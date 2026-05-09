@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "next build",
+		"clean": "git clean -xdf node_modules",
 		"check": "biome check .",
 		"check:write": "biome check --write .",
 		"dev": "next dev --turbo -p 3001",

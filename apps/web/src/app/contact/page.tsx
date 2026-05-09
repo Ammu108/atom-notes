@@ -58,9 +58,6 @@ const Contact = () => {
 			<section className="mx-auto max-w-6xl px-4 pt-24 pb-16">
 				<div className="space-y-6 text-center">
 					<div>
-						<span className="mb-3 inline-block font-semibold text-primary text-xs uppercase tracking-wider">
-							Get in Touch
-						</span>
 						<h1 className="font-bold font-playfair text-5xl text-foreground leading-tight sm:text-6xl">
 							We'd Love to <span className="text-primary">Hear From You</span>
 						</h1>

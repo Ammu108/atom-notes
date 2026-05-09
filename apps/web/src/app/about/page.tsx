@@ -1,13 +1,21 @@
-import { Button } from "@repo/ui";
 import { IconBoltFilled, IconEye } from "@tabler/icons-react";
-import Image from "next/image";
 
 const About = () => {
 	// Move all static data outside render for stable keys + performance
 	const highlights = [
-		{ id: "years", number: "6+", label: "Years of Excellence", emoji: "🏆" },
-		{ id: "lives", number: "5M+", label: "Lives Changed", emoji: "❤️" },
-		{ id: "partners", number: "500+", label: "Medical Partners", emoji: "🤝" },
+		{
+			id: "startup",
+			number: "Startup",
+			label: "Early-stage two-person team",
+			emoji: "🚀",
+		},
+		{
+			id: "notes",
+			number: "Regular",
+			label: "Structured notes & PYQs",
+			emoji: "📝",
+		},
+		{ id: "focus", number: "Focus", label: "Student-first UX", emoji: "🎯" },
 	];
 
 	const coreValues = [
@@ -41,69 +49,7 @@ const About = () => {
 		},
 	];
 
-	const achievements = [
-		{
-			id: "consultations",
-			number: "5M+",
-			label: "Successful Consultations",
-			detail: "And counting every day",
-		},
-		{
-			id: "specialists",
-			number: "200+",
-			label: "Specialists On Board",
-			detail: "From multiple medical fields",
-		},
-		{
-			id: "availability",
-			number: "24/7",
-			label: "Service Availability",
-			detail: "Always there when you need us",
-		},
-		{
-			id: "satisfaction",
-			number: "4.9★",
-			label: "Patient Satisfaction",
-			detail: "Based on 500K+ reviews",
-		},
-		{
-			id: "cities",
-			number: "15+",
-			label: "Cities Covered",
-			detail: "And expanding rapidly",
-		},
-		{
-			id: "uptime",
-			number: "99.9%",
-			label: "Uptime Guarantee",
-			detail: "Reliable and always accessible",
-		},
-	];
-
-	const culturePoints = [
-		"collaborative-culture",
-		"continuous-learning",
-		"work-life-balance",
-		"inclusive-environment",
-	].map((id) => ({
-		id,
-		text: id
-			.replace(/-/g, " ")
-			.replace(/\b\w/g, (l) => l.toUpperCase())
-			.replace(
-				"Collaborative Culture",
-				"Collaborative culture fostering innovation",
-			)
-			.replace(
-				"Continuous Learning",
-				"Continuous learning and professional growth",
-			)
-			.replace("Work Life Balance", "Work-life balance and wellness programs")
-			.replace(
-				"Inclusive Environment",
-				"Diverse, inclusive, and welcoming environment",
-			),
-	}));
+	// culturePoints not required for Alphanote founders view
 
 	const testimonials = [
 		{
@@ -143,23 +89,24 @@ const About = () => {
 								About Us
 							</span>
 							<h1 className="font-bold font-playfair text-5xl text-foreground leading-tight sm:text-6xl">
-								Transforming Healthcare,{" "}
-								<span className="text-primary">One Click at a Time</span>
+								Welcome to Alphanote —
+								<span className="text-primary">
+									Structured Notes, Faster Revision
+								</span>
 							</h1>
 						</div>
 
 						<div className="space-y-4">
 							<p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
-								Founded in 2020, Atom Hospital emerged from a simple
-								observation: accessing quality healthcare shouldn't be
-								complicated. What began as a mission to revolutionize
-								patient-doctor connections has become a trusted platform serving
-								millions.
+								Alphanote is a small startup building a focused notes platform
+								for students. We publish structured, detailed notes and curated
+								PYQs regularly to help you revise efficiently and perform better
+								in exams.
 							</p>
 							<p className="max-w-xl text-base text-muted-foreground leading-relaxed">
-								We're not just an appointment system. We're building an
-								ecosystem where technology and compassion meet to redefine what
-								healthcare can be.
+								We believe clear structure and concise solutions make learning
+								faster — so every note is authored and reviewed for clarity and
+								exam relevance.
 							</p>
 						</div>
 					</div>
@@ -253,69 +200,37 @@ const About = () => {
 				</div>
 			</section>
 
-			{/* ── ACHIEVEMENTS ── */}
-			<section className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl px-4 py-20">
-				<div className="absolute inset-0 bg-linear-to-r from-primary/10 via-accent/5 to-primary/10" />
-				<div className="relative z-10">
-					<h2 className="mb-16 text-center font-bold font-playfair text-4xl text-foreground">
-						Our Achievements
-					</h2>
-
-					<div className="grid gap-8 md:grid-cols-3">
-						{achievements.map(({ id, number, label, detail }) => (
-							<div
-								className="group animate-fadeUp-1 rounded-2xl border border-border/50 bg-background/50 p-8 text-center transition-all duration-300 hover:-translate-y-2 hover:bg-background"
-								key={id}
-							>
-								<div className="mb-2 font-bold font-playfair text-4xl text-primary">
-									{number}
-								</div>
-								<h3 className="mb-2 font-semibold text-foreground">{label}</h3>
-								<p className="text-muted-foreground text-xs">{detail}</p>
-							</div>
-						))}
-					</div>
-				</div>
-			</section>
-
-			{/* ── TEAM CULTURE ── */}
+			{/* ── TEAM — FOUNDERS ── */}
 			<section className="mx-auto max-w-6xl px-4 py-20">
-				<div className="grid items-center gap-12 md:grid-cols-2">
-					{/* Image/Visual */}
-					<div className="relative h-96 animate-fadeUp-1 overflow-hidden rounded-2xl">
-						<Image
-							alt="team culture"
-							className="object-cover"
-							fill
-							src="/about-doctors.jpg"
-						/>
+				<div className="mb-12 text-center">
+					<h2 className="mb-4 font-bold font-playfair text-4xl text-foreground">
+						Meet the Founders
+					</h2>
+					<p className="mx-auto max-w-2xl text-muted-foreground">
+						Alphanote is built and maintained by a two-person team focused on
+						creating high-quality, exam-ready notes.
+					</p>
+				</div>
+
+				<div className="grid gap-8 md:grid-cols-2">
+					<div className="group animate-fadeUp-1 rounded-2xl border border-border/50 bg-card p-6">
+						<h3 className="mb-3 font-bold text-foreground text-lg">Aman</h3>
+						<p className="text-muted-foreground text-sm leading-relaxed">
+							Developer & maintainer. Aman builds and manages the platform,
+							implements features, and ensures the site runs reliably. He also
+							curates and writes structured, detailed notes and compiles PYQs
+							with clear solution explanations.
+						</p>
 					</div>
 
-					{/* Content */}
-					<div className="animate-fadeUp-2">
-						<h2 className="mb-6 font-bold font-playfair text-4xl text-foreground">
-							Built by Brilliant Minds
-						</h2>
-						<p className="mb-4 text-muted-foreground leading-relaxed">
-							Our team consists of doctors, engineers, designers, and healthcare
-							professionals united by a shared vision: making healthcare better
-							for everyone.
+					<div className="group animate-fadeUp-2 rounded-2xl border border-border/50 bg-card p-6">
+						<h3 className="mb-3 font-bold text-foreground text-lg">Rishabh</h3>
+						<p className="text-muted-foreground text-sm leading-relaxed">
+							Content lead and UI/UX designer. Rishabh makes sure the
+							application should be user focused and feels easy to use and he
+							also writes structured, detailed notes and compiles PYQs with
+							clear solution explanations.
 						</p>
-						<p className="mb-8 text-muted-foreground leading-relaxed">
-							From our founders who started this journey to the growing family
-							of innovators joining us daily, every team member brings unique
-							expertise and unwavering commitment to transforming healthcare
-							delivery.
-						</p>
-
-						<div className="space-y-4">
-							{culturePoints.map(({ id, text }) => (
-								<div className="flex items-start gap-3" key={id}>
-									<div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
-									<span className="text-foreground">{text}</span>
-								</div>
-							))}
-						</div>
 					</div>
 				</div>
 			</section>
@@ -346,34 +261,6 @@ const About = () => {
 							</div>
 						</div>
 					))}
-				</div>
-			</section>
-
-			{/* ── CTA SECTION ── */}
-			<section className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl px-8 py-16 md:py-20">
-				<Image
-					alt="Doctors and healthcare professionals collaborating"
-					className="object-cover"
-					fill
-					priority
-					src="/about-cta.jpg"
-				/>
-
-				<div className="absolute inset-0 bg-linear-to-r from-teal-950/70 via-teal-950/40 to-teal-950/70" />
-
-				<div className="relative z-10 text-center">
-					<h2 className="mb-6 font-bold font-playfair text-4xl text-white">
-						Join Our Healthcare Revolution
-					</h2>
-					<p className="mx-auto mb-10 max-w-2xl text-white">
-						Experience the future of healthcare today. Schedule your appointment
-						in seconds and connect with world-class medical professionals.
-					</p>
-					<div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
-						<Button size="lg" variant="primary">
-							Book Appointment
-						</Button>
-					</div>
 				</div>
 			</section>
 

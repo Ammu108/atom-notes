@@ -1,363 +1,269 @@
-# Atom Hospital - Doctor Appointment Booking Platform
+# Atom Notes
 
-A modern, full-stack healthcare platform enabling patients to book appointments with doctors, manage their medical history, and healthcare providers to manage their practice. Built with Next.js 15, tRPC, and PostgreSQL.
+A modern note-taking application built with a monorepo architecture. Features a clean web interface for users and a powerful admin dashboard for management.
 
-## 📋 Table of Contents
+---
 
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
-- [Available Scripts](#available-scripts)
-- [Architecture](#architecture)
-- [Authentication & Authorization](#authentication--authorization)
-- [Database](#database)
-- [Contributing](#contributing)
-- [Future Improvements](#future-improvements)
+## 🎯 Overview
 
-## ✨ Features
+Atom Notes is a full-stack TypeScript application designed for secure note management and team collaboration. The project uses a monorepo structure to organize shared packages and multiple applications.
 
-### Patient Features
+---
 
-- **User Authentication** - Secure sign-up and login with JWT-based authentication
-- **Doctor Discovery** - Browse doctors by specialty with detailed profiles and ratings
-- **Appointment Booking** - Multi-step appointment booking with date/time selection
-- **My Appointments** - View, reschedule, and cancel appointments with status tracking
-- **Medical Records** - Access consultation notes and appointment history
-- **Profile Management** - Update personal information and medical history
+## 🏗️ Tech Stack
 
-### Core Platform Features
+- **Frontend**: Next.js 14+, React, TypeScript
+- **Backend**: tRPC, Next.js API routes
+- **Database**: PostgreSQL with Drizzle ORM
+- **Authentication**: JWT-based auth with bcryptjs
+- **Styling**: Tailwind CSS, shadcn/ui components
+- **Package Manager**: pnpm with workspaces
+- **Code Quality**: Biome (linting & formatting)
 
-- **Real-time Availability** - Live doctor availability and appointment slots
-- **Responsive Design** - Mobile-first UI with Tailwind CSS and dark theme
-- **Type-Safe API** - End-to-end type safety with TypeScript and tRPC
-- **Performance Optimized** - Next.js 15 with Turbo for fast builds and optimal performance
-- **Accessible UI** - Base UI components with accessibility best practices
+---
 
-## 🛠️ Tech Stack
-
-### Frontend
-
-- **Framework** - Next.js 15 (App Router)
-- **Language** - TypeScript
-- **Styling** - Tailwind CSS 4
-- **UI Components** - Base UI, Shadcn/ui, Tabler Icons
-- **State Management** - React Query (TanStack Query)
-- **Validation** - Zod
-
-### Backend
-
-- **API** - tRPC 11
-- **Authentication** - JWT with bcryptjs
-- **Server** - Next.js API routes with Node runtime
-
-### Database
-
-- **ORM** - Drizzle ORM
-- **Database** - PostgreSQL
-- **Migrations** - Drizzle Kit
-
-### Development Tools
-
-- **Code Quality** - Biome (linting & formatting)
-- **Package Manager** - pnpm
-- **Build Tool** - Next.js + Turbopack
-
-## 📁 Project Structure
+## 📂 Project Structure
 
 ```
-atom-hospital/
-├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── page.tsx           # Home page
-│   │   ├── about/             # About page
-│   │   ├── doctors/           # Doctors directory
-│   │   ├── book-appointment/  # Appointment booking flow
-│   │   ├── my-appointments/   # User appointments dashboard
-│   │   ├── contact/           # Contact page
-│   │   ├── privacy-policy/    # Privacy policy
-│   │   ├── auth/              # Authentication pages
-│   │   ├── layout.tsx         # Root layout
-│   ├── server/
-│   │   ├── api/               # tRPC routers
-│   │   └── db/                # Database configuration
-│   ├── components/
-│   │   ├── ui/                # Reusable UI components
-│   │   ├── navbar.tsx         # Navigation bar
-│   │   ├── footer.tsx         # Footer
-│   │   └── kokonutui/         # Third-party components
-│   ├── features/
-│   │   └── home/              # Home page sections
-│   ├── trpc/                  # tRPC client setup
-│   ├── styles/
-│   │   └── globals.css        # Global styles and animations
-│   └── lib/                   # Utilities and helpers
-├── drizzle/                   # Database migrations
-├── public/                    # Static assets
-├── .env.example              # Environment variables template
-├── drizzle.config.ts         # Drizzle configuration
-├── next.config.js            # Next.js configuration
-└── tsconfig.json             # TypeScript configuration
+atom-notes/
+├── apps/
+│   ├── web/              # User-facing web app (port 3000)
+│   └── admin/            # Admin dashboard (port 3001)
+├── packages/
+│   ├── api/              # tRPC API routers
+│   ├── auth/             # Authentication logic
+│   ├── db/               # Database schema & migrations
+│   └── ui/               # Shared UI components
+├── package.json          # Workspace root
+├── pnpm-workspace.yaml  # Workspace configuration
+└── tsconfig.json         # TypeScript config with path aliases
 ```
+
+### Apps
+
+- **`apps/web`** - Public-facing web application for users to manage notes
+- **`apps/admin`** - Admin dashboard for system management and monitoring
+
+### Packages
+
+- **`packages/api`** - tRPC server configuration and API routers
+- **`packages/auth`** - Authentication service (signup, login, JWT utilities)
+- **`packages/db`** - Drizzle ORM schema, migrations, and database utilities
+- **`packages/ui`** - Reusable React components and layouts
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ and pnpm
-- PostgreSQL 13+
-- Git
+- **Node.js** 18+ 
+- **pnpm** 10+ (or `npm install -g pnpm`)
+- **PostgreSQL** database connection string
 
 ### Installation
 
 1. **Clone the repository**
-
-```bash
-git clone https://github.com/yourusername/atom-hospital.git
-cd atom-hospital
-```
+   ```bash
+   git clone <repository-url>
+   cd atom-notes
+   ```
 
 2. **Install dependencies**
-
-```bash
-pnpm install
-```
-
-3. **Setup environment variables**
-
-```bash
-cp .env.example .env
-```
-
-Update `.env` with your configuration (see [Environment Variables](#environment-variables) section)
-
-4. **Setup the database**
-
-```bash
-# Create database schema
-pnpm run db:push
-
-# (Optional) Open Drizzle Studio to view your database
-pnpm run db:studio
-```
-
-5. **Start the development server**
-
-```bash
-pnpm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to see the application.
-
-## 🔐 Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
-
-```env
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/atom-hospital"
-
-# JWT (for authentication)
-JWT_SECRET="your-super-secret-jwt-key-min-32-characters"
-
-# (Optional) NextAuth.js
-NEXTAUTH_SECRET="your-nextauth-secret"
-NEXTAUTH_URL="http://localhost:3000"
-```
-
-### Variable Descriptions
-
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:password@localhost:5432/atom-hospital` |
-| `JWT_SECRET` | Secret key for JWT token signing (min 32 chars) | Random secure string |
-| `NEXTAUTH_SECRET` | Secret for NextAuth.js session encryption | Random secure string |
-| `NEXTAUTH_URL` | Base URL for NextAuth.js callbacks | `http://localhost:3000` (dev), `https://yourdomain.com` (prod) |
-
-## 📜 Available Scripts
-
-### Development
-
-```bash
-# Start development server with Turbo
-pnpm run dev
-
-# Type-check TypeScript without emitting
-pnpm run typecheck
-
-# Format code with Biome
-pnpm run format
-
-# Lint code with Biome
-pnpm run lint
-
-# Check and fix linting issues
-pnpm run check:write
-```
-
-### Database
-
-```bash
-# Generate database migrations
-pnpm run db:generate
-
-# Apply pending migrations
-pnpm run db:migrate
-
-# Push schema changes to database (development only)
-pnpm run db:push
-
-# Open Drizzle Studio for database management
-pnpm run db:studio
-```
-
-### Production
-
-```bash
-# Build for production
-pnpm run build
-
-# Start production server
-pnpm run start
-
-# Preview production build locally
-pnpm run preview
-```
-
-## 🏗️ Architecture
-
-### Why This Architecture?
-
-The project uses a **single-app structure** with **tRPC + Next.js** for several reasons:
-
-1. **Type Safety** - tRPC provides end-to-end type safety between frontend and backend
-2. **Code Colocation** - API and frontend code in the same repository for easier refactoring
-3. **Performance** - Server-side rendering, incremental static regeneration, and optimization
-4. **Developer Experience** - Hot module reloading, TypeScript support, minimal boilerplate
-
-### API Layer (tRPC)
-
-The backend is structured as tRPC routers in `/src/server/api/`:
-
-- **Type-safe RPC calls** - Fully typed procedures with input validation
-- **React Query Integration** - Automatic caching and synchronization
-- **Middleware Support** - Authentication checks and authorization
-- **Error Handling** - Structured error responses
-
-```typescript
-// Client usage
-const { data: doctors } = trpc.doctor.getAll.useQuery();
-
-// Server definition
-export const doctorRouter = createTRPCRouter({
-  getAll: publicProcedure.query(async ({ ctx }) => {
-    return ctx.db.query.doctors.findMany();
-  }),
-});
-```
-
-### Database Layer (Drizzle ORM)
-
-- **Type-safe queries** - Fully typed SQL from schema definitions
-- **Migrations** - Version-controlled database changes
-- **PostgreSQL** - Robust, production-ready database
-
-## 🔐 Authentication & Authorization
-
-### How It Works
-
-1. **Sign Up** - Users register with email and password (hashed with bcryptjs)
-2. **Login** - Users receive a JWT token stored securely in cookies
-3. **Protected Routes** - Middleware checks JWT validity before accessing protected pages
-4. **Role-Based Access** - Roles (PATIENT, DOCTOR, ADMIN) control access to features
-
-### Protected Procedures
-
-```typescript
-// Server-side authentication check
-const protectedProcedure = t.procedure.use(async (opts) => {
-  const user = await getUser(); // Get from JWT
-  if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
-  return opts.next({ ctx: { user } });
-});
-```
-
-## 🗄️ Database
-
-### Key Tables
-
-- **users** - Patient/doctor accounts with authentication data
-- **doctors** - Doctor profiles with specialization and availability
-- **appointments** - Booking records with status tracking
-- **consultations** - Medical records of completed appointments
-
-### Migrations
-
-Migrations are stored in `/drizzle` and versioned with your code:
-
-```bash
-# Create a new migration after schema changes
-pnpm run db:generate
-
-# Apply migrations to database
-pnpm run db:push
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these guidelines:
-
-1. **Branch naming** - Use `feature/` or `fix/` prefixes
    ```bash
-   git checkout -b feature/appointment-reminders
+   pnpm install
    ```
 
-2. **Code quality** - Run linters before committing
+3. **Set up environment variables**
+   - Create `.env` files in `apps/web`, `apps/admin`, and `packages/db`
+   - Copy from `.env.example` if available
+   - Required: `DATABASE_URL` for PostgreSQL connection
+
+4. **Run database migrations**
    ```bash
-   pnpm run check:write
-   pnpm run format
+   pnpm db:push
    ```
 
-3. **Type safety** - Ensure no TypeScript errors
+5. **Start development servers**
    ```bash
-   pnpm run typecheck
+   pnpm dev
    ```
 
-4. **Testing** - Add tests for new features (when test setup is added)
-
-5. **Commit messages** - Use conventional commits
-   ```
-   feat: add appointment reminders
-   fix: resolve booking form validation
-   ```
-
-## 🚀 Future Improvements
-
-- **Payment Integration** - Stripe/Razorpay for online consultations and deposits
-- **Email Notifications** - Appointment reminders, confirmations, and follow-ups
-- **SMS Alerts** - Two-way SMS for appointment updates
-- **Video Consultations** - WebRTC integration for remote consultations
-- **Analytics Dashboard** - Admin analytics for bookings, revenues, and user behavior
-- **Appointment Ratings** - Patient reviews and ratings for doctors
-- **Prescription Management** - Digital prescriptions and medication history
-- **Insurance Integration** - Coverage verification and claims processing
-- **Multi-language Support** - Internationalization (i18n) for global reach
-- **Mobile App** - React Native app for iOS and Android
-- **AI-Powered Chatbot** - Initial consultation and symptom checking
-
-## 📞 Support
-
-For issues, questions, or feedback:
-
-- **GitHub Issues** - Report bugs and request features
-- **Email** - contact@atomhospital.com
-- **Documentation** - [Full docs](https://docs.atomhospital.com)
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+   - Web app: http://localhost:3000
+   - Admin dashboard: http://localhost:3001
 
 ---
 
-**Happy coding! Let's revolutionize healthcare together. 🏥**
+## 📱 Available Scripts
+
+### Root Workspace Commands
+
+```bash
+# Development
+pnpm dev              # Start all apps in development mode
+
+# Building & Production
+pnpm build            # Build all apps for production
+pnpm start            # Start production servers
+
+# Code Quality
+pnpm lint             # Run Biome linter
+pnpm lint:fix         # Fix linting issues
+pnpm format           # Format code with Biome
+pnpm check            # Run type checking
+pnpm typecheck        # TypeScript compilation check
+
+# Database
+pnpm db:generate      # Generate Drizzle types & migrations
+pnpm db:migrate       # Run pending migrations
+pnpm db:push          # Sync schema with database (dev only)
+pnpm db:studio        # Open Drizzle Studio (database GUI)
+
+# Maintenance
+pnpm clean            # Remove node_modules and build artifacts
+```
+
+---
+
+## 🔧 Development Workflow
+
+### Development Mode
+
+1. Start all services with hot reload:
+   ```bash
+   pnpm dev
+   ```
+
+2. Make changes to any app or package - they update automatically
+
+3. Check code quality:
+   ```bash
+   pnpm lint:fix        # Auto-fix linting issues
+   pnpm typecheck       # Verify TypeScript types
+   ```
+
+### Database Changes
+
+When modifying the database schema in `packages/db/src/schema.ts`:
+
+```bash
+# 1. Update your schema
+# 2. Generate migration
+pnpm db:generate
+
+# 3. Review the generated migration file
+# 4. Apply to database
+pnpm db:push         # Dev only
+# or
+pnpm db:migrate      # Production migrations
+```
+
+---
+
+## 🔐 Authentication
+
+The auth system is in `packages/auth`:
+
+- **Signup**: Create new user accounts with email/password
+- **Login**: JWT-based authentication
+- **Sessions**: Token-based with expiration
+- **Password Security**: bcryptjs hashing
+
+See `packages/auth/src/` for implementation details.
+
+---
+
+## 📦 Shared Packages
+
+### `@repo/api`
+tRPC routers and procedures for communication between frontend and backend.
+
+```typescript
+// Example usage in apps
+import { api } from '@repo/api';
+```
+
+### `@repo/auth`
+Authentication utilities and services.
+
+```typescript
+import { authService } from '@repo/auth';
+```
+
+### `@repo/db`
+Database queries and schema definitions.
+
+```typescript
+import { db } from '@repo/db';
+```
+
+### `@repo/ui`
+Reusable components and layouts.
+
+```typescript
+import { Button, Card } from '@repo/ui';
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Port Already in Use
+- Web app uses port 3000, Admin uses port 3001
+- Change in `next.config.js` if needed
+
+### Database Connection Failed
+- Verify `DATABASE_URL` is correct
+- Ensure PostgreSQL is running
+- Check firewall/network access
+
+### pnpm Not Installed
+```bash
+npm install -g pnpm
+```
+
+### Dependency Issues
+```bash
+pnpm clean
+pnpm install
+```
+
+---
+
+## 📖 Key Files & Directories
+
+- **`pnpm-workspace.yaml`** - Workspace configuration
+- **`biome.json`** - Code formatting & linting rules
+- **`tsconfig.json`** - TypeScript configuration with `@repo/*` aliases
+- **`packages/db/drizzle.config.ts`** - Database configuration
+- **`packages/api/src/root.ts`** - Main tRPC router definition
+
+---
+
+## 🤝 Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Run `pnpm lint:fix` and `pnpm check`
+4. Test in dev mode with `pnpm dev`
+5. Commit and push
+
+---
+
+## 📝 License
+
+This project is private. All rights reserved.
+
+---
+
+## 🆘 Support
+
+For issues or questions:
+1. Check this README
+2. Review the monorepo structure documentation
+3. Check logs in development mode
+4. Review package-specific README files (if available)
+
+---
+
+**Happy coding! 🎉**

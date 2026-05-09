@@ -1,6 +1,6 @@
 {
-	"name": "atom-hospital-monorepo",
-	"description": "Healthcare appointment booking platform - monorepo",
+	"name": "atom-notes",
+	"description": "A simple note-taking app",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",

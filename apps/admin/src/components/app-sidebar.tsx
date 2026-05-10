@@ -42,8 +42,8 @@ const data = {
 			icon: <ListIcon />,
 		},
 		{
-			title: "Create Notes",
-			url: "/create-notes",
+			title: "All Notes",
+			url: "/notes",
 			icon: <ChartBarIcon />,
 		},
 		{

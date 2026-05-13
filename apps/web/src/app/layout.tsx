@@ -2,10 +2,9 @@ import "~/styles/globals.css";
 
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import Footer from "~/components/footer";
-import Navbar from "~/components/navbar";
+import { AppShell } from "~/components/app-shell";
 import { TRPCReactProvider } from "~/trpc/react";
-import { api, HydrateClient } from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
 
 export const metadata: Metadata = {
 	title: "Atom - Hospital Booking System",
@@ -18,19 +17,15 @@ const geist = Geist({
 	variable: "--font-geist-sans",
 });
 
-export default async function RootLayout({
+export default function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
-	await api.auth.me.prefetch();
-
 	return (
 		<html className={`${geist.variable}`} lang="en">
 			<body>
 				<TRPCReactProvider>
 					<HydrateClient>
-						<Navbar />
-						{children}
-						<Footer />
+						<AppShell>{children}</AppShell>
 					</HydrateClient>
 				</TRPCReactProvider>
 			</body>

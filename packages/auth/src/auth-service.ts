@@ -1,5 +1,4 @@
-import type { DB } from "@repo/db";
-import { users } from "@repo/db/schema";
+import { type DB, users } from "@repo/db";
 import { TRPCError } from "@trpc/server";
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";

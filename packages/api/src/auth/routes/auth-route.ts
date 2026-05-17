@@ -1,23 +1,24 @@
-import {
-	authService,
-	createToken,
-	deleteUserSchema,
-	signupSchema,
-} from "@repo/auth";
-import { users } from "@repo/db";
+// import { authService, createToken } from "@repo/auth";
 import { TRPCError } from "@trpc/server";
 import { serialize } from "cookie";
-import { eq } from "drizzle-orm";
 import z from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "../../trpc";
+import { authRepository } from "../repositories/auth-repositary";
+import { authService } from "../services/auth-service";
+import { createToken } from "../utils/auth.util";
+import { deleteUserSchema, signupSchema } from "../validators/auth-validator";
+
+/**
+ * Auth Router
+ * API endpoints only - uses service for business logic
+ */
 
 export const authRouter = createTRPCRouter({
 	signUp: publicProcedure
 		.input(signupSchema)
 		.mutation(async ({ input, ctx }) => {
-			const userExists = await ctx.db.query.users.findFirst({
-				where: eq(users.email, input.email),
-			});
+			// Check if user already exists using repository
+			const userExists = await authRepository.findByEmail(ctx.db, input.email);
 
 			if (userExists) {
 				throw new TRPCError({
@@ -27,17 +28,13 @@ export const authRouter = createTRPCRouter({
 				});
 			}
 
+			// Sign up using service (handles business logic)
 			const user = await authService.signUp(input, ctx.db);
 
-			if (!user?.id) {
-				throw new TRPCError({
-					code: "INTERNAL_SERVER_ERROR",
-					message: "Failed to create user",
-				});
-			}
-
+			// Create JWT token
 			const token = createToken(user.id, ctx.jwtSecret, user.role);
 
+			// Set secure HTTP-only cookie
 			const cookie = serialize("token", token, {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === "production",
@@ -58,17 +55,13 @@ export const authRouter = createTRPCRouter({
 	login: publicProcedure
 		.input(z.object({ email: z.string(), password: z.string() }))
 		.mutation(async ({ input, ctx }) => {
+			// Login using service (handles business logic & password verification)
 			const user = await authService.login(input.email, input.password, ctx.db);
 
-			if (!user?.id) {
-				throw new TRPCError({
-					code: "UNAUTHORIZED",
-					message: "Invalid user credentials",
-				});
-			}
-
+			// Create JWT token
 			const token = createToken(user.id, ctx.jwtSecret, user.role);
 
+			// Set secure HTTP-only cookie
 			const cookie = serialize("token", token, {
 				httpOnly: true,
 				secure: process.env.NODE_ENV === "production",
@@ -111,9 +104,8 @@ export const authRouter = createTRPCRouter({
 			return null;
 		}
 
-		const user = await ctx.db.query.users.findFirst({
-			where: (u, { eq }) => eq(u.id, authUser.userId),
-		});
+		// Use repository to get current user
+		const user = await authRepository.findById(ctx.db, authUser.userId);
 
 		return user;
 	}),
@@ -126,17 +118,9 @@ export const authRouter = createTRPCRouter({
 			});
 		}
 
-		return ctx.db.query.users.findMany({
-			where: (u, { eq }) => eq(u.role, "user"),
-			columns: {
-				id: true,
-				name: true,
-				email: true,
-				role: true,
-				createdAt: true,
-				isDeleted: true,
-			},
-		});
+		// TODO: Create a repository method for list all users
+		const users = await authRepository.getAllUsers(ctx.db);
+		return users;
 	}),
 
 	deleteUser: publicProcedure
@@ -145,27 +129,21 @@ export const authRouter = createTRPCRouter({
 			if (!ctx.user || ctx.user.role !== "admin") {
 				throw new TRPCError({
 					code: "FORBIDDEN",
-					message: "Only admins can view users",
+					message: "Only admins can delete users",
 				});
 			}
 
-			const userExist = await ctx.db.query.users.findFirst({
-				where: eq(users.id, input.id),
-			});
+			// Check if user exists using repository
+			const userExist = await authRepository.findById(ctx.db, input.id);
 
 			if (!userExist) {
 				throw new TRPCError({
-					code: "FORBIDDEN",
-					message: "Only admins can view users.",
+					code: "NOT_FOUND",
+					message: "User not found",
 				});
 			}
 
-			return await ctx.db
-				.update(users)
-				.set({
-					isDeleted: true,
-					deletedAt: new Date(),
-				})
-				.where(eq(users.id, input.id));
+			// Delete user using repository
+			return await authRepository.deleteById(ctx.db, input.id);
 		}),
 });

@@ -12,7 +12,8 @@
 		"migrate": "drizzle-kit migrate",
 		"push": "drizzle-kit push",
 		"studio": "drizzle-kit studio",
-		"seed": "tsx seed.ts"
+		"seed": "tsx src/seed.ts",
+		"seed-course": "tsx src/course-seed.ts"
 	},
 	"devDependencies": {
 		"drizzle-kit": "^0.30.5",

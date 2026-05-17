@@ -1,4 +1,4 @@
-import { authRouter } from "./routers/auth-router";
+import { authRouter } from "./auth/routes/auth-route";
 import { createCallerFactory, createTRPCRouter } from "./trpc";
 
 /**

@@ -45,9 +45,6 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@repo/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -184,9 +181,6 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@repo/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -266,9 +260,6 @@ importers:
 
   packages/api:
     dependencies:
-      '@repo/auth':
-        specifier: workspace:*
-        version: link:../auth
       '@repo/db':
         specifier: workspace:*
         version: link:../db
@@ -296,6 +287,9 @@ importers:
       drizzle-orm:
         specifier: ^0.41.0
         version: 0.41.0(gel@2.2.0)(postgres@3.4.8)
+      jsonwebtoken:
+        specifier: ^9.0.3
+        version: 9.0.3
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -312,37 +306,6 @@ importers:
       '@types/react':
         specifier: ^19.0.0
         version: 19.2.14
-      typescript:
-        specifier: ^5.8.2
-        version: 5.9.3
-
-  packages/auth:
-    dependencies:
-      '@repo/db':
-        specifier: workspace:*
-        version: link:../db
-      '@trpc/server':
-        specifier: ^11.0.0
-        version: 11.16.0(typescript@5.9.3)
-      bcryptjs:
-        specifier: ^3.0.3
-        version: 3.0.3
-      drizzle-orm:
-        specifier: ^0.41.0
-        version: 0.41.0(gel@2.2.0)(postgres@3.4.8)
-      jsonwebtoken:
-        specifier: ^9.0.3
-        version: 9.0.3
-      zod:
-        specifier: ^3.24.2
-        version: 3.25.76
-    devDependencies:
-      '@types/jsonwebtoken':
-        specifier: ^9.0.10
-        version: 9.0.10
-      '@types/node':
-        specifier: ^20.14.10
-        version: 20.19.39
       typescript:
         specifier: ^5.8.2
         version: 5.9.3
@@ -2023,12 +1986,6 @@ packages:
 
   '@types/d3-timer@3.0.2':
     resolution: {integrity: sha512-Ps3T8E8dZDam6fUyNiMkekK3XUsaUEik+idO9/YjPtfj2qruF8tFBXS7XhtE4iIXBLxhmLjP3SXpLhVf21I9Lw==}
-
-  '@types/jsonwebtoken@9.0.10':
-    resolution: {integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==}
-
-  '@types/ms@2.1.0':
-    resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
   '@types/node@20.19.39':
     resolution: {integrity: sha512-orrrD74MBUyK8jOAD/r0+lfa1I2MO6I+vAkmAWzMYbCcgrN4lCrmK52gRFQq/JRxfYPfonkr4b0jcY7Olqdqbw==}
@@ -5107,13 +5064,6 @@ snapshots:
   '@types/d3-time@3.0.4': {}
 
   '@types/d3-timer@3.0.2': {}
-
-  '@types/jsonwebtoken@9.0.10':
-    dependencies:
-      '@types/ms': 2.1.0
-      '@types/node': 20.19.39
-
-  '@types/ms@2.1.0': {}
 
   '@types/node@20.19.39':
     dependencies:

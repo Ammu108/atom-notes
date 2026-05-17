@@ -6,6 +6,6 @@ const createTable = pgTableCreator((name) => `${name}`);
 export const courses = createTable("courses", {
 	id: uuid("id").defaultRandom().primaryKey(),
 	name: varchar("name", { length: 256 }).notNull(), // e.g., "Computer Science", "Mathematics"
-	code: varchar("code", { length: 50 }).notNull().unique(), // e.g., "CS", "MATH"
+	slug: varchar("slug", { length: 50 }).notNull().unique(), // e.g., "cs", "math"
 	...timestamps,
 });

@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
-import { env } from "./env";
-import { db, users } from "./src";
+import { env } from "../env";
+import { db, users } from ".";
 
 async function seed() {
 	const adminEmail = env.ADMIN_EMAIL;

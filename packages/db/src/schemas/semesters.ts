@@ -9,6 +9,6 @@ export const semesters = createTable("semesters", {
 	courseId: uuid("course_id")
 		.references(() => courses.id, { onDelete: "cascade" })
 		.notNull(),
-	semesters: integer("semesters").notNull(), // e.g., 1, 2, 3, 4, etc.
+	number: integer("number").notNull(), // e.g., 1, 2, 3, 4, etc.
 	...timestamps,
 });

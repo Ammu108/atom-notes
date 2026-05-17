@@ -3,7 +3,6 @@ import { createEnv } from "@t3-oss/env-core";
 import dotenv from "dotenv";
 import { z } from "zod";
 
-// 🔥 Load root env
 dotenv.config({
 	path: path.resolve(process.cwd(), "../../.env"),
 });

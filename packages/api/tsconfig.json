@@ -2,8 +2,13 @@
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
 		"outDir": "./dist",
-		"declaration": true
+		"declaration": true,
+		"rootDir": "../../"
 	},
-	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.tsx",
+		"../shared/helpers/normalize-text.ts"
+	],
 	"exclude": ["node_modules"]
 }

@@ -16,12 +16,7 @@ import {
 import { Switch } from "~/components/ui/switch";
 
 const courses = ["B.Tech", "BCA", "MCA", "MBA"];
-const branches = [
-	"Computer Science",
-	"Information Technology",
-	"Mechanical",
-	"Electronics",
-];
+
 const semesters = ["Semester 1", "Semester 2", "Semester 3", "Semester 4"];
 
 const subjects = ["Subject 1", "Subject 2", "Subject 3", "Subject 4"];
@@ -137,22 +132,6 @@ const CreateNotesForm = () => {
 							</SelectTrigger>
 							<SelectContent>
 								{courses.map((item) => (
-									<SelectItem key={item} value={item}>
-										{item}
-									</SelectItem>
-								))}
-							</SelectContent>
-						</Select>
-					</div>
-
-					<div className="space-y-2">
-						<FieldLabel htmlFor="input-field-slug">Branch</FieldLabel>
-						<Select defaultValue="Computer Science">
-							<SelectTrigger className="w-full">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								{branches.map((item) => (
 									<SelectItem key={item} value={item}>
 										{item}
 									</SelectItem>

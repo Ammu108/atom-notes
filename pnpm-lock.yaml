@@ -45,9 +45,6 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@repo/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -184,9 +181,6 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@repo/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -266,9 +260,6 @@ importers:
 
   packages/api:
     dependencies:
-      '@repo/auth':
-        specifier: workspace:*
-        version: link:../auth
       '@repo/db':
         specifier: workspace:*
         version: link:../db
@@ -296,6 +287,9 @@ importers:
       drizzle-orm:
         specifier: ^0.41.0
         version: 0.41.0(gel@2.2.0)(postgres@3.4.8)
+      jsonwebtoken:
+        specifier: ^9.0.3
+        version: 9.0.3
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -306,43 +300,15 @@ importers:
         specifier: ^3.24.2
         version: 3.25.76
     devDependencies:
-      '@types/node':
-        specifier: ^20.14.10
-        version: 20.19.39
-      '@types/react':
-        specifier: ^19.0.0
-        version: 19.2.14
-      typescript:
-        specifier: ^5.8.2
-        version: 5.9.3
-
-  packages/auth:
-    dependencies:
-      '@repo/db':
-        specifier: workspace:*
-        version: link:../db
-      '@trpc/server':
-        specifier: ^11.0.0
-        version: 11.16.0(typescript@5.9.3)
-      bcryptjs:
-        specifier: ^3.0.3
-        version: 3.0.3
-      drizzle-orm:
-        specifier: ^0.41.0
-        version: 0.41.0(gel@2.2.0)(postgres@3.4.8)
-      jsonwebtoken:
-        specifier: ^9.0.3
-        version: 9.0.3
-      zod:
-        specifier: ^3.24.2
-        version: 3.25.76
-    devDependencies:
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
       '@types/node':
         specifier: ^20.14.10
         version: 20.19.39
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
       typescript:
         specifier: ^5.8.2
         version: 5.9.3

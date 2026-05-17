@@ -7,12 +7,12 @@
  * need to use are documented accordingly near the end.
  */
 
-import { verifyToken } from "@repo/auth/utils";
 import { db } from "@repo/db";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { parse } from "cookie";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { verifyToken } from "./auth/utils/auth.util";
 
 /**
  * 1. CONTEXT

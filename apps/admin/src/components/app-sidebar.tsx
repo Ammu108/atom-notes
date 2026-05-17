@@ -2,12 +2,11 @@
 
 import {
 	CameraIcon,
-	ChartBarIcon,
 	CircleHelpIcon,
 	FileTextIcon,
-	FolderIcon,
 	LayoutDashboardIcon,
-	ListIcon,
+	LibraryBig,
+	NotebookPen,
 	SearchIcon,
 	Settings2Icon,
 	UsersIcon,
@@ -39,22 +38,17 @@ const data = {
 		{
 			title: "All Users",
 			url: "/users",
-			icon: <ListIcon />,
+			icon: <UsersIcon />,
+		},
+		{
+			title: "All Courses",
+			url: "/courses",
+			icon: <LibraryBig />,
 		},
 		{
 			title: "All Notes",
 			url: "/notes",
-			icon: <ChartBarIcon />,
-		},
-		{
-			title: "Projects",
-			url: "#",
-			icon: <FolderIcon />,
-		},
-		{
-			title: "Team",
-			url: "#",
-			icon: <UsersIcon />,
+			icon: <NotebookPen />,
 		},
 	],
 	navClouds: [

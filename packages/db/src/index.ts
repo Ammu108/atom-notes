@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import { env } from "../env";
 
-import * as schema from "./schema";
+import * as schema from "./schemas";
 
 /**
  * Cache the database connection in development. This avoids creating a new connection on every HMR
@@ -25,4 +25,4 @@ export const db = drizzle(conn, { schema });
 export type DB = typeof db;
 
 // Export schema for use in other packages/apps
-export * from "./schema";
+export * from "./schemas";

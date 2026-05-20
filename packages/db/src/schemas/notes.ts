@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
 	boolean,
 	numeric,
@@ -30,3 +31,10 @@ export const notes = createTable("notes", {
 		.notNull(), // Supports INR perfectly
 	...timestamps,
 });
+
+export const notesRelations = relations(notes, ({ one }) => ({
+	chapter: one(chapters, {
+		fields: [notes.chapterId],
+		references: [chapters.id],
+	}),
+}));

@@ -1,4 +1,4 @@
-import { normalizeString } from "@repo/shared/normalize-string";
+import { normalizeString } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, publicProcedure } from "../../trpc";
 import { courseRepository } from "../repositories/course-repositary";

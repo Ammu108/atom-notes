@@ -1,5 +1,5 @@
 import type { DB } from "@repo/db";
-import { generateSlug } from "@repo/shared/generate-slug";
+import { generateSlug } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
 import type { z } from "zod";
 import { courseRepository } from "../repositories/course-repositary";

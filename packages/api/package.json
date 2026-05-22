@@ -17,6 +17,7 @@
 	},
 	"dependencies": {
 		"@repo/db": "workspace:*",
+		"@repo/shared": "workspace:*",
 		"@tanstack/react-query": "^5.69.0",
 		"@trpc/client": "^11.0.0",
 		"@trpc/next": "^11.0.0",

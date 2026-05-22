@@ -1,5 +1,5 @@
 import { chapters, courses, type DB, semesters, subjects } from "@repo/db";
-import { normalizeString } from "@repo/shared/normalize-string";
+import { normalizeString } from "@repo/shared";
 import { countDistinct, desc, eq } from "drizzle-orm";
 
 export const courseRepository = {

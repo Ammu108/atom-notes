@@ -118,7 +118,6 @@ export const authRouter = createTRPCRouter({
 			});
 		}
 
-		// TODO: Create a repository method for list all users
 		const users = await authRepository.getAllUsers(ctx.db);
 		return users;
 	}),

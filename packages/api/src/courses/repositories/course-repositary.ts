@@ -1,6 +1,6 @@
 import { chapters, courses, type DB, semesters, subjects } from "@repo/db";
-import { eq } from "drizzle-orm";
-import { normalizeString } from "packages/shared/helpers/normalize-string";
+import { normalizeString } from "@repo/shared";
+import { countDistinct, desc, eq } from "drizzle-orm";
 
 export const courseRepository = {
 	// check if slug already exists
@@ -13,7 +13,7 @@ export const courseRepository = {
 	},
 
 	// create course relationally
-	async createCourse(
+	async create(
 		db: DB,
 		data: {
 			name: string;
@@ -129,6 +129,188 @@ export const courseRepository = {
 			return {
 				message: "Course created successfully",
 				course: createdCourse,
+			};
+		});
+	},
+
+	// get all courses
+	async getAllCourses(db: DB) {
+		return await db
+			.select({
+				id: courses.id,
+				name: courses.name,
+				slug: courses.slug,
+				createdAt: courses.createdAt,
+				totalSemesters: countDistinct(semesters.id),
+				totalSubjects: countDistinct(subjects.id),
+			})
+			.from(courses)
+			.leftJoin(semesters, eq(semesters.courseId, courses.id))
+			.leftJoin(subjects, eq(subjects.semesterId, semesters.id))
+			.groupBy(courses.id)
+			.orderBy(desc(courses.createdAt));
+	},
+
+	// get course by id with all its relations
+	async findCourseById(db: DB, courseId: string) {
+		return await db.query.courses.findFirst({
+			where: (course, { eq }) => eq(course.id, courseId),
+
+			with: {
+				semesters: {
+					with: {
+						subjects: {
+							with: {
+								chapters: true,
+							},
+						},
+					},
+				},
+			},
+		});
+	},
+
+	// update course
+	async updateCourse(
+		db: DB,
+		courseId: string,
+		data: {
+			name: string;
+			slug: string;
+
+			semesters: {
+				number: number;
+
+				subjects: {
+					name: string;
+
+					units: {
+						name: string;
+					}[];
+				}[];
+			}[];
+		},
+	) {
+		return await db.transaction(async (tx) => {
+			const existingCourse = await tx.query.courses.findFirst({
+				where: (course, { eq }) => eq(course.id, courseId),
+			});
+
+			if (!existingCourse) {
+				throw new Error("Course not found");
+			}
+
+			// update course
+			const [updatedCourse] = await tx
+				.update(courses)
+				.set({
+					name: data.name,
+					slug: data.slug,
+				})
+				.where(eq(courses.id, courseId))
+				.returning({
+					id: courses.id,
+					name: courses.name,
+					slug: courses.slug,
+				});
+
+			// ============================================
+			// DELETE OLD RELATIONS
+			// ============================================
+
+			const existingSemesters = await tx.query.semesters.findMany({
+				where: (semester, { eq }) => eq(semester.courseId, courseId),
+			});
+
+			// delete subjects
+			for (const semester of existingSemesters) {
+				await tx.delete(subjects).where(eq(subjects.semesterId, semester.id));
+			}
+
+			// delete semesters
+			await tx.delete(semesters).where(eq(semesters.courseId, courseId));
+
+			// ============================================
+			// RE-CREATE NEW RELATIONS
+			// ============================================
+
+			for (const semesterData of data.semesters) {
+				const [createdSemester] = await tx
+					.insert(semesters)
+					.values({
+						number: semesterData.number,
+						courseId: courseId,
+					})
+					.returning({
+						id: semesters.id,
+					});
+
+				if (!createdSemester) {
+					throw new Error("Failed to create semester");
+				}
+
+				for (const subjectData of semesterData.subjects) {
+					const normalizedSubjectName = normalizeString(subjectData.name);
+
+					const [createdSubject] = await tx
+						.insert(subjects)
+						.values({
+							name: normalizedSubjectName,
+							semesterId: createdSemester.id,
+						})
+						.returning({
+							id: subjects.id,
+						});
+
+					if (!createdSubject) {
+						throw new Error("Failed to create subject");
+					}
+
+					for (const unitData of subjectData.units) {
+						const normalizedUnitName = normalizeString(unitData.name);
+
+						await tx.insert(chapters).values({
+							name: normalizedUnitName,
+							subjectId: createdSubject.id,
+						});
+					}
+				}
+			}
+
+			// ============================================
+			// RETURN RESPONSE
+			// ============================================
+
+			return {
+				message: "Course updated successfully",
+				course: updatedCourse,
+			};
+		});
+	},
+
+	// delete course by id (with all its relations)
+	async deleteCourse(db: DB, courseId: string) {
+		return await db.transaction(async (tx) => {
+			const existingCourse = await tx.query.courses.findFirst({
+				where: (course, { eq }) => eq(course.id, courseId),
+			});
+
+			if (!existingCourse) {
+				throw new Error("Course not found");
+			}
+
+			const [deletedCourse] = await tx
+				.delete(courses)
+				.where(eq(courses.id, courseId))
+				.returning({ id: courses.id, name: courses.name });
+
+			if (!deletedCourse) {
+				throw new Error("Failed to delete course");
+			}
+
+			return {
+				message: "Course deleted successfully",
+				course: deletedCourse,
 			};
 		});
 	},

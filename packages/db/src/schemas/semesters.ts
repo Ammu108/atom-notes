@@ -1,6 +1,8 @@
+import { relations } from "drizzle-orm";
 import { integer, pgTableCreator, uuid } from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
 import { courses } from "./courses";
+import { subjects } from "./subjects";
 
 export const createTable = pgTableCreator((name) => `${name}`);
 
@@ -12,3 +14,11 @@ export const semesters = createTable("semesters", {
 	number: integer("number").notNull(), // e.g., 1, 2, 3, 4, etc.
 	...timestamps,
 });
+
+export const semestersRelations = relations(semesters, ({ one, many }) => ({
+	course: one(courses, {
+		fields: [semesters.courseId],
+		references: [courses.id],
+	}),
+	subjects: many(subjects),
+}));

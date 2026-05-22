@@ -40,3 +40,11 @@ export const coursesSchema = z.object({
 		.max(8, "at most 8 semesters are allowed"),
 	slug: z.string(),
 });
+
+export const getCourseByIdSchema = z.object({
+	id: z.string(),
+});
+
+export const updateCourseSchema = coursesSchema.extend({
+	courseId: z.string().uuid(),
+});

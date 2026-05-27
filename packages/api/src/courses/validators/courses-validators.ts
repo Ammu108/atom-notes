@@ -45,6 +45,14 @@ export const getCourseByIdSchema = z.object({
 	id: z.string(),
 });
 
+export const getSubjectsBySemesterIdSchema = z.object({
+	id: z.string(),
+});
+
+export const getUnitsBySubjectIdSchema = z.object({
+	id: z.string(),
+});
+
 export const updateCourseSchema = coursesSchema.extend({
 	courseId: z.string().uuid(),
 });

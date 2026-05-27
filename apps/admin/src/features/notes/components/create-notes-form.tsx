@@ -1,7 +1,10 @@
-import { CloudUpload, FileText, ImageIcon, Layers3 } from "lucide-react";
-import Tiptap from "~/components/tiptap";
+"use client";
 
+import { CloudUpload, FileText, Layers3 } from "lucide-react";
+import { useState } from "react";
+import Tiptap from "~/components/tiptap";
 import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Field, FieldDescription, FieldLabel } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
@@ -14,14 +17,54 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { Switch } from "~/components/ui/switch";
-
-const courses = ["B.Tech", "BCA", "MCA", "MBA"];
-
-const semesters = ["Semester 1", "Semester 2", "Semester 3", "Semester 4"];
-
-const subjects = ["Subject 1", "Subject 2", "Subject 3", "Subject 4"];
+import {
+	useGetAllCourses,
+	useGetAllSemesters,
+	useGetAllSubjects,
+	useGetAllUnits,
+} from "../api";
 
 const CreateNotesForm = () => {
+	const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+	const [selectedSemesterId, setSelectedSemesterId] = useState<string | null>(
+		null,
+	);
+	const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(
+		null,
+	);
+	const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+
+	const { data: courses, isPending, isError } = useGetAllCourses();
+	const selectedCourseName = courses?.find(
+		(course) => course.id === selectedCourseId,
+	)?.name;
+
+	const {
+		data: selectedCourse,
+		isPending: isSmestersPending,
+		isError: isSemestersError,
+	} = useGetAllSemesters(selectedCourseId ?? undefined);
+	const semesters = selectedCourse?.semesters ?? [];
+	const selectedSemesterName = semesters.find(
+		(sem) => sem.id === selectedSemesterId,
+	)?.number;
+
+	const {
+		data: subjectsData,
+		isPending: isSubjectsPending,
+		isError: isSubjectsError,
+	} = useGetAllSubjects(selectedSemesterId ?? undefined);
+	const subjectsName = subjectsData?.find(
+		(sub) => sub.id === selectedSubjectId,
+	)?.name;
+
+	const {
+		data: unitsData,
+		isPending: isUnitsPending,
+		isError: isUnitsError,
+	} = useGetAllUnits(selectedSubjectId ?? undefined);
+	const unitsName = unitsData?.find((unit) => unit.id === selectedUnitId)?.name;
+
 	return (
 		<>
 			<Card>
@@ -32,19 +75,6 @@ const CreateNotesForm = () => {
 							<Input
 								id="input-field-title"
 								placeholder="Enter note title"
-								type="text"
-							/>
-						</Field>
-					</div>
-
-					<div className="space-y-2">
-						<Field>
-							<FieldLabel htmlFor="input-field-tags">
-								Search Keywords (Tags)
-							</FieldLabel>
-							<Input
-								id="input-field-tags"
-								placeholder="Enter search keywords"
 								type="text"
 							/>
 						</Field>
@@ -75,42 +105,6 @@ const CreateNotesForm = () => {
 							<FieldDescription>160 characters max</FieldDescription>
 						</Field>
 					</div>
-
-					<div className="lg:col-span-2">
-						<div className="space-y-1.5">
-							<Field>
-								<FieldLabel htmlFor="input-field-slug">
-									URL Slug (Optional)
-								</FieldLabel>
-								<Input
-									id="input-field-slug"
-									placeholder="atomsnote/notes/semester-1/computer-science/subject-name"
-									type="text"
-								/>
-							</Field>
-						</div>
-					</div>
-
-					<div className="lg:col-span-2">
-						<div className="space-y-3">
-							<FieldLabel htmlFor="input-field-slug">
-								Thumbnail Image
-							</FieldLabel>
-							<div className="flex min-h-44 items-center justify-center rounded-lg border border-input border-dashed bg-transparent px-6 py-10 text-center dark:bg-input/30">
-								<div className="flex max-w-sm flex-col items-center gap-3">
-									<div className="flex h-12 w-12 items-center justify-center rounded-full border border-input bg-background">
-										<ImageIcon className="h-6 w-6" />
-									</div>
-									<p className="font-medium text-muted-foreground text-sm">
-										Drag and drop or click to upload
-									</p>
-									<p className="text-muted-foreground text-xs">
-										1200×630px recommended (Max 5MB)
-									</p>
-								</div>
-							</div>
-						</div>
-					</div>
 				</CardContent>
 			</Card>
 
@@ -126,61 +120,124 @@ const CreateNotesForm = () => {
 				<CardContent className="grid gap-5 p-5 lg:grid-cols-4">
 					<div className="space-y-2">
 						<FieldLabel htmlFor="input-field-slug">Course</FieldLabel>
-						<Select defaultValue="B.Tech">
+						<Select
+							onValueChange={(value) => setSelectedCourseId(value)}
+							value={selectedCourseId}
+						>
 							<SelectTrigger className="w-full">
-								<SelectValue />
+								<SelectValue>
+									{() => selectedCourseName ?? "Select a course"}
+								</SelectValue>
 							</SelectTrigger>
 							<SelectContent>
-								{courses.map((item) => (
-									<SelectItem key={item} value={item}>
-										{item}
-									</SelectItem>
-								))}
+								{isPending ? (
+									<div>
+										<p>loading..</p>
+									</div>
+								) : isError ? (
+									<div>
+										<p>error fetching courses</p>
+									</div>
+								) : (
+									courses?.map((item) => (
+										<SelectItem key={item.id} value={item.id}>
+											{item.name}
+										</SelectItem>
+									))
+								)}
 							</SelectContent>
 						</Select>
 					</div>
 
 					<div className="space-y-2">
 						<FieldLabel htmlFor="input-field-slug">Semester</FieldLabel>
-						<Select defaultValue="Semester 1">
+						<Select
+							onValueChange={(value) => setSelectedSemesterId(value)}
+							value={selectedSemesterId}
+						>
 							<SelectTrigger className="w-full">
-								<SelectValue />
+								<SelectValue>
+									{() => selectedSemesterName ?? "Select a semester"}
+								</SelectValue>
 							</SelectTrigger>
 							<SelectContent>
-								{semesters.map((item) => (
-									<SelectItem key={item} value={item}>
-										{item}
-									</SelectItem>
-								))}
+								{isSmestersPending ? (
+									<div>
+										<p>loading..</p>
+									</div>
+								) : isSemestersError ? (
+									<div>
+										<p>error fetching semesters</p>
+									</div>
+								) : (
+									semesters.map((item) => (
+										<SelectItem key={item.id} value={item.id}>
+											Semester {item.number}
+										</SelectItem>
+									))
+								)}
 							</SelectContent>
 						</Select>
 					</div>
 
 					<div className="space-y-2">
 						<FieldLabel htmlFor="input-field-slug">Subject</FieldLabel>
-						<Select defaultValue="Subject 1">
+						<Select
+							onValueChange={(value) => setSelectedSubjectId(value)}
+							value={selectedSubjectId}
+						>
 							<SelectTrigger className="w-full">
-								<SelectValue />
+								<SelectValue>
+									{() => subjectsName ?? "Select a subject"}
+								</SelectValue>
 							</SelectTrigger>
 							<SelectContent>
-								{subjects.map((item) => (
-									<SelectItem key={item} value={item}>
-										{item}
-									</SelectItem>
-								))}
+								{isSubjectsPending ? (
+									<div>
+										<p>loading...</p>
+									</div>
+								) : isSubjectsError ? (
+									<div>
+										<p>error fetching subjects</p>
+									</div>
+								) : (
+									subjectsData?.map((item) => (
+										<SelectItem key={item.id} value={item.id}>
+											{item.name}
+										</SelectItem>
+									))
+								)}
 							</SelectContent>
 						</Select>
 					</div>
 
 					<div className="space-y-2 lg:col-span-1">
-						<Field>
-							<FieldLabel htmlFor="input-field-slug">Unit / Chapter</FieldLabel>
-							<Input
-								id="input-field-slug"
-								placeholder="e.g. unit-1"
-								type="text"
-							/>
-						</Field>
+						<FieldLabel htmlFor="input-field-slug">Unit / Chapter</FieldLabel>
+						<Select
+							onValueChange={(value) => setSelectedUnitId(value)}
+							value={selectedUnitId}
+						>
+							<SelectTrigger className="w-full">
+								<SelectValue>{() => unitsName ?? "Select a unit"}</SelectValue>
+							</SelectTrigger>
+							<SelectContent>
+								{isUnitsPending ? (
+									<div>
+										<p>loading...</p>
+									</div>
+								) : isUnitsError ? (
+									<div>
+										<p>error fetching units</p>
+									</div>
+								) : (
+									unitsData?.map((item) => (
+										<SelectItem key={item.id} value={item.id}>
+											{item.name}
+										</SelectItem>
+									))
+								)}
+							</SelectContent>
+						</Select>
 					</div>
 				</CardContent>
 			</Card>
@@ -253,6 +310,15 @@ const CreateNotesForm = () => {
 					</div>
 				</CardContent>
 			</Card>
+
+			{/* Submit Button */}
+			<div className="space-y-2">
+				<div className="flex gap-3">
+					<Button className="w-full" type="submit">
+						Create Notes
+					</Button>
+				</div>
+			</div>
 		</>
 	);
 };

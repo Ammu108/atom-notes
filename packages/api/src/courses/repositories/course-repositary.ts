@@ -170,6 +170,20 @@ export const courseRepository = {
 		});
 	},
 
+	// get subjects by semester id with all its relations
+	async findSubjectBySemesterId(db: DB, semesterId: string) {
+		return await db.query.subjects.findMany({
+			where: (subjects, { eq }) => eq(subjects.semesterId, semesterId),
+		});
+	},
+
+	// get units by subject id with all its relations
+	async findUnitsBySubjectId(db: DB, subjectId: string) {
+		return await db.query.chapters.findMany({
+			where: (chapters, { eq }) => eq(chapters.subjectId, subjectId),
+		});
+	},
+
 	// update course
 	async updateCourse(
 		db: DB,

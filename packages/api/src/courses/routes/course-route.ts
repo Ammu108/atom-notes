@@ -6,6 +6,8 @@ import { coursesService } from "../services/courses-service";
 import {
 	coursesSchema,
 	getCourseByIdSchema,
+	getSubjectsBySemesterIdSchema,
+	getUnitsBySubjectIdSchema,
 	updateCourseSchema,
 } from "../validators/courses-validators";
 
@@ -23,7 +25,7 @@ export const courseRouter = createTRPCRouter({
 			);
 
 			if (isSLugExist.length > 0) {
-				throw new Error("Course with this name already exists");
+				throw new Error("Course with this name already exists!");
 			}
 
 			const course = await coursesService.createCourse(input, ctx.db);
@@ -57,11 +59,61 @@ export const courseRouter = createTRPCRouter({
 			if (!course) {
 				throw new TRPCError({
 					code: "NOT_FOUND",
-					message: "Course not found",
+					message: "Course not found!",
 				});
 			}
 
 			return course;
+		}),
+
+	getSubjectsBySemesterId: publicProcedure
+		.input(getSubjectsBySemesterIdSchema)
+		.query(async ({ input, ctx }) => {
+			if (!ctx.user || ctx.user.role !== "admin") {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "Only admins can view subject details",
+				});
+			}
+
+			const subjects = await courseRepository.findSubjectBySemesterId(
+				ctx.db,
+				input.id,
+			);
+
+			if (!subjects) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "subjects not found!",
+				});
+			}
+
+			return subjects;
+		}),
+
+	getUnitsBySubjectId: publicProcedure
+		.input(getUnitsBySubjectIdSchema)
+		.query(async ({ input, ctx }) => {
+			if (!ctx.user || ctx.user.role !== "admin") {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "Only admins can view units details",
+				});
+			}
+
+			const subjects = await courseRepository.findUnitsBySubjectId(
+				ctx.db,
+				input.id,
+			);
+
+			if (!subjects) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Units not found!",
+				});
+			}
+
+			return subjects;
 		}),
 
 	updateCourse: publicProcedure

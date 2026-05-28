@@ -1,5 +1,6 @@
 import { authRouter } from "./auth/routes/auth-route";
 import { courseRouter } from "./courses/routes/course-route";
+import { notesRouter } from "./notes/routes/notes-route";
 import { createCallerFactory, createTRPCRouter } from "./trpc";
 
 /**
@@ -10,6 +11,7 @@ import { createCallerFactory, createTRPCRouter } from "./trpc";
 export const appRouter = createTRPCRouter({
 	auth: authRouter,
 	courses: courseRouter,
+	notes: notesRouter,
 });
 
 // export type definition of API

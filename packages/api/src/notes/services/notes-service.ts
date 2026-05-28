@@ -6,14 +6,14 @@ import type { notesSchema } from "../validators/notes-validators";
 
 export const notesService = {
 	async createNotes(input: z.infer<typeof notesSchema>, db: DB) {
-		const generatedSlug = generateSlug(input.slug);
+		const generatedSlug = generateSlug(input.title);
 
 		const notes = await notesRepository.create(db, {
-			title: input.title,
+			chapterId: input.chapterId,
 			slug: generatedSlug,
+			title: input.title,
 			metaTitle: input.metaTitle,
 			metaDescription: input.metaDescription,
-			chapterId: input.chapterId,
 		});
 
 		return notes;

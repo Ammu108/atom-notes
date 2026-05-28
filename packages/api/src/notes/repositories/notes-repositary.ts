@@ -1,25 +1,27 @@
 import { type DB, notes } from "@repo/db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { NoteType } from "../types";
 
 export const notesRepository = {
-	async findBySlug(db: DB, slug: string) {
-		return await db.select().from(notes).where(eq(notes.slug, slug)).limit(1);
+	async findNoteBySlugAndChapterId(db: DB, slug: string, chapterId: string) {
+		const [note] = await db
+			.select()
+			.from(notes)
+			.where(and(eq(notes.slug, slug), eq(notes.chapterId, chapterId)))
+			.limit(1);
+
+		return note;
 	},
 
 	async create(db: DB, data: NoteType) {
 		return await db.transaction(async (tx) => {
-			const [createNotes] = await tx.insert(notes).values(data).returning({
-				id: notes.id,
-				slug: notes.slug,
-				title: notes.title,
-				metaTitle: notes.metaTitle,
-				metaDescription: notes.metaDescription,
-			});
+			const [createNotes] = await tx.insert(notes).values(data).returning();
 
 			if (!createNotes) {
 				throw new Error("Failed to create note");
 			}
+
+			return createNotes;
 		});
 	},
 };

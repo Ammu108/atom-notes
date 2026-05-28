@@ -5,7 +5,7 @@ export const useGetAllCourses = () => {
 };
 
 export const useGetAllSemesters = (courseId?: string) => {
-	return api.courses.getCourseById.useQuery(
+	return api.courses.getSemestersByCourseId.useQuery(
 		{ id: courseId ?? "" },
 		{ enabled: !!courseId },
 	);

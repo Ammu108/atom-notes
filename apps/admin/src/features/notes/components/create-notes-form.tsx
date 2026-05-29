@@ -35,6 +35,7 @@ const NotesFormSchema = z.object({
 	metaTitle: z.string().min(2).max(70),
 	metaDescription: z.string().min(2).max(160),
 	chapterId: z.string().uuid(),
+	editorContent: z.unknown(),
 });
 
 const CreateNotesForm = () => {
@@ -46,6 +47,7 @@ const CreateNotesForm = () => {
 		null,
 	);
 	const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+	const [editorContent, setEditorContent] = useState<any>(null);
 	const router = useRouter();
 	const form = useForm<z.infer<typeof NotesFormSchema>>({
 		defaultValues: {
@@ -53,6 +55,7 @@ const CreateNotesForm = () => {
 			metaTitle: "",
 			metaDescription: "",
 			chapterId: "",
+			editorContent: "",
 		},
 	});
 
@@ -100,10 +103,18 @@ const CreateNotesForm = () => {
 			return;
 		}
 
+		if (!editorContent) {
+			toast.error(
+				"Editor is Empty! Please add content to the notes before creating.",
+			);
+			return;
+		}
+
 		try {
 			await createNote({
 				...data,
 				chapterId: selectedUnitId,
+				editorContent: editorContent,
 			});
 			form.reset();
 		} catch (error) {
@@ -116,7 +127,10 @@ const CreateNotesForm = () => {
 	};
 
 	return (
-		<form onSubmit={form.handleSubmit(onSubmit)}>
+		<form
+			className="flex flex-col gap-6"
+			onSubmit={form.handleSubmit(onSubmit)}
+		>
 			<Card>
 				<CardContent className="grid gap-5 p-5 lg:grid-cols-2">
 					<div className="space-y-2">
@@ -328,7 +342,7 @@ const CreateNotesForm = () => {
 			{/*Rich  Text Editor */}
 
 			<Card>
-				<Tiptap />
+				<Tiptap onChange={(json) => setEditorContent(json)} />
 			</Card>
 
 			<Card>

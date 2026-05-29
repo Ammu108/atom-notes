@@ -50,7 +50,7 @@ import {
 } from "./ui/select";
 import { Toggle } from "./ui/toggle";
 
-const Tiptap = () => {
+const Tiptap = ({ onChange }: { onChange?: (json: any) => void }) => {
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
@@ -76,6 +76,12 @@ const Tiptap = () => {
 		},
 		// Don't render immediately on the server to avoid SSR issues
 		immediatelyRender: false,
+		onUpdate: ({ editor }) => {
+			const json = editor.getJSON();
+			// notify parent of editor JSON changes
+			if (onChange) onChange(json);
+			console.log(json);
+		},
 	});
 
 	return (

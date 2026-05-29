@@ -14,6 +14,7 @@ export const notesService = {
 			title: input.title,
 			metaTitle: input.metaTitle,
 			metaDescription: input.metaDescription,
+			content: input.editorContent,
 		});
 
 		return notes;

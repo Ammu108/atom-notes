@@ -4,4 +4,5 @@ export type NoteType = {
 	slug: string;
 	metaTitle: string;
 	metaDescription: string;
+	content: any;
 };

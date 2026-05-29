@@ -49,4 +49,10 @@ export const notesRouter = createTRPCRouter({
 
 			return notes;
 		}),
+
+	getAllNotes: publicProcedure.query(async ({ ctx }) => {
+		const notes = await notesRepository.getAllNotes(ctx.db);
+
+		return notes;
+	}),
 });

@@ -24,4 +24,14 @@ export const notesRepository = {
 			return createNotes;
 		});
 	},
+
+	async getAllNotes(db: DB) {
+		return await db
+			.select({
+				id: notes.id,
+				title: notes.title,
+				metaTitle: notes.metaTitle,
+			})
+			.from(notes);
+	},
 };

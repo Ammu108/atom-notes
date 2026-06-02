@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const notesSchema = z.object({
+	id: z.string(),
 	chapterId: z.string(),
 	title: z
 		.string()
@@ -12,4 +13,8 @@ export const notesSchema = z.object({
 		.string()
 		.max(160, "Meta description must be at most 160 characters"),
 	content: z.any(),
+});
+
+export const noteIdSchema = z.object({
+	id: z.string(),
 });

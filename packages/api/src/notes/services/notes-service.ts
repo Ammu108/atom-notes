@@ -19,4 +19,19 @@ export const notesService = {
 
 		return notes;
 	},
+
+	async updateNote(input: z.infer<typeof notesSchema>, db: DB, id: string) {
+		const generatedSlug = generateSlug(input.title);
+
+		const notes = await notesRepository.update(db, id, {
+			chapterId: input.chapterId,
+			slug: generatedSlug,
+			title: input.title,
+			metaTitle: input.metaTitle,
+			metaDescription: input.metaDescription,
+			content: input.editorContent,
+		});
+
+		return notes;
+	},
 };

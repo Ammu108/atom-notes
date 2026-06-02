@@ -1,8 +1,17 @@
 "use client";
 
-import { SearchIcon } from "lucide-react";
+import { EllipsisVerticalIcon, SearchIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ConfirmActionDialog } from "~/components/confirm-action-dialog";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
 import {
 	Select,
@@ -22,11 +31,40 @@ import {
 	TableRow,
 } from "~/components/ui/table";
 import { api } from "~/trpc/react";
+import { useDeleteNote } from "../api";
 
 const noteSkeletonRows = ["note-skel-1", "note-skel-2", "note-skel-3"];
 
 export function NotesTable() {
+	const router = useRouter();
+	const deleteNoteMutation = useDeleteNote();
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [selectedNote, setSelectedNote] = useState<{
+		id: string;
+	} | null>(null);
 	const { data: notes, isPending } = api.notes.getAllNotes.useQuery();
+
+	const handleNavigateToNotes = (notesId: string) => {
+		router.push(`/notes/${notesId}`);
+	};
+
+	const handleDeleteNote = (notesId: string) => {
+		setDeleteDialogOpen(true);
+		setSelectedNote({ id: notesId });
+	};
+
+	const handleDeleteConfirm = async () => {
+		if (!selectedNote) return;
+
+		try {
+			await deleteNoteMutation.mutateAsync({ id: selectedNote.id });
+			router.refresh();
+			setSelectedNote(null);
+			setDeleteDialogOpen(false);
+		} catch {
+			// Error toast is handled by the mutation hook.
+		}
+	};
 
 	return (
 		<Card>
@@ -61,8 +99,9 @@ export function NotesTable() {
 					<TableHeader>
 						<TableRow>
 							<TableHead>Title</TableHead>
-							<TableHead>Meta Title</TableHead>
-							<TableHead>ID</TableHead>
+							<TableHead>Unit</TableHead>
+							<TableHead>Subject</TableHead>
+							<TableHead>Updated At</TableHead>
 							<TableHead className="text-right">Action</TableHead>
 						</TableRow>
 					</TableHeader>
@@ -99,19 +138,57 @@ export function NotesTable() {
 							notes?.map((note) => (
 								<TableRow key={note.id}>
 									<TableCell className="font-medium">{note.title}</TableCell>
-									<TableCell>{note.metaTitle}</TableCell>
-									<TableCell>{note.id}</TableCell>
+									<TableCell>{note.chapter}</TableCell>
+									<TableCell>{note.subject}</TableCell>
+									<TableCell>
+										{note.UpdatedAt?.toLocaleDateString("en-US", {
+											year: "numeric",
+											month: "short",
+											day: "numeric",
+										})}
+									</TableCell>
 									<TableCell className="text-right">
-										<div className="flex justify-end">
-											<Button size="sm" variant="ghost">
-												View
-											</Button>
-										</div>
+										<DropdownMenu>
+											<DropdownMenuTrigger
+												render={
+													<Button size="icon" variant="ghost">
+														<EllipsisVerticalIcon className="size-4" />
+														<span className="sr-only">Open actions</span>
+													</Button>
+												}
+											></DropdownMenuTrigger>
+											<DropdownMenuContent align="end" className="w-40">
+												<DropdownMenuItem
+													onClick={() => handleNavigateToNotes(note.id)}
+												>
+													Edit Notes
+												</DropdownMenuItem>
+												<DropdownMenuItem
+													className="text-destructive"
+													onClick={() => handleDeleteNote(note.id)}
+												>
+													Delete Notes
+												</DropdownMenuItem>
+											</DropdownMenuContent>
+										</DropdownMenu>
 									</TableCell>
 								</TableRow>
 							))
 						)}
 					</TableBody>
+
+					<ConfirmActionDialog
+						cancelText="Cancel"
+						confirmDisabled={!selectedNote}
+						confirmLoading={deleteNoteMutation.isPending}
+						confirmText="Continue"
+						description={`This action is permanent and cannot be undone. ${selectedNote?.id ? "This note" : "This course"} will be deleted from the system.`}
+						onCancel={() => setSelectedNote(null)}
+						onConfirm={handleDeleteConfirm}
+						onOpenChange={setDeleteDialogOpen}
+						open={deleteDialogOpen}
+						title="Delete note permanently?"
+					/>
 				</Table>
 			</CardContent>
 		</Card>

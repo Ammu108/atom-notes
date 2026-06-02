@@ -1,4 +1,4 @@
-import { type DB, notes } from "@repo/db";
+import { chapters, type DB, notes, subjects } from "@repo/db";
 import { and, eq } from "drizzle-orm";
 import type { NoteType } from "../types";
 
@@ -25,13 +25,78 @@ export const notesRepository = {
 		});
 	},
 
+	async update(db: DB, id: string, data: NoteType) {
+		return await db.transaction(async (tx) => {
+			const [updateNotes] = await tx
+				.update(notes)
+				.set(data)
+				.where(eq(notes.id, id))
+				.returning();
+
+			if (!updateNotes) {
+				throw new Error("Failed to update note!");
+			}
+
+			return updateNotes;
+		});
+	},
+
+	async getNotesById(db: DB, id: string) {
+		const [note] = await db
+			.select({
+				id: notes.id,
+				title: notes.title,
+				metaTitle: notes.metaTitle,
+				metaDescription: notes.metaDescription,
+				chapterId: notes.chapterId,
+				unitName: chapters.name,
+				content: notes.content,
+			})
+			.from(notes)
+			.where(eq(notes.id, id))
+			.innerJoin(chapters, eq(notes.chapterId, chapters.id))
+			.limit(1);
+
+		return note;
+	},
+
 	async getAllNotes(db: DB) {
 		return await db
 			.select({
 				id: notes.id,
 				title: notes.title,
-				metaTitle: notes.metaTitle,
+				chapter: chapters.name,
+				subject: subjects.name,
+				UpdatedAt: notes.createdAt,
 			})
-			.from(notes);
+			.from(notes)
+			.innerJoin(chapters, eq(notes.chapterId, chapters.id))
+			.innerJoin(subjects, eq(chapters.subjectId, subjects.id));
+	},
+
+	async deleteNote(db: DB, id: string) {
+		return await db.transaction(async (tx) => {
+			const noteExist = await tx.query.notes.findFirst({
+				where: (notes, { eq }) => eq(notes.id, id),
+			});
+
+			if (!noteExist) {
+				throw new Error("Note not found");
+			}
+
+			const [deleteNote] = await tx
+				.delete(notes)
+				.where(eq(notes.id, id))
+				.returning({ id: notes.id });
+
+			if (!deleteNote) {
+				throw new Error("Failed to delete note");
+			}
+
+			return {
+				message: "Note deleted successfully!",
+				note: deleteNote,
+			};
+		});
 	},
 };

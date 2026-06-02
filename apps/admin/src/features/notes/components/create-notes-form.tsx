@@ -3,7 +3,7 @@
 import { TRPCClientError } from "@trpc/client";
 import { CloudUpload, FileText, Layers3 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -31,6 +31,7 @@ import {
 } from "../api";
 
 const NotesFormSchema = z.object({
+	id: z.string(),
 	title: z.string().min(2).max(100),
 	metaTitle: z.string().min(2).max(70),
 	metaDescription: z.string().min(2).max(160),
@@ -38,7 +39,21 @@ const NotesFormSchema = z.object({
 	editorContent: z.unknown(),
 });
 
-const CreateNotesForm = () => {
+interface CreateNotesFormProps {
+	notes?: {
+		id: string;
+		title: string;
+		metaTitle: string | null;
+		metaDescription: string | null;
+		chapterId: string;
+		unitName: string;
+		content: any;
+	};
+	notesId?: string;
+}
+
+const CreateNotesForm = ({ notes, notesId }: CreateNotesFormProps) => {
+	const isEditMode = !!notes && !!notesId;
 	const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 	const [selectedSemesterId, setSelectedSemesterId] = useState<string | null>(
 		null,
@@ -46,18 +61,37 @@ const CreateNotesForm = () => {
 	const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(
 		null,
 	);
-	const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
-	const [editorContent, setEditorContent] = useState<any>(null);
+	const [selectedUnitId, setSelectedUnitId] = useState<string | null>(
+		notes?.chapterId ?? null,
+	);
+	const [editorContent, setEditorContent] = useState(notes?.content ?? null);
 	const router = useRouter();
 	const form = useForm<z.infer<typeof NotesFormSchema>>({
 		defaultValues: {
-			title: "",
-			metaTitle: "",
-			metaDescription: "",
-			chapterId: "",
-			editorContent: "",
+			id: notes?.id ?? "",
+			title: notes?.title ?? "",
+			metaTitle: notes?.metaTitle ?? "",
+			metaDescription: notes?.metaDescription ?? "",
+			chapterId: notes?.chapterId ?? "",
+			editorContent: notes?.content ?? "",
 		},
 	});
+
+	useEffect(() => {
+		if (!notes) return;
+
+		form.reset({
+			id: notes.id,
+			title: notes.title,
+			metaTitle: notes.metaTitle ?? "",
+			metaDescription: notes.metaDescription ?? "",
+			chapterId: notes.chapterId,
+			editorContent: notes.content,
+		});
+
+		setEditorContent(notes.content);
+		setSelectedUnitId(notes.chapterId);
+	}, [notes, form]);
 
 	const { data: courses, isPending, isError } = useGetAllCourses();
 	const selectedCourseName = courses?.find(
@@ -97,6 +131,14 @@ const CreateNotesForm = () => {
 			},
 		});
 
+	const { mutateAsync: updateNote, isPending: isUpdateNotePending } =
+		api.notes.UpdateNote.useMutation({
+			onSuccess: () => {
+				toast.success("Notes updated successfully!");
+				router.push("/notes");
+			},
+		});
+
 	const onSubmit = async (data: z.infer<typeof NotesFormSchema>) => {
 		if (!selectedUnitId) {
 			toast.error("Please select a unit or chapter before creating notes.");
@@ -105,17 +147,28 @@ const CreateNotesForm = () => {
 
 		if (!editorContent) {
 			toast.error(
-				"Editor is Empty! Please add content to the notes before creating.",
+				"Editor is Empty! Please add content to the notes before saving.",
 			);
 			return;
 		}
 
 		try {
-			await createNote({
-				...data,
-				chapterId: selectedUnitId,
-				editorContent: editorContent,
-			});
+			if (isEditMode && notesId) {
+				// Update mode
+				await updateNote({
+					...data,
+					id: notesId,
+					chapterId: selectedUnitId,
+					editorContent: editorContent,
+				});
+			} else {
+				// Create mode
+				await createNote({
+					...data,
+					chapterId: selectedUnitId,
+					editorContent: editorContent,
+				});
+			}
 			form.reset();
 		} catch (error) {
 			if (error instanceof TRPCClientError) {
@@ -342,7 +395,10 @@ const CreateNotesForm = () => {
 			{/*Rich  Text Editor */}
 
 			<Card>
-				<Tiptap onChange={(json) => setEditorContent(json)} />
+				<Tiptap
+					initialContent={editorContent}
+					onChange={(json) => setEditorContent(json)}
+				/>
 			</Card>
 
 			<Card>
@@ -413,10 +469,16 @@ const CreateNotesForm = () => {
 				<div className="flex gap-3">
 					<Button
 						className="w-full"
-						disabled={isCreateNotePending}
+						disabled={isCreateNotePending || isUpdateNotePending}
 						type="submit"
 					>
-						{isCreateNotePending ? "Creating..." : "Create Notes"}
+						{isEditMode
+							? isUpdateNotePending
+								? "Updating..."
+								: "Update Notes"
+							: isCreateNotePending
+								? "Creating..."
+								: "Create Notes"}
 					</Button>
 				</div>
 			</div>

@@ -50,7 +50,13 @@ import {
 } from "./ui/select";
 import { Toggle } from "./ui/toggle";
 
-const Tiptap = ({ onChange }: { onChange?: (json: any) => void }) => {
+const Tiptap = ({
+	onChange,
+	initialContent,
+}: {
+	onChange?: (json: any) => void;
+	initialContent?: any;
+}) => {
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
@@ -67,7 +73,7 @@ const Tiptap = ({ onChange }: { onChange?: (json: any) => void }) => {
 			}),
 			ResizeImage,
 		],
-		content: "<p>Hello World!</p>",
+		content: initialContent ?? "<p>Hello World!</p>",
 		editorProps: {
 			attributes: {
 				class:

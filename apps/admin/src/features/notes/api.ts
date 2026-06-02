@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { api } from "~/trpc/react";
 
 export const useGetAllCourses = () => {
@@ -5,7 +6,7 @@ export const useGetAllCourses = () => {
 };
 
 export const useGetAllSemesters = (courseId?: string) => {
-	return api.courses.getCourseById.useQuery(
+	return api.courses.getSemestersByCourseId.useQuery(
 		{ id: courseId ?? "" },
 		{ enabled: !!courseId },
 	);
@@ -23,4 +24,23 @@ export const useGetAllUnits = (subjectId?: string) => {
 		{ id: subjectId ?? "" },
 		{ enabled: !!subjectId },
 	);
+};
+
+export const useGetNotesById = (noteId: string) => {
+	return api.notes.getNoteById.useQuery({ id: noteId });
+};
+
+export const useDeleteNote = () => {
+	const utils = api.useUtils();
+
+	return api.notes.deleteNote.useMutation({
+		onSuccess: async (data) => {
+			await utils.notes.invalidate();
+			toast.success(data.message);
+		},
+		onError: (error) => {
+			console.error("Error deleting course:", error);
+			toast.error(error.message);
+		},
+	});
 };

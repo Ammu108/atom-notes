@@ -50,7 +50,13 @@ import {
 } from "./ui/select";
 import { Toggle } from "./ui/toggle";
 
-const Tiptap = () => {
+const Tiptap = ({
+	onChange,
+	initialContent,
+}: {
+	onChange?: (json: any) => void;
+	initialContent?: any;
+}) => {
 	const editor = useEditor({
 		extensions: [
 			StarterKit,
@@ -67,7 +73,7 @@ const Tiptap = () => {
 			}),
 			ResizeImage,
 		],
-		content: "<p>Hello World!</p>",
+		content: initialContent ?? "<p>Hello World!</p>",
 		editorProps: {
 			attributes: {
 				class:
@@ -76,6 +82,12 @@ const Tiptap = () => {
 		},
 		// Don't render immediately on the server to avoid SSR issues
 		immediatelyRender: false,
+		onUpdate: ({ editor }) => {
+			const json = editor.getJSON();
+			// notify parent of editor JSON changes
+			if (onChange) onChange(json);
+			console.log(json);
+		},
 	});
 
 	return (

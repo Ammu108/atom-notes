@@ -1,26 +1,146 @@
-import { normalizeString } from "@repo/shared";
+import { generateSlug } from "@repo/shared";
+import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, publicProcedure } from "../../trpc";
 import { notesRepository } from "../repositories/notes-repositary";
 import { notesService } from "../services/notes-service";
-import { notesSchema } from "../validators/notes-validators";
+import { noteIdSchema, notesSchema } from "../validators/notes-validators";
 
 export const notesRouter = createTRPCRouter({
 	createNote: publicProcedure
 		.input(notesSchema)
 		.mutation(async ({ input, ctx }) => {
-			const normalizedName = normalizeString(input.title);
+			// admin check
+			if (!ctx.user || ctx.user.role !== "admin") {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "Only admins can create notes!",
+				});
+			}
 
-			const isSlugExist = await notesRepository.findBySlug(
+			// check if unit exists
+			const isUnitExist = await ctx.db.query.chapters.findFirst({
+				where: (chapter, { eq }) => eq(chapter.id, input.chapterId),
+			});
+
+			if (!isUnitExist) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Unit not found!",
+				});
+			}
+
+			const slug = generateSlug(input.title);
+
+			// duplicate check by slug and chapterId
+			const existingNote = await notesRepository.findNoteBySlugAndChapterId(
 				ctx.db,
-				normalizedName,
+				slug,
+				input.chapterId,
 			);
 
-			if (isSlugExist.length > 0) {
-				throw new Error("Notes with this name Or Slug already exists!");
+			if (existingNote) {
+				throw new TRPCError({
+					code: "CONFLICT",
+					message: "Note already exists!",
+				});
 			}
 
 			const notes = await notesService.createNotes(input, ctx.db);
 
 			return notes;
+		}),
+
+	UpdateNote: publicProcedure
+		.input(notesSchema)
+		.mutation(async ({ input, ctx }) => {
+			if (!ctx.user || ctx.user.role !== "admin") {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "Only admins can update notes!",
+				});
+			}
+
+			// note exist or not
+			const isNoteExist = await ctx.db.query.notes.findFirst({
+				where: (note, { eq }) => eq(note.id, input.id),
+			});
+
+			if (!isNoteExist) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Note not found!",
+				});
+			}
+
+			// check if unit exists
+			const isUnitExist = await ctx.db.query.chapters.findFirst({
+				where: (chapter, { eq }) => eq(chapter.id, input.chapterId),
+			});
+
+			if (!isUnitExist) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Unit not found!",
+				});
+			}
+
+			const slug = generateSlug(input.title);
+
+			// duplicate check by slug and chapterId
+			const existingNote = await notesRepository.findNoteBySlugAndChapterId(
+				ctx.db,
+				slug,
+				input.chapterId,
+			);
+
+			if (existingNote && existingNote.id !== input.id) {
+				throw new TRPCError({
+					code: "CONFLICT",
+					message: "Note already exists!",
+				});
+			}
+
+			const notes = await notesService.updateNote(input, ctx.db, input.id);
+
+			return {
+				message: "Note updated successfully!",
+				notes,
+			};
+		}),
+
+	getAllNotes: publicProcedure.query(async ({ ctx }) => {
+		const notes = await notesRepository.getAllNotes(ctx.db);
+
+		return notes;
+	}),
+
+	getNoteById: publicProcedure
+		.input(noteIdSchema)
+		.query(async ({ input, ctx }) => {
+			const notes = await notesRepository.getNotesById(ctx.db, input.id);
+
+			if (!notes) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Note not found!",
+				});
+			}
+
+			return notes;
+		}),
+
+	deleteNote: publicProcedure
+		.input(noteIdSchema)
+		.mutation(async ({ input, ctx }) => {
+			if (!ctx.user || ctx.user.role !== "admin") {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "Only admins can delete notes!",
+				});
+			}
+
+			const deleteNote = await notesRepository.deleteNote(ctx.db, input.id);
+
+			return deleteNote;
 		}),
 });

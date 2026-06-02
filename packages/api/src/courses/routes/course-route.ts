@@ -6,6 +6,7 @@ import { coursesService } from "../services/courses-service";
 import {
 	coursesSchema,
 	getCourseByIdSchema,
+	getSemestersByCourseIdSchema,
 	getSubjectsBySemesterIdSchema,
 	getUnitsBySubjectIdSchema,
 	updateCourseSchema,
@@ -64,6 +65,31 @@ export const courseRouter = createTRPCRouter({
 			}
 
 			return course;
+		}),
+
+	getSemestersByCourseId: publicProcedure
+		.input(getSemestersByCourseIdSchema)
+		.query(async ({ input, ctx }) => {
+			if (!ctx.user || ctx.user.role !== "admin") {
+				throw new TRPCError({
+					code: "FORBIDDEN",
+					message: "Only admins can view semester details",
+				});
+			}
+
+			const semesters = await courseRepository.findSemesterByCourseId(
+				ctx.db,
+				input.id,
+			);
+
+			if (!semesters) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "semesters not found!",
+				});
+			}
+
+			return semesters;
 		}),
 
 	getSubjectsBySemesterId: publicProcedure

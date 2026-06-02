@@ -1,7 +1,12 @@
 "use client";
 
+import { TRPCClientError } from "@trpc/client";
 import { CloudUpload, FileText, Layers3 } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import Tiptap from "~/components/tiptap";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -17,6 +22,7 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { Switch } from "~/components/ui/switch";
+import { api } from "~/trpc/react";
 import {
 	useGetAllCourses,
 	useGetAllSemesters,
@@ -24,7 +30,30 @@ import {
 	useGetAllUnits,
 } from "../api";
 
-const CreateNotesForm = () => {
+const NotesFormSchema = z.object({
+	id: z.string(),
+	title: z.string().min(2).max(100),
+	metaTitle: z.string().min(2).max(70),
+	metaDescription: z.string().min(2).max(160),
+	chapterId: z.string().uuid(),
+	editorContent: z.unknown(),
+});
+
+interface CreateNotesFormProps {
+	notes?: {
+		id: string;
+		title: string;
+		metaTitle: string | null;
+		metaDescription: string | null;
+		chapterId: string;
+		unitName: string;
+		content: any;
+	};
+	notesId?: string;
+}
+
+const CreateNotesForm = ({ notes, notesId }: CreateNotesFormProps) => {
+	const isEditMode = !!notes && !!notesId;
 	const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 	const [selectedSemesterId, setSelectedSemesterId] = useState<string | null>(
 		null,
@@ -32,7 +61,37 @@ const CreateNotesForm = () => {
 	const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(
 		null,
 	);
-	const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+	const [selectedUnitId, setSelectedUnitId] = useState<string | null>(
+		notes?.chapterId ?? null,
+	);
+	const [editorContent, setEditorContent] = useState(notes?.content ?? null);
+	const router = useRouter();
+	const form = useForm<z.infer<typeof NotesFormSchema>>({
+		defaultValues: {
+			id: notes?.id ?? "",
+			title: notes?.title ?? "",
+			metaTitle: notes?.metaTitle ?? "",
+			metaDescription: notes?.metaDescription ?? "",
+			chapterId: notes?.chapterId ?? "",
+			editorContent: notes?.content ?? "",
+		},
+	});
+
+	useEffect(() => {
+		if (!notes) return;
+
+		form.reset({
+			id: notes.id,
+			title: notes.title,
+			metaTitle: notes.metaTitle ?? "",
+			metaDescription: notes.metaDescription ?? "",
+			chapterId: notes.chapterId,
+			editorContent: notes.content,
+		});
+
+		setEditorContent(notes.content);
+		setSelectedUnitId(notes.chapterId);
+	}, [notes, form]);
 
 	const { data: courses, isPending, isError } = useGetAllCourses();
 	const selectedCourseName = courses?.find(
@@ -40,12 +99,11 @@ const CreateNotesForm = () => {
 	)?.name;
 
 	const {
-		data: selectedCourse,
+		data: semestersData,
 		isPending: isSmestersPending,
 		isError: isSemestersError,
 	} = useGetAllSemesters(selectedCourseId ?? undefined);
-	const semesters = selectedCourse?.semesters ?? [];
-	const selectedSemesterName = semesters.find(
+	const selectedSemesterName = semestersData?.find(
 		(sem) => sem.id === selectedSemesterId,
 	)?.number;
 
@@ -65,17 +123,83 @@ const CreateNotesForm = () => {
 	} = useGetAllUnits(selectedSubjectId ?? undefined);
 	const unitsName = unitsData?.find((unit) => unit.id === selectedUnitId)?.name;
 
+	const { mutateAsync: createNote, isPending: isCreateNotePending } =
+		api.notes.createNote.useMutation({
+			onSuccess: () => {
+				toast.success("Notes created successfully!");
+				router.push("/notes");
+			},
+		});
+
+	const { mutateAsync: updateNote, isPending: isUpdateNotePending } =
+		api.notes.UpdateNote.useMutation({
+			onSuccess: () => {
+				toast.success("Notes updated successfully!");
+				router.push("/notes");
+			},
+		});
+
+	const onSubmit = async (data: z.infer<typeof NotesFormSchema>) => {
+		if (!selectedUnitId) {
+			toast.error("Please select a unit or chapter before creating notes.");
+			return;
+		}
+
+		if (!editorContent) {
+			toast.error(
+				"Editor is Empty! Please add content to the notes before saving.",
+			);
+			return;
+		}
+
+		try {
+			if (isEditMode && notesId) {
+				// Update mode
+				await updateNote({
+					...data,
+					id: notesId,
+					chapterId: selectedUnitId,
+					editorContent: editorContent,
+				});
+			} else {
+				// Create mode
+				await createNote({
+					...data,
+					chapterId: selectedUnitId,
+					editorContent: editorContent,
+				});
+			}
+			form.reset();
+		} catch (error) {
+			if (error instanceof TRPCClientError) {
+				toast.error(error.message);
+			} else {
+				toast.error("An unexpected error occurred. Please try again.");
+			}
+		}
+	};
+
 	return (
-		<>
+		<form
+			className="flex flex-col gap-6"
+			onSubmit={form.handleSubmit(onSubmit)}
+		>
 			<Card>
 				<CardContent className="grid gap-5 p-5 lg:grid-cols-2">
 					<div className="space-y-2">
 						<Field>
 							<FieldLabel htmlFor="input-field-title">Title</FieldLabel>
-							<Input
-								id="input-field-title"
-								placeholder="Enter note title"
-								type="text"
+							<Controller
+								control={form.control}
+								name="title"
+								render={({ field }) => (
+									<Input
+										{...field} // This spreads onChange, onBlur, value, and ref into your Input
+										id="note-title"
+										placeholder="Enter note title"
+										type="text"
+									/>
+								)}
 							/>
 						</Field>
 					</div>
@@ -83,10 +207,17 @@ const CreateNotesForm = () => {
 					<div className="space-y-2">
 						<Field>
 							<FieldLabel htmlFor="input-field-title">Meta Title</FieldLabel>
-							<Input
-								id="input-field-title"
-								placeholder="Enter note title"
-								type="text"
+							<Controller
+								control={form.control}
+								name="metaTitle"
+								render={({ field }) => (
+									<Input
+										{...field}
+										id="meta-title"
+										placeholder="Enter meta title"
+										type="text"
+									/>
+								)}
 							/>
 							<FieldDescription>70 characters max</FieldDescription>
 						</Field>
@@ -97,10 +228,17 @@ const CreateNotesForm = () => {
 							<FieldLabel htmlFor="input-field-title">
 								Meta Description
 							</FieldLabel>
-							<Input
-								id="input-field-title"
-								placeholder="Enter note title"
-								type="text"
+							<Controller
+								control={form.control}
+								name="metaDescription"
+								render={({ field }) => (
+									<Input
+										{...field}
+										id="meta-description"
+										placeholder="Enter meta description"
+										type="text"
+									/>
+								)}
 							/>
 							<FieldDescription>160 characters max</FieldDescription>
 						</Field>
@@ -170,7 +308,7 @@ const CreateNotesForm = () => {
 										<p>error fetching semesters</p>
 									</div>
 								) : (
-									semesters.map((item) => (
+									semestersData?.map((item) => (
 										<SelectItem key={item.id} value={item.id}>
 											Semester {item.number}
 										</SelectItem>
@@ -211,33 +349,45 @@ const CreateNotesForm = () => {
 						</Select>
 					</div>
 
+					{/* add controller here */}
 					<div className="space-y-2 lg:col-span-1">
 						<FieldLabel htmlFor="input-field-slug">Unit / Chapter</FieldLabel>
-						<Select
-							onValueChange={(value) => setSelectedUnitId(value)}
-							value={selectedUnitId}
-						>
-							<SelectTrigger className="w-full">
-								<SelectValue>{() => unitsName ?? "Select a unit"}</SelectValue>
-							</SelectTrigger>
-							<SelectContent>
-								{isUnitsPending ? (
-									<div>
-										<p>loading...</p>
-									</div>
-								) : isUnitsError ? (
-									<div>
-										<p>error fetching units</p>
-									</div>
-								) : (
-									unitsData?.map((item) => (
-										<SelectItem key={item.id} value={item.id}>
-											{item.name}
-										</SelectItem>
-									))
-								)}
-							</SelectContent>
-						</Select>
+						<Controller
+							control={form.control}
+							name="chapterId"
+							render={({ field }) => (
+								<Select
+									onValueChange={(value) => {
+										field.onChange(value);
+										setSelectedUnitId(value);
+									}}
+									value={field.value || undefined}
+								>
+									<SelectTrigger className="w-full">
+										<SelectValue>
+											{() => unitsName ?? "Select a unit"}
+										</SelectValue>
+									</SelectTrigger>
+									<SelectContent>
+										{isUnitsPending ? (
+											<div>
+												<p>loading...</p>
+											</div>
+										) : isUnitsError ? (
+											<div>
+												<p>error fetching units</p>
+											</div>
+										) : (
+											unitsData?.map((item) => (
+												<SelectItem key={item.id} value={item.id}>
+													{item.name}
+												</SelectItem>
+											))
+										)}
+									</SelectContent>
+								</Select>
+							)}
+						/>
 					</div>
 				</CardContent>
 			</Card>
@@ -245,7 +395,10 @@ const CreateNotesForm = () => {
 			{/*Rich  Text Editor */}
 
 			<Card>
-				<Tiptap />
+				<Tiptap
+					initialContent={editorContent}
+					onChange={(json) => setEditorContent(json)}
+				/>
 			</Card>
 
 			<Card>
@@ -314,12 +467,22 @@ const CreateNotesForm = () => {
 			{/* Submit Button */}
 			<div className="space-y-2">
 				<div className="flex gap-3">
-					<Button className="w-full" type="submit">
-						Create Notes
+					<Button
+						className="w-full"
+						disabled={isCreateNotePending || isUpdateNotePending}
+						type="submit"
+					>
+						{isEditMode
+							? isUpdateNotePending
+								? "Updating..."
+								: "Update Notes"
+							: isCreateNotePending
+								? "Creating..."
+								: "Create Notes"}
 					</Button>
 				</div>
 			</div>
-		</>
+		</form>
 	);
 };
 

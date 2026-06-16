@@ -5,4 +5,8 @@ export type NoteType = {
 	metaTitle: string;
 	metaDescription: string;
 	content: any;
+	pdfUrl?: string | null;
+	pdfKey?: string | null;
+	isPaid: boolean;
+	price: string;
 };

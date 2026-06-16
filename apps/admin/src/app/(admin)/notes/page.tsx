@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SiteHeader } from "~/components/site-header";
 import { buttonVariants } from "~/components/ui/button";
-import { NotesTable } from "~/features/notes/components/notes-table";
+import { NotesTable } from "~/features/notes/_components/notes-table";
 
 const Notes = () => {
 	return (

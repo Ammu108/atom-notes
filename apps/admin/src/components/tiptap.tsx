@@ -9,6 +9,7 @@ import { TableRow } from "@tiptap/extension-table-row";
 import {
 	type Editor,
 	EditorContent,
+	type JSONContent,
 	useEditor,
 	useEditorState,
 } from "@tiptap/react";
@@ -30,8 +31,8 @@ import {
 	Trash2Icon,
 	UnderlineIcon,
 } from "lucide-react";
-import { useCallback } from "react";
 import ResizeImage from "tiptap-extension-resize-image";
+import { useUploadThing } from "~/lib/uploadthing";
 import LinkComponent from "./link-component";
 import {
 	DropdownMenu,
@@ -54,8 +55,8 @@ const Tiptap = ({
 	onChange,
 	initialContent,
 }: {
-	onChange?: (json: any) => void;
-	initialContent?: any;
+	onChange?: (json: JSONContent) => void;
+	initialContent?: JSONContent;
 }) => {
 	const editor = useEditor({
 		extensions: [
@@ -126,29 +127,29 @@ const ToolBar = ({ editor }: { editor: Editor }) => {
 		},
 	});
 
-	const handleImageUpload = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			const file = e.target.files?.[0];
-			if (!file) return;
+	const { startUpload } = useUploadThing("imageUploader");
 
-			const reader = new FileReader();
-			reader.onload = () => {
-				editor
-					.chain()
-					.focus()
-					.setImage({ src: reader.result as string })
-					.run();
-			};
-			reader.readAsDataURL(file);
-		},
-		[editor],
-	);
+	const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0];
+
+		if (!file) return;
+
+		const result = await startUpload([file]);
+
+		const imageUrl = result?.[0]?.ufsUrl;
+
+		if (imageUrl) {
+			editor.chain().focus().setImage({ src: imageUrl }).run();
+		}
+
+		console.log("image url", imageUrl);
+	};
 
 	const handleHeadingChange = (value: string | null) => {
 		if (!value || value === "paragraph") {
 			editor.chain().focus().setParagraph().run();
 		} else {
-			const level = Number.parseInt(value.replace("heading", "")) as
+			const level = Number.parseInt(value.replace("heading", ""), 10) as
 				| 1
 				| 2
 				| 3

@@ -1,6 +1,10 @@
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
 
+export const useGetAllNotes = () => {
+	return api.notes.getAllNotes.useQuery();
+};
+
 export const useGetAllCourses = () => {
 	return api.courses.getAllCourses.useQuery();
 };

@@ -1,5 +1,6 @@
 // Export the entire tRPC API and types
 
+export { deletePdfFromTigris, uploadPdfToTigris } from "./lib/upload-file";
 // Export query client and React utilities
 export { createQueryClient } from "./query-client";
 // Export React integration

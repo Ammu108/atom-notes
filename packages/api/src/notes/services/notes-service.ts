@@ -15,6 +15,10 @@ export const notesService = {
 			metaTitle: input.metaTitle,
 			metaDescription: input.metaDescription,
 			content: input.editorContent,
+			pdfUrl: input.pdfUrl,
+			pdfKey: input.pdfKey,
+			isPaid: input.isPaid,
+			price: input.price.toString(),
 		});
 
 		return notes;
@@ -30,7 +34,13 @@ export const notesService = {
 			metaTitle: input.metaTitle,
 			metaDescription: input.metaDescription,
 			content: input.editorContent,
+			pdfUrl: input.pdfUrl,
+			pdfKey: input.pdfKey,
+			isPaid: input.isPaid,
+			price: input.price.toString(),
 		});
+
+		console.log("DB update complete");
 
 		return notes;
 	},

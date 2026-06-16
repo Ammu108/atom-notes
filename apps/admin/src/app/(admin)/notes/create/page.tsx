@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { SiteHeader } from "~/components/site-header";
 import { buttonVariants } from "~/components/ui/button";
-import CreateNotesForm from "~/features/notes/components/create-notes-form";
+import CreateNotesForm from "~/features/notes/_components/create-notes-form";
 
 const CreateNotes = () => {
 	return (

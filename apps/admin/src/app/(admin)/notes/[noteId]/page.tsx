@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { SiteHeader } from "~/components/site-header";
 import { buttonVariants } from "~/components/ui/button";
-import EditNotesWrapper from "~/features/notes/components/edit-notes-wrapper";
+import EditNotesWrapper from "~/features/notes/_components/edit-notes-wrapper";
 
 interface PageProps {
 	params: Promise<{ noteId: string }>;

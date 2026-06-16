@@ -1,5 +1,5 @@
 import { chapters, type DB, notes, subjects } from "@repo/db";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import type { NoteType } from "../types";
 
 export const notesRepository = {
@@ -51,6 +51,10 @@ export const notesRepository = {
 				chapterId: notes.chapterId,
 				unitName: chapters.name,
 				content: notes.content,
+				pdfUrl: notes.pdfUrl,
+				pdfKey: notes.pdfKey,
+				pdfPrice: notes.price,
+				isPaid: notes.isPaid,
 			})
 			.from(notes)
 			.where(eq(notes.id, id))
@@ -67,11 +71,12 @@ export const notesRepository = {
 				title: notes.title,
 				chapter: chapters.name,
 				subject: subjects.name,
-				UpdatedAt: notes.createdAt,
+				UpdatedAt: notes.updatedAt,
 			})
 			.from(notes)
 			.innerJoin(chapters, eq(notes.chapterId, chapters.id))
-			.innerJoin(subjects, eq(chapters.subjectId, subjects.id));
+			.innerJoin(subjects, eq(chapters.subjectId, subjects.id))
+			.orderBy(desc(notes.updatedAt));
 	},
 
 	async deleteNote(db: DB, id: string) {

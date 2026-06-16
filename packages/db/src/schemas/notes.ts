@@ -1,5 +1,12 @@
 import { relations } from "drizzle-orm";
-import { jsonb, pgTableCreator, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	jsonb,
+	numeric,
+	pgTableCreator,
+	uuid,
+	varchar,
+} from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
 import { chapters } from "./chapters";
 
@@ -15,11 +22,12 @@ export const notes = createTable("notes", {
 	content: jsonb("content").notNull(),
 	metaTitle: varchar("meta_title", { length: 70 }),
 	metaDescription: varchar("meta_description", { length: 160 }),
-	// pdfUrl: varchar("pdf_url", { length: 2048 }),
-	// isPaid: boolean("is_paid").default(false).notNull(),
-	// price: numeric("price", { precision: 10, scale: 2 })
-	// 	.default("0.00")
-	// 	.notNull(), // Supports INR perfectly
+	pdfUrl: varchar("pdf_url", { length: 2048 }),
+	pdfKey: varchar("pdf_key", { length: 255 }),
+	isPaid: boolean("is_paid").default(false).notNull(),
+	price: numeric("price", { precision: 10, scale: 2 })
+		.default("0.00")
+		.notNull(), // Supports INR perfectly
 	...timestamps,
 });
 

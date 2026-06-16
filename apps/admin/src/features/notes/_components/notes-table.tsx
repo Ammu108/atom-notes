@@ -3,6 +3,7 @@
 import { EllipsisVerticalIcon, SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { ConfirmActionDialog } from "~/components/confirm-action-dialog";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -13,14 +14,6 @@ import {
 	DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "~/components/ui/select";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
 	Table,
@@ -30,8 +23,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "~/components/ui/table";
-import { api } from "~/trpc/react";
-import { useDeleteNote } from "../api";
+import { useDeleteNote, useGetAllNotes } from "../api";
 
 const noteSkeletonRows = ["note-skel-1", "note-skel-2", "note-skel-3"];
 
@@ -42,7 +34,7 @@ export function NotesTable() {
 	const [selectedNote, setSelectedNote] = useState<{
 		id: string;
 	} | null>(null);
-	const { data: notes, isPending } = api.notes.getAllNotes.useQuery();
+	const { data: notes, isPending } = useGetAllNotes();
 
 	const handleNavigateToNotes = (notesId: string) => {
 		router.push(`/notes/${notesId}`);
@@ -62,7 +54,7 @@ export function NotesTable() {
 			setSelectedNote(null);
 			setDeleteDialogOpen(false);
 		} catch {
-			// Error toast is handled by the mutation hook.
+			toast.error("Failed to delete note.");
 		}
 	};
 
@@ -74,22 +66,6 @@ export function NotesTable() {
 					<div className="relative w-full md:max-w-sm">
 						<SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
 						<Input className="pl-9" placeholder="Search title or id..." />
-					</div>
-
-					<div className="flex flex-col gap-2 sm:flex-row">
-						<Select>
-							<SelectTrigger className="w-full sm:w-36">
-								<SelectValue placeholder="Sort" />
-							</SelectTrigger>
-							<SelectContent align="end">
-								<SelectGroup>
-									<SelectItem value="newest">Newest</SelectItem>
-									<SelectItem value="oldest">Oldest</SelectItem>
-									<SelectItem value="name-asc">A-Z</SelectItem>
-									<SelectItem value="name-desc">Z-A</SelectItem>
-								</SelectGroup>
-							</SelectContent>
-						</Select>
 					</div>
 				</div>
 			</CardHeader>

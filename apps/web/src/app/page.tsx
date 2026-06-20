@@ -6,7 +6,7 @@ const Page = () => {
 	return (
 		<main>
 			<HeroSection />
-			<div className="mx-auto flex max-w-6xl flex-col gap-16">
+			<div className="flex flex-col gap-24">
 				<Categories />
 				<RecentlyAddedNotes />
 			</div>

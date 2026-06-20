@@ -1,273 +1,225 @@
-import { IconBoltFilled, IconEye } from "@tabler/icons-react";
+import { IconBrandLinkedin, IconGlobe } from "@tabler/icons-react";
+import {
+	BookOpen,
+	FileText,
+	GraduationCap,
+	Star,
+	Users,
+	Zap,
+} from "lucide-react";
+import Image from "next/image";
+import { Container } from "~/components/container";
+import { Badge } from "~/components/ui/badge";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
 
-const About = () => {
-	// Move all static data outside render for stable keys + performance
-	const highlights = [
-		{
-			id: "startup",
-			number: "Startup",
-			label: "Early-stage two-person team",
-			emoji: "🚀",
-		},
-		{
-			id: "notes",
-			number: "Regular",
-			label: "Structured notes & PYQs",
-			emoji: "📝",
-		},
-		{ id: "focus", number: "Focus", label: "Student-first UX", emoji: "🎯" },
-	];
+const features = [
+	{
+		icon: <BookOpen className="h-5 w-5" />,
+		title: "Semester-wise Notes",
+		desc: "Curated notes organized by semester so you always find exactly what you need for your current term.",
+		color: "bg-blue-50 text-blue-600",
+	},
+	{
+		icon: <GraduationCap className="h-5 w-5" />,
+		title: "Subject-wise Organization",
+		desc: "Every note is tagged by subject — Algorithms, DBMS, OS, Networks, ML and more. Filter in seconds.",
+		color: "bg-green-50 text-green-600",
+	},
+	{
+		icon: <FileText className="h-5 w-5" />,
+		title: "Previous Year Questions",
+		desc: "Solved PYQs with explanations for every major subject, helping you ace your exams with confidence.",
+		color: "bg-orange-50 text-orange-600",
+	},
+	{
+		icon: <Star className="h-5 w-5" />,
+		title: "Exam-Focused Content",
+		desc: "Every note highlights key concepts, definitions, and exam tips — written by students, for students.",
+		color: "bg-purple-50 text-purple-600",
+	},
+	{
+		icon: <Zap className="h-5 w-5" />,
+		title: "Instant PDF Download",
+		desc: "One-time purchase, lifetime access. Download as mobile-friendly PDFs and study anywhere, anytime.",
+		color: "bg-red-50 text-red-600",
+	},
+	{
+		icon: <Users className="h-5 w-5" />,
+		title: "Community Driven",
+		desc: "Notes crafted by top-performing students and reviewed for accuracy before publishing.",
+		color: "bg-teal-50 text-teal-600",
+	},
+];
 
-	const coreValues = [
-		{
-			id: "compassion",
-			icon: "❤️",
-			title: "Compassion",
-			description:
-				"We prioritize patient wellbeing above all else, treating every person with dignity and empathy.",
-		},
-		{
-			id: "innovation",
-			icon: "🔬",
-			title: "Innovation",
-			description:
-				"Constantly pushing boundaries with cutting-edge technology and medical practices.",
-		},
-		{
-			id: "integrity",
-			icon: "🤝",
-			title: "Integrity",
-			description:
-				"Transparent, honest, and ethical in all our operations and patient relationships.",
-		},
-		{
-			id: "excellence",
-			icon: "🎯",
-			title: "Excellence",
-			description:
-				"Striving for perfection in everything we do, from care to technology.",
-		},
-	];
+const founders = [
+	{
+		name: "Aman Kumar",
+		role: "Founder & CEO",
+		avatar: "/aman-img.webp",
+		Education: "MCA - Present",
+		bio: "Aman Kumar is the Founder & CEO of Atom Notes, leading the technical vision and development of the platform. With strong expertise in Full Stack Development, he has been responsible for building the core technology behind Atom Notes. From designing scalable web solutions to implementing modern technologies, Aman has worked extensively with TypeScript, React, and other advanced programming technologies to bring the idea of Atom Notes into a fully functional learning platform. His strong understanding of frontend, backend, and complete development workflows helps Atom Notes deliver a smooth, reliable, and user-friendly experience for students. Beyond coding, Aman contributes to the overall product thinking, ensuring that technology and user needs come together to create a meaningful educational platform.",
+		linkedin: "https://www.linkedin.com/in/aman-kumar-5464242b8/",
+		portfolio: "https://amenx.me/",
+	},
+	{
+		name: "Rishabh Jha",
+		role: "Co-Founder & CEO",
+		avatar: "/rishabh-img.webp",
+		Education: "MCA - Present",
+		bio: "Rishabh Jha is the Founder & CEO of Atom Notes, responsible for shaping the platform’s design vision, user experience, and creative direction. With a strong interest in UI/UX Design, user behavior, and digital experiences, Rishabh designed the complete structure, interface, and visual identity of Atom Notes. From planning the website flow to creating an intuitive user journey, he focuses on making the platform simple, engaging, and easy for students to navigate. His work revolves around understanding student needs, creating meaningful designs, and improving the overall experience through thoughtful UX decisions. Along with design, Rishabh also contributes to product strategy, content planning, and building the overall direction of Atom Notes to ensure that the platform solves real problems faced by students.",
+		linkedin:
+			"https://www.linkedin.com/in/rishabh-jha-7883a3270?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
+		portfolio: "https://rishabh-portfolio-tau.vercel.app/",
+	},
+];
 
-	// culturePoints not required for Alphanote founders view
-
-	const testimonials = [
-		{
-			id: "sarah",
-			quote:
-				"Atom Hospital made scheduling my specialist appointment incredibly easy. What would have taken weeks took just 15 minutes!",
-			author: "Sarah M.",
-			role: "Patient",
-		},
-		{
-			id: "patel",
-			quote:
-				"As a healthcare provider, I'm impressed with how this platform streamlines my practice and helps me reach more patients.",
-			author: "Dr. Patel",
-			role: "Cardiologist",
-		},
-		{
-			id: "rajesh",
-			quote:
-				"The 24/7 virtual consultation feature has been a lifesaver for our family. Highly recommended!",
-			author: "Rajesh K.",
-			role: "Happy Patient",
-		},
-	];
-
-	const stars = ["star-1", "star-2", "star-3", "star-4", "star-5"];
-
+export default function AboutPage() {
 	return (
-		<main>
-			{/* ── HERO SECTION ── */}
-			<section className="mx-auto max-w-6xl px-4 pt-24 pb-16">
-				<div className="grid items-center gap-16 lg:grid-cols-2">
-					{/* Left: Intro Text */}
-					<div className="animate-fadeUp-1 space-y-6">
-						<div>
-							<span className="mb-3 inline-block font-semibold text-primary text-xs uppercase tracking-wider">
-								About Us
-							</span>
-							<h1 className="font-bold font-playfair text-5xl text-foreground leading-tight sm:text-6xl">
-								Welcome to Alphanote —
-								<span className="text-primary">
-									Structured Notes, Faster Revision
-								</span>
-							</h1>
-						</div>
+		<Container className="mx-auto">
+			<div className="w-full pt-24">
+				{/* Hero */}
+				<section className="bg-card">
+					<div className="mx-auto max-w-5xl px-6 py-16 text-center">
+						<Badge className="mb-4 rounded-full bg-primary/10 px-3 py-1 font-semibold text-primary text-xs">
+							About AtomsNote
+						</Badge>
+						<h1 className="mb-4 font-extrabold text-4xl text-foreground leading-tight sm:text-5xl">
+							Notes that actually{" "}
+							<span className="text-primary">make sense</span>
+						</h1>
+						<p className="mx-auto max-w-2xl text-foreground text-lg leading-relaxed">
+							AtomsNote is a student-built platform delivering semester-wise,
+							subject-wise college notes and previous year questions — so you
+							spend less time searching and more time learning.
+						</p>
+					</div>
+				</section>
 
-						<div className="space-y-4">
-							<p className="max-w-xl text-lg text-muted-foreground leading-relaxed">
-								Alphanote is a small startup building a focused notes platform
-								for students. We publish structured, detailed notes and curated
-								PYQs regularly to help you revise efficiently and perform better
-								in exams.
-							</p>
-							<p className="max-w-xl text-base text-muted-foreground leading-relaxed">
-								We believe clear structure and concise solutions make learning
-								faster — so every note is authored and reviewed for clarity and
-								exam relevance.
+				{/* Mission */}
+				<section className="px-6 py-8">
+					<div className="flex flex-col items-start gap-8 rounded-2xl border border-border bg-card p-8 shadow-sm sm:flex-row">
+						<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-2xl text-primary">
+							🎯
+						</div>
+						<div>
+							<h2 className="mb-2 font-bold text-foreground text-xl">
+								Our Mission
+							</h2>
+							<p className="text-foreground leading-relaxed">
+								College students waste countless hours chasing notes across
+								WhatsApp groups, Telegram channels, and random drives. We built
+								AtomsNote to fix that. Our mission is simple — give every
+								student access to well-structured, exam-ready notes and PYQs,
+								organized the way their syllabus is: by{" "}
+								<span className="font-semibold text-gray-700">semester</span>{" "}
+								and <span className="font-semibold text-gray-700">subject</span>
+								. No clutter. No noise. Just the stuff that matters.
 							</p>
 						</div>
 					</div>
+				</section>
 
-					{/* Right: Highlight Cards */}
-					<div className="animate-fadeUp-2 space-y-5">
-						{highlights.map(({ id, number, label, emoji }) => (
-							<div
-								className="group flex gap-4 rounded-2xl border border-border/50 bg-card p-6 transition-all duration-300 hover:border-accent hover:bg-secondary/50 hover:shadow-lg"
-								key={id}
+				{/* What We Offer */}
+				<section className="px-6 py-8">
+					<h2 className="mb-6 font-extrabold text-2xl text-foreground">
+						What we offer
+					</h2>
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+						{features.map((f) => (
+							<Card
+								className="rounded-2xl border border-border transition-shadow hover:shadow-md"
+								key={f.title}
 							>
-								<div className="shrink-0 pt-1 text-4xl">{emoji}</div>
-								<div className="flex flex-col justify-center">
-									<div className="font-bold font-playfair text-2xl text-primary">
-										{number}
+								<CardContent className="p-2">
+									<div
+										className={`mb-3 flex h-9 w-9 items-center justify-center rounded-xl ${f.color}`}
+									>
+										{f.icon}
 									</div>
-									<div className="mt-0.5 text-muted-foreground text-sm">
-										{label}
-									</div>
-								</div>
-							</div>
+									<h3 className="mb-1 font-bold text-gray-900">{f.title}</h3>
+									<p className="text-gray-500 text-sm leading-relaxed">
+										{f.desc}
+									</p>
+								</CardContent>
+							</Card>
 						))}
 					</div>
-				</div>
-			</section>
+				</section>
 
-			{/* ── MISSION & VISION ── */}
-			<section className="mx-auto max-w-6xl px-4 py-20">
-				<div className="grid gap-12 md:grid-cols-2">
-					{/* Mission */}
-					<div className="group animate-fadeUp-1">
-						<div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-accent">
-							<IconBoltFilled className="h-7 w-7 text-primary" />
-						</div>
-						<h2 className="mb-4 font-bold font-playfair text-3xl text-foreground">
-							Our Mission
-						</h2>
-						<p className="text-base text-muted-foreground leading-relaxed">
-							To transform healthcare accessibility by enabling every individual
-							to connect with qualified medical professionals instantly,
-							regardless of geographical or socioeconomic barriers. We believe
-							quality healthcare is a right, not a privilege.
-						</p>
-					</div>
-
-					{/* Vision */}
-					<div className="group animate-fadeUp-2">
-						<div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-accent">
-							<IconEye className="h-7 w-7 text-primary" />
-						</div>
-						<h2 className="mb-4 font-bold font-playfair text-3xl text-foreground">
-							Our Vision
-						</h2>
-						<p className="text-base text-muted-foreground leading-relaxed">
-							To create a world where healthcare is democratized, personalized,
-							and accessible to all. Our vision extends beyond appointments—we
-							envision a holistic health ecosystem powered by AI, data, and
-							human expertise.
-						</p>
-					</div>
-				</div>
-			</section>
-
-			{/* ── CORE VALUES ── */}
-			<section className="mx-auto max-w-6xl px-4 py-20">
-				<div className="mb-16 text-center">
-					<h2 className="mb-4 font-bold font-playfair text-4xl text-foreground">
-						Guided by Core Values
+				{/* Founders */}
+				<section className="px-6 py-8 pb-16">
+					<h2 className="mb-6 font-extrabold text-2xl text-foreground">
+						Meet the founders
 					</h2>
-					<p className="mx-auto max-w-2xl text-muted-foreground">
-						Every decision we make is rooted in these fundamental principles
-						that define our culture and commitment to excellence.
-					</p>
-				</div>
-
-				<div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-					{coreValues.map(({ id, icon, title, description }) => (
-						<div
-							className="group animate-fadeUp-1 rounded-2xl border border-border/50 bg-card p-6"
-							key={id}
-						>
-							<div className="mb-4 text-4xl">{icon}</div>
-							<h3 className="mb-3 font-bold text-foreground text-lg">
-								{title}
-							</h3>
-							<p className="text-muted-foreground text-sm leading-relaxed">
-								{description}
-							</p>
-						</div>
-					))}
-				</div>
-			</section>
-
-			{/* ── TEAM — FOUNDERS ── */}
-			<section className="mx-auto max-w-6xl px-4 py-20">
-				<div className="mb-12 text-center">
-					<h2 className="mb-4 font-bold font-playfair text-4xl text-foreground">
-						Meet the Founders
-					</h2>
-					<p className="mx-auto max-w-2xl text-muted-foreground">
-						Alphanote is built and maintained by a two-person team focused on
-						creating high-quality, exam-ready notes.
-					</p>
-				</div>
-
-				<div className="grid gap-8 md:grid-cols-2">
-					<div className="group animate-fadeUp-1 rounded-2xl border border-border/50 bg-card p-6">
-						<h3 className="mb-3 font-bold text-foreground text-lg">Aman</h3>
-						<p className="text-muted-foreground text-sm leading-relaxed">
-							Developer & maintainer. Aman builds and manages the platform,
-							implements features, and ensures the site runs reliably. He also
-							curates and writes structured, detailed notes and compiles PYQs
-							with clear solution explanations.
-						</p>
+					<div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+						{founders.map((f) => (
+							<Card className="rounded-2xl border border-border" key={f.name}>
+								<CardContent className="p-6">
+									<div className="mb-4 flex items-center gap-4">
+										<div className="relative h-16 w-16 rounded-full">
+											<Image
+												alt="Logo"
+												className="rounded-full"
+												fill
+												src={f.avatar}
+											/>
+										</div>
+										<div>
+											<p className="font-extrabold text-foreground text-lg leading-tight">
+												{f.name}
+											</p>
+											<p className="font-semibold text-primary text-sm">
+												{f.role}
+											</p>
+											<p className="text-foreground/70 text-xs">
+												{f.Education}
+											</p>
+										</div>
+									</div>
+									<p className="mb-4 text-foreground/90 text-sm leading-relaxed">
+										{f.bio}
+									</p>
+									<div className="flex items-center gap-3 border-gray-100 border-t pt-4">
+										<a
+											className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 font-medium text-gray-600 text-xs transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
+											href={f.linkedin}
+											rel="noopener noreferrer"
+											target="_blank"
+										>
+											<IconBrandLinkedin className="h-3.5 w-3.5" />
+											LinkedIn
+										</a>
+										<a
+											className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 font-medium text-gray-600 text-xs transition hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+											href={f.portfolio}
+											rel="noopener noreferrer"
+											target="_blank"
+										>
+											<IconGlobe className="h-3.5 w-3.5" />
+											Portfolio
+										</a>
+									</div>
+								</CardContent>
+							</Card>
+						))}
 					</div>
+				</section>
 
-					<div className="group animate-fadeUp-2 rounded-2xl border border-border/50 bg-card p-6">
-						<h3 className="mb-3 font-bold text-foreground text-lg">Rishabh</h3>
-						<p className="text-muted-foreground text-sm leading-relaxed">
-							Content lead and UI/UX designer. Rishabh makes sure the
-							application should be user focused and feels easy to use and he
-							also writes structured, detailed notes and compiles PYQs with
-							clear solution explanations.
+				{/* CTA */}
+				<section className="bg-card">
+					<div className="mx-auto max-w-5xl px-6 py-14 text-center">
+						<h2 className="mb-3 font-extrabold text-2xl text-foreground sm:text-3xl">
+							Ready to study smarter?
+						</h2>
+						<p className="mb-6 text-gray-500 text-sm">
+							Browse notes by your semester and subject — find exactly what you
+							need.
 						</p>
+						<Button size="sm"> Browse Notes</Button>
 					</div>
-				</div>
-			</section>
-
-			{/* ── TESTIMONIALS ── */}
-			<section className="mx-auto max-w-6xl px-4 py-20">
-				<h2 className="mb-16 text-center font-bold font-playfair text-4xl text-foreground">
-					Trusted by Thousands
-				</h2>
-
-				<div className="grid gap-8 md:grid-cols-3">
-					{testimonials.map(({ id, quote, author, role }) => (
-						<div
-							className="group animate-fadeUp-1 rounded-2xl border border-border/50 bg-card p-8 transition-all duration-300 hover:border-accent hover:bg-secondary/30"
-							key={id}
-						>
-							<div className="mb-4 flex gap-1">
-								{stars.map((starId) => (
-									<span className="text-lg text-primary" key={starId}>
-										★
-									</span>
-								))}
-							</div>
-							<p className="mb-6 text-muted-foreground italic">"{quote}"</p>
-							<div>
-								<p className="font-semibold text-foreground">{author}</p>
-								<p className="text-muted-foreground text-sm">{role}</p>
-							</div>
-						</div>
-					))}
-				</div>
-			</section>
-
-			{/* Spacing */}
-			<div className="h-8" />
-		</main>
+				</section>
+			</div>
+		</Container>
 	);
-};
-
-export default About;
+}

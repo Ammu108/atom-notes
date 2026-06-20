@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { AppShell } from "~/components/app-shell";
+import { Toaster } from "~/components/ui/sonner";
 import { TRPCReactProvider } from "~/trpc/react";
 import { HydrateClient } from "~/trpc/server";
 
@@ -22,10 +23,13 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html className={`${geist.variable}`} lang="en">
-			<body>
+			<body className="bg-background">
 				<TRPCReactProvider>
 					<HydrateClient>
-						<AppShell>{children}</AppShell>
+						<AppShell>
+							{children}
+							<Toaster />
+						</AppShell>
 					</HydrateClient>
 				</TRPCReactProvider>
 			</body>

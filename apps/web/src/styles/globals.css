@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 @source "../../../../packages/ui/src";
 
 @theme {
@@ -31,7 +35,7 @@
 @layer base {
 	:root {
 		/* Light Mode: Clean, slightly blue-tinted grays */
-		--background: hsl(220 33% 98%);
+		--background: hsl(60 17% 98%);
 		--foreground: hsla(222, 46%, 11%, 0.834);
 
 		--card: hsl(0 0% 100%);
@@ -41,7 +45,7 @@
 		--popover-foreground: hsl(222 47% 11%);
 
 		/* Your Primary Blue */
-		--primary: hsl(217 91% 60%);
+		--primary: hsl(7 82% 51%);
 		--primary-foreground: hsl(210 33% 98%);
 
 		--secondary: hsl(210 40% 96%);
@@ -58,7 +62,7 @@
 
 		--border: hsl(214 32% 91%);
 		--input: hsl(214 32% 91%);
-		--ring: hsl(217 91% 60%);
+		--ring: hsl(7 82% 51%);
 
 		--radius: 0.625rem;
 
@@ -105,6 +109,9 @@
 	}
 	body {
 		@apply bg-background text-foreground;
+	}
+	html {
+		@apply font-sans;
 	}
 }
 

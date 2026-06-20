@@ -115,4 +115,56 @@ export const semesters: Semester[] = [
 			},
 		],
 	},
+	{
+		slug: "semester-5",
+		name: "Semester 5",
+		subjects: [
+			{
+				slug: "operating-systems",
+				name: "Operating Systems",
+				chapters: [
+					"Process Management",
+					"CPU Scheduling",
+					"Deadlocks",
+					"Memory Management",
+				],
+			},
+			{
+				slug: "computer-networks",
+				name: "Computer Networks",
+				chapters: [
+					"OSI Model",
+					"Transport Layer",
+					"Routing Protocols",
+					"Network Security Basics",
+				],
+			},
+		],
+	},
+	{
+		slug: "semester-6",
+		name: "Semester 6",
+		subjects: [
+			{
+				slug: "operating-systems",
+				name: "Operating Systems",
+				chapters: [
+					"Process Management",
+					"CPU Scheduling",
+					"Deadlocks",
+					"Memory Management",
+				],
+			},
+			{
+				slug: "computer-networks",
+				name: "Computer Networks",
+				chapters: [
+					"OSI Model",
+					"Transport Layer",
+					"Routing Protocols",
+					"Network Security Basics",
+				],
+			},
+		],
+	},
 ];

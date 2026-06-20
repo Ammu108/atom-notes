@@ -52,14 +52,19 @@ export default function Navbar() {
 
 	return (
 		<nav className="fixed top-0 right-0 left-0 z-50 w-full border-border border-b bg-card transition-all duration-300">
-			<div className="mx-auto flex max-w-6xl items-center justify-between gap-8 px-4 py-3">
+			<div className="mx-auto flex max-w-7xl items-center justify-between gap-8 px-4 py-3">
 				{/* ── LEFT: Logo ── */}
 				<Link
 					className="group flex shrink-0 flex-row items-center gap-1"
 					href="/"
 				>
 					<div className="relative h-10 w-10">
-						<Image alt="Logo" className="rounded-sm" fill src="/logo.webp" />
+						<Image
+							alt="Logo"
+							className="rounded-sm"
+							fill
+							src="/atomsNote-logo.webp"
+						/>
 					</div>
 					<h1 className="font-bold text-foreground text-lg">Atom Notes</h1>
 				</Link>

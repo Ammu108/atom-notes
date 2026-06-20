@@ -6,11 +6,10 @@ export type NoteSection = {
 export type RecentNote = {
 	slug: string;
 	title: string;
+	description: string;
 	subject: string;
 	semester: string;
-	updatedAt: string;
-	readTime: string;
-	chapterCount: number;
+	unit: number;
 	pdfUrl: string;
 	sections: NoteSection[];
 };
@@ -19,11 +18,11 @@ export const recentNotes: RecentNote[] = [
 	{
 		slug: "dbms-normalization-quick-revision",
 		title: "DBMS Normalization Quick Revision",
+		description:
+			"A concise guide to database normalization, covering 1NF to 3NF with key concepts and exam tips for quick revision.",
 		subject: "Database Management Systems",
+		unit: 1,
 		semester: "Semester 3",
-		updatedAt: "Updated 2 days ago",
-		readTime: "8 min read",
-		chapterCount: 4,
 		pdfUrl: "/pdf/dbms-normalization-quick-revision.pdf",
 		sections: [
 			{
@@ -53,11 +52,11 @@ export const recentNotes: RecentNote[] = [
 	{
 		slug: "os-cpu-scheduling-complete-notes",
 		title: "OS CPU Scheduling Complete Notes",
+		description:
+			"Comprehensive notes on operating system CPU scheduling, including fundamental concepts and algorithmic approaches.",
 		subject: "Operating Systems",
+		unit: 2,
 		semester: "Semester 4",
-		updatedAt: "Updated 5 days ago",
-		readTime: "12 min read",
-		chapterCount: 5,
 		pdfUrl: "/pdf/os-cpu-scheduling-complete-notes.pdf",
 		sections: [
 			{
@@ -87,11 +86,11 @@ export const recentNotes: RecentNote[] = [
 	{
 		slug: "dsa-graphs-and-traversal-notes",
 		title: "DSA Graphs and Traversal Notes",
+		description:
+			"Notes on graphs and traversal techniques in data structures, including DFS and BFS algorithms. This is a must-read for understanding...",
 		subject: "Data Structures",
+		unit: 3,
 		semester: "Semester 2",
-		updatedAt: "Updated 1 week ago",
-		readTime: "10 min read",
-		chapterCount: 6,
 		pdfUrl: "/pdf/dsa-graphs-and-traversal-notes.pdf",
 		sections: [
 			{

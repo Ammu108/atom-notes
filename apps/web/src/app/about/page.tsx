@@ -97,7 +97,7 @@ export default function AboutPage() {
 				</section>
 
 				{/* Mission */}
-				<section className="px-6 py-8">
+				<section className="py-8 md:px-6">
 					<div className="flex flex-col items-start gap-8 rounded-2xl border border-border bg-card p-8 shadow-sm sm:flex-row">
 						<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-2xl text-primary">
 							🎯
@@ -121,7 +121,7 @@ export default function AboutPage() {
 				</section>
 
 				{/* What We Offer */}
-				<section className="px-6 py-8">
+				<section className="py-8 md:px-6">
 					<h2 className="mb-6 font-extrabold text-2xl text-foreground">
 						What we offer
 					</h2>
@@ -148,7 +148,7 @@ export default function AboutPage() {
 				</section>
 
 				{/* Founders */}
-				<section className="px-6 py-8 pb-16">
+				<section className="py-8 pb-16 md:px-6">
 					<h2 className="mb-6 font-extrabold text-2xl text-foreground">
 						Meet the founders
 					</h2>

@@ -16,7 +16,6 @@ import Link from "next/link";
 import type * as React from "react";
 import { NavMain } from "~/components/nav-main";
 import { NavSecondary } from "~/components/nav-secondary";
-import { NavUser } from "~/components/nav-user";
 import {
 	Sidebar,
 	SidebarContent,
@@ -26,7 +25,6 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "~/components/ui/sidebar";
-import { api } from "~/trpc/react";
 
 const data = {
 	navMain: [
@@ -118,9 +116,9 @@ const data = {
 	],
 };
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-	const { data: currentUser } = api.auth.me.useQuery(undefined, {
-		retry: false,
-	});
+	// const { data: currentUser } = api.auth.me.useQuery(undefined, {
+	// 	retry: false,
+	// });
 
 	return (
 		<Sidebar collapsible="offcanvas" {...props}>
@@ -144,7 +142,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<NavSecondary className="mt-auto" items={data.navSecondary} />
 			</SidebarContent>
 			<SidebarFooter>
-				{currentUser && <NavUser user={currentUser} />}
+				{/* {currentUser && <NavUser user={currentUser} />} */}
 			</SidebarFooter>
 		</Sidebar>
 	);

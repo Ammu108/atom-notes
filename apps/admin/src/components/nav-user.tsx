@@ -32,11 +32,11 @@ export function NavUser({
 }) {
 	const { isMobile } = useSidebar();
 	const router = useRouter();
-	const utils = api.useUtils();
+	// const utils = api.useUtils();
 
 	const logout = api.auth.logout.useMutation({
 		onSuccess: async () => {
-			await utils.auth.me.invalidate();
+			// await utils.auth.me.invalidate();
 			router.refresh();
 		},
 	});

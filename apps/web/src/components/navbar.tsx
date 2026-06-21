@@ -1,10 +1,12 @@
 "use client";
+
 import { Button } from "@repo/ui";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import ProfileDropdown from "./kokonutui/profile-dropdown";
 
@@ -15,21 +17,29 @@ const NAV_LINKS = [
 	{ label: "Contact", href: "/contact" },
 ];
 
-export default function Navbar() {
+interface UserInfo {
+	name: string;
+	email: string;
+}
+
+interface NavbarProps {
+	user: UserInfo | null;
+}
+
+export default function Navbar({ user }: NavbarProps) {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const pathname = usePathname();
 	const router = useRouter();
-	const utils = api.useUtils();
-
-	const { data: currentUser } = api.auth.me.useQuery(undefined, {
-		retry: false,
-	});
 
 	const logout = api.auth.logout.useMutation({
-		onSuccess: async () => {
-			await utils.auth.me.invalidate();
+		onSuccess: async (opts) => {
+			toast.success(opts.message);
+			router.refresh();
 			router.refresh();
 			setMenuOpen(false);
+		},
+		onError: (error) => {
+			toast.error(error.message);
 		},
 	});
 
@@ -42,11 +52,11 @@ export default function Navbar() {
 		logout.mutate();
 	};
 
-	const profileData = currentUser
+	const profileData = user
 		? {
-				name: currentUser.name,
-				email: currentUser.email,
-				avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.name)}&background=0D8ABC&color=fff`,
+				name: user.name,
+				email: user.email,
+				avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=0D8ABC&color=fff`,
 			}
 		: undefined;
 
@@ -106,14 +116,14 @@ export default function Navbar() {
 					) : (
 						<div className="hidden md:block">
 							<Button onClick={handleSignUp} size="sm" variant="primary">
-								Sign Up
+								Sign Up / Login
 							</Button>
 						</div>
 					)}
 
 					{/* Hamburger — mobile */}
 
-					<div className="flex items-center gap-2">
+					<div className="flex items-center">
 						{profileData ? (
 							<ProfileDropdown
 								className="md:hidden"
@@ -128,7 +138,7 @@ export default function Navbar() {
 									size="xs"
 									variant="primary"
 								>
-									Sign Up
+									Sign Up / Login
 								</Button>
 							</div>
 						)}

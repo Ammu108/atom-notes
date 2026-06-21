@@ -56,7 +56,7 @@ const Tiptap = ({
 	initialContent,
 }: {
 	onChange?: (json: JSONContent) => void;
-	initialContent?: JSONContent;
+	initialContent: JSONContent | null;
 }) => {
 	const editor = useEditor({
 		extensions: [

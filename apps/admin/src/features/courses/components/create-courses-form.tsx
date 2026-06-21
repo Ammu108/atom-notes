@@ -209,7 +209,7 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 								min="1"
 								onChange={(e) =>
 									handleSemesterCountChange(
-										e.target.value ? parseInt(e.target.value) : 1,
+										e.target.value ? parseInt(e.target.value, 10) : 1,
 									)
 								}
 								placeholder="e.g., 8"

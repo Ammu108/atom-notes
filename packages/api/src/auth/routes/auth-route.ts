@@ -1,13 +1,18 @@
-// import { authService, createToken } from "@repo/auth";
 import { TRPCError } from "@trpc/server";
 import { serialize } from "cookie";
 import z from "zod";
 import { createTRPCRouter, publicProcedure } from "../../trpc";
-import { authRepository } from "../repositories/auth-repositary";
+import {
+	authRepository,
+	SESSION_CONFIG,
+} from "../repositories/auth-repositary";
 import { authService } from "../services/auth-service";
-import { createToken } from "../utils/auth.util";
+import { generateRefreshToken, signAccessToken } from "../utils/token";
 import { deleteUserSchema, signupSchema } from "../validators/auth-validator";
 
+// async function createSession(userId: string, refreshToken: string) {
+// 	await authService.createSession(ctx.db, userId, refreshToken);
+// }
 /**
  * Auth Router
  * API endpoints only - uses service for business logic
@@ -31,25 +36,45 @@ export const authRouter = createTRPCRouter({
 			// Sign up using service (handles business logic)
 			const user = await authService.signUp(input, ctx.db);
 
-			// Create JWT token
-			const token = createToken(user.id, ctx.jwtSecret, user.role);
+			// Create tokens
+			const accessToken = await signAccessToken(
+				user.id,
+				user.name,
+				user.email,
+				user.role,
+			);
+			const refreshToken = generateRefreshToken();
 
-			// Set secure HTTP-only cookie
-			const cookie = serialize("token", token, {
-				httpOnly: true,
-				secure: process.env.NODE_ENV === "production",
-				sameSite: "lax",
-				path: "/",
-				maxAge: 60 * 60 * 24 * 7,
-			});
+			// Persist session
+			await authService.createSession(ctx.db, user.id, refreshToken);
 
-			ctx.resHeaders.append("set-cookie", cookie);
+			ctx.resHeaders.append(
+				"set-cookie",
+				serialize("access_token", accessToken, {
+					httpOnly: true,
+					secure: process.env.NODE_ENV === "production",
+					sameSite: "lax",
+					path: "/",
+					maxAge: SESSION_CONFIG.REFRESH_TOKEN_DAYS * 24 * 60 * 60, // 30 days
+				}),
+			);
+
+			ctx.resHeaders.append(
+				"set-cookie",
+				serialize("refresh_token", refreshToken, {
+					httpOnly: true,
+					secure: process.env.NODE_ENV === "production",
+					sameSite: "lax",
+					path: "/",
+					maxAge: SESSION_CONFIG.REFRESH_TOKEN_DAYS * 24 * 60 * 60,
+				}),
+			);
 
 			if (process.env.NODE_ENV === "development") {
 				console.log("[auth][signup] appended Set-Cookie header");
 			}
 
-			return { user };
+			return { message: "Signup successful", user };
 		}),
 
 	login: publicProcedure
@@ -58,56 +83,72 @@ export const authRouter = createTRPCRouter({
 			// Login using service (handles business logic & password verification)
 			const user = await authService.login(input.email, input.password, ctx.db);
 
-			// Create JWT token
-			const token = createToken(user.id, ctx.jwtSecret, user.role);
+			// Create tokens
+			const accessToken = await signAccessToken(
+				user.id,
+				user.name,
+				user.email,
+				user.role,
+			);
+			const refreshToken = generateRefreshToken();
+
+			// Persist session
+			await authService.createSession(ctx.db, user.id, refreshToken);
 
 			// Set secure HTTP-only cookie
-			const cookie = serialize("token", token, {
-				httpOnly: true,
-				secure: process.env.NODE_ENV === "production",
-				sameSite: "lax",
-				path: "/",
-				maxAge: 60 * 60 * 24 * 7,
-			});
+			ctx.resHeaders.append(
+				"set-cookie",
+				serialize("access_token", accessToken, {
+					httpOnly: true,
+					secure: process.env.NODE_ENV === "production",
+					sameSite: "lax",
+					path: "/",
+					maxAge: SESSION_CONFIG.ACCESS_TOKEN_MINUTES * 60, // 15 minutes
+				}),
+			);
 
-			ctx.resHeaders.append("set-cookie", cookie);
+			ctx.resHeaders.append(
+				"set-cookie",
+				serialize("refresh_token", refreshToken, {
+					httpOnly: true,
+					secure: process.env.NODE_ENV === "production",
+					sameSite: "lax",
+					path: "/",
+					maxAge: SESSION_CONFIG.REFRESH_TOKEN_DAYS * 24 * 60 * 60,
+				}),
+			);
 
 			if (process.env.NODE_ENV === "development") {
 				console.log("[auth][login] appended Set-Cookie header");
 			}
 
-			return { user };
+			return { message: "Login successful", user };
 		}),
 
 	logout: publicProcedure.mutation(async ({ ctx }) => {
-		const cookie = serialize("token", "", {
-			httpOnly: true,
-			expires: new Date(0),
-			path: "/",
-			sameSite: "lax",
-			secure: process.env.NODE_ENV === "production",
-		});
+		ctx.resHeaders.append(
+			"set-cookie",
+			serialize("access_token", "", {
+				httpOnly: true,
+				expires: new Date(0),
+				path: "/",
+			}),
+		);
 
-		ctx.resHeaders.append("set-cookie", cookie);
+		ctx.resHeaders.append(
+			"set-cookie",
+			serialize("refresh_token", "", {
+				httpOnly: true,
+				expires: new Date(0),
+				path: "/",
+			}),
+		);
 
 		if (process.env.NODE_ENV === "development") {
 			console.log("[auth][logout] appended Set-Cookie header");
 		}
 
-		return { success: true };
-	}),
-
-	me: publicProcedure.query(async ({ ctx }) => {
-		const authUser = ctx.user;
-
-		if (!authUser) {
-			return null;
-		}
-
-		// Use repository to get current user
-		const user = await authRepository.findById(ctx.db, authUser.userId);
-
-		return user;
+		return { message: "Logout successful", };
 	}),
 
 	getAllUsers: publicProcedure.query(async ({ ctx }) => {

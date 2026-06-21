@@ -12,7 +12,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { parse } from "cookie";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { verifyToken } from "./auth/utils/auth.util";
+import { verifyAccessToken } from "./auth/utils/token";
 
 /**
  * 1. CONTEXT
@@ -54,7 +54,7 @@ export const createTRPCContext = async (opts: {
 
 		if (cookies.token) {
 			try {
-				user = verifyToken(cookies.token, opts.jwtSecret);
+				user = await verifyAccessToken(cookies.token);
 
 				if (process.env.NODE_ENV === "development") {
 					console.log("[auth][context] token verified for user");

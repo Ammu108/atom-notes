@@ -19,6 +19,8 @@ export const notesSchema = z.object({
 	price: z.number().min(0, "Price must be a positive number"),
 });
 
+export type NotesInput = z.infer<typeof notesSchema>;
+
 export const noteIdSchema = z.object({
 	id: z.string(),
 });

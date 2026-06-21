@@ -20,11 +20,11 @@ export function LoginForm({
 	...props
 }: React.ComponentProps<"div">) {
 	const router = useRouter();
-	const utils = api.useUtils();
+	// const utils = api.useUtils();
 
 	const login = api.auth.login.useMutation({
 		onSuccess() {
-			utils.auth.me.invalidate();
+			// utils.auth.me.invalidate();
 			console.log("admin logged in successfully.");
 			router.replace("/");
 			router.refresh();

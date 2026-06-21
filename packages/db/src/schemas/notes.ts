@@ -1,3 +1,4 @@
+import type { EditorContent } from "@repo/shared";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
@@ -19,7 +20,7 @@ export const notes = createTable("notes", {
 		.notNull(),
 	title: varchar("title", { length: 255 }).notNull(),
 	slug: varchar("slug", { length: 500 }).notNull().unique(),
-	content: jsonb("content").notNull(),
+	content: jsonb("content").$type<EditorContent>().notNull(),
 	metaTitle: varchar("meta_title", { length: 70 }),
 	metaDescription: varchar("meta_description", { length: 160 }),
 	pdfUrl: varchar("pdf_url", { length: 2048 }),

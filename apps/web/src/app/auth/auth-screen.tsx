@@ -1,7 +1,8 @@
 "use client";
 
-import { Card, CardContent, CardHeader } from "@repo/ui";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { DialogHeader } from "~/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import Login from "~/features/auth/components/login";
 import SignUp from "~/features/auth/components/signup";
 
@@ -20,40 +21,63 @@ const AuthPage = () => {
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
-			<Card className="flex w-full max-w-md">
-				<CardHeader>
-					{/* Tabs */}
-					<div className="flex gap-4 border-border border-b">
-						<button
-							className={`pb-3 font-medium transition-colors ${
-								activeTab === "login"
-									? "border-primary border-b-2 text-primary"
-									: "text-muted-foreground hover:text-foreground"
-							}`}
-							onClick={() => onTabChange("login")}
-							type="button"
+			<div className="rounded-2xl border-2 border-border p-4 sm:min-w-sm">
+				{/* Header */}
+				<DialogHeader className="mb-5 text-left">
+					<h2 className="font-extrabold text-2xl text-gray-900">
+						{activeTab === "signup" ? "Create a free acount" : "Welcome back"}
+					</h2>
+					<p className="text-gray-500 text-sm">
+						{activeTab === "signup"
+							? "Sign up to start saving and managing your notes."
+							: "Login to download notes and PYQ answer PDFs."}
+					</p>
+				</DialogHeader>
+
+				{/* Shadcn Tabs */}
+				<Tabs
+					defaultValue="login"
+					onValueChange={onTabChange}
+					value={activeTab}
+				>
+					<TabsList className="mb-6 h-auto w-full rounded-none border-b bg-transparent p-0">
+						<TabsTrigger
+							className="rounded-none border-transparent border-b-2 data-active:border-primary data-active:bg-transparent data-active:text-primary data-active:shadow-none"
+							value="login"
 						>
 							Login
-						</button>
-						<button
-							className={`pb-3 font-medium transition-colors ${
-								activeTab === "signup"
-									? "border-primary border-b-2 text-primary"
-									: "text-muted-foreground hover:text-foreground"
-							}`}
-							onClick={() => onTabChange("signup")}
-							type="button"
+						</TabsTrigger>
+						<TabsTrigger
+							className="rounded-none border-transparent border-b-2 data-active:border-primary data-active:bg-transparent data-active:text-primary data-active:shadow-none"
+							value="signup"
 						>
 							Sign Up
-						</button>
-					</div>
-				</CardHeader>
+						</TabsTrigger>
+					</TabsList>
 
-				<CardContent className="flex items-center justify-center py-4">
-					{/* Content */}
-					{activeTab === "login" ? <Login /> : <SignUp />}
-				</CardContent>
-			</Card>
+					{/* Login */}
+					<TabsContent className="mt-0 flex flex-col gap-3" value="login">
+						<Login />
+					</TabsContent>
+
+					{/* Sign Up */}
+					<TabsContent className="mt-0 flex flex-col gap-3" value="signup">
+						<SignUp />
+					</TabsContent>
+				</Tabs>
+
+				{/* Footer */}
+				<p className="mt-5 text-center text-gray-400 text-xs">
+					By continuing, you agree to our{" "}
+					<a
+						className="underline transition-colors hover:text-gray-600"
+						href="/terms"
+					>
+						Terms of Service
+					</a>
+					.
+				</p>
+			</div>
 		</div>
 	);
 };

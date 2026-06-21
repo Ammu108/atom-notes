@@ -27,9 +27,9 @@ const subjects = [
 const units = ["All Units", "Unit 1", "Unit 2", "Unit 3", "Unit 4"];
 
 const Browse = () => {
-	const [semester, setSemester] = useState("All Semesters");
-	const [subject, setSubject] = useState("All Subjects");
-	const [unit, setUnit] = useState("All Units");
+	const [semester, _setSemester] = useState("All Semesters");
+	const [subject, _setSubject] = useState("All Subjects");
+	const [unit, _setUnit] = useState("All Units");
 
 	return (
 		<Container className="mx-auto">

@@ -8,6 +8,7 @@ import {
 	LogOutIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import {
 	DropdownMenu,
@@ -32,12 +33,16 @@ export function NavUser({
 }) {
 	const { isMobile } = useSidebar();
 	const router = useRouter();
-	// const utils = api.useUtils();
+	const utils = api.useUtils();
 
-	const logout = api.auth.logout.useMutation({
-		onSuccess: async () => {
-			// await utils.auth.me.invalidate();
+	const logout = api.authAdmin.logout.useMutation({
+		onSuccess: async (opts) => {
+			toast.success(opts.message);
+			await utils.authAdmin.me.invalidate();
 			router.refresh();
+		},
+		onError: async (error) => {
+			toast.error(error.message);
 		},
 	});
 

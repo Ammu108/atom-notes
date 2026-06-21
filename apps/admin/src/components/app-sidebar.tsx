@@ -25,6 +25,8 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "~/components/ui/sidebar";
+import { api } from "~/trpc/react";
+import { NavUser } from "./nav-user";
 
 const data = {
 	navMain: [
@@ -116,9 +118,7 @@ const data = {
 	],
 };
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-	// const { data: currentUser } = api.auth.me.useQuery(undefined, {
-	// 	retry: false,
-	// });
+	const { data: currentUser } = api.authAdmin.me.useQuery();
 
 	return (
 		<Sidebar collapsible="offcanvas" {...props}>
@@ -130,7 +130,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							render={<Link href="/" />}
 						>
 							<div className="relative aspect-square w-12">
-								<Image alt="logo" fill objectFit="contain" src="/logo.webp" />
+								<Image
+									alt="logo"
+									fill
+									objectFit="contain"
+									src="/atomsNote-logo.webp"
+								/>
 							</div>
 							<span className="font-semibold text-base">Atom Notes </span>
 						</SidebarMenuButton>
@@ -142,7 +147,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<NavSecondary className="mt-auto" items={data.navSecondary} />
 			</SidebarContent>
 			<SidebarFooter>
-				{/* {currentUser && <NavUser user={currentUser} />} */}
+				{currentUser && <NavUser user={currentUser} />}
 			</SidebarFooter>
 		</Sidebar>
 	);

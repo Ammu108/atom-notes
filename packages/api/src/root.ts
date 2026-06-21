@@ -1,3 +1,4 @@
+import { authAdminRouter } from "./auth/routes/auth-admin-route";
 import { authRouter } from "./auth/routes/auth-route";
 import { courseRouter } from "./courses/routes/course-route";
 import { notesRouter } from "./notes/routes/notes-route";
@@ -10,6 +11,7 @@ import { createCallerFactory, createTRPCRouter } from "./trpc";
  */
 export const appRouter = createTRPCRouter({
 	auth: authRouter,
+	authAdmin: authAdminRouter,
 	courses: courseRouter,
 	notes: notesRouter,
 });

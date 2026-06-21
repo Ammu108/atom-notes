@@ -52,9 +52,9 @@ export const createTRPCContext = async (opts: {
 			);
 		}
 
-		if (cookies.token) {
+		if (cookies.access_token) {
 			try {
-				user = await verifyAccessToken(cookies.token);
+				user = await verifyAccessToken(cookies.access_token);
 
 				if (process.env.NODE_ENV === "development") {
 					console.log("[auth][context] token verified for user");

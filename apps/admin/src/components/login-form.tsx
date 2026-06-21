@@ -3,6 +3,7 @@ import { cn } from "@repo/ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
 	Card,
@@ -22,15 +23,16 @@ export function LoginForm({
 	const router = useRouter();
 	// const utils = api.useUtils();
 
-	const login = api.auth.login.useMutation({
-		onSuccess() {
-			// utils.auth.me.invalidate();
+	const login = api.authAdmin.login.useMutation({
+		onSuccess(opts) {
+			toast.success(opts.message);
 			console.log("admin logged in successfully.");
 			router.replace("/");
 			router.refresh();
 		},
 		onError: (error) => {
 			console.error("Login failed:", error);
+			toast.error(error.message);
 		},
 	});
 

@@ -28,6 +28,7 @@
 			"*": ["./*"],
 			"@repo/db": ["./packages/db/src/index.ts"],
 			"@repo/api": ["./packages/api/src/index.ts"],
+			"@repo/api/verifyToken": ["./packages/api/src/auth/utils/token.ts"],
 			"@repo/auth": ["./packages/auth/src/index.ts"],
 			"@repo/ui": ["./packages/ui/src/index.ts"],
 			"@repo/shared/*": ["./packages/shared/src/*"]

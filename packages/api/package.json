@@ -5,6 +5,7 @@
 	"type": "module",
 	"exports": {
 		".": "./src/index.ts",
+		"./verifyToken": "./src/auth/utils/token.ts",
 		"./trpc": "./src/trpc.ts",
 		"./root": "./src/root.ts",
 		"./react": "./src/react.tsx"
@@ -27,6 +28,7 @@
 		"bcryptjs": "^3.0.3",
 		"cookie": "^1.1.1",
 		"drizzle-orm": "^0.41.0",
+		"jose": "^6.2.3",
 		"jsonwebtoken": "^9.0.3",
 		"react": "^19.0.0",
 		"superjson": "^2.2.1",

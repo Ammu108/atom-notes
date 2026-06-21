@@ -1,4 +1,4 @@
-import { type DB, users } from "@repo/db";
+import { type DB, sessions, users } from "@repo/db";
 import { eq } from "drizzle-orm";
 
 /**
@@ -6,7 +6,21 @@ import { eq } from "drizzle-orm";
  * ONLY database communication - no business logic
  */
 
+export const SESSION_CONFIG = {
+	ACCESS_TOKEN_MINUTES: 15,
+	REFRESH_TOKEN_DAYS: 30,
+};
+
 export const authRepository = {
+	async createSession(db: DB, userId: string, hashedToken: string) {
+		await db.insert(sessions).values({
+			userId,
+			refreshToken: hashedToken,
+			expiresAt: new Date(
+				Date.now() + SESSION_CONFIG.REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000,
+			), // 30 days from now
+		});
+	},
 	/**
 	 * Find user by email
 	 */

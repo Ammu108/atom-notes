@@ -1,8 +1,9 @@
 import type { DB } from "@repo/db";
 import { TRPCError } from "@trpc/server";
-import bcrypt from "bcryptjs";
 import type z from "zod";
 import { authRepository } from "../repositories/auth-repositary";
+import { hashPassword, verifyPassword } from "../utils/password";
+import { hashRefreshToken } from "../utils/token";
 import type { signupSchema } from "../validators/auth-validator";
 
 /**
@@ -11,6 +12,11 @@ import type { signupSchema } from "../validators/auth-validator";
  */
 
 export const authService = {
+	async createSession(db: DB, userId: string, refreshToken: string) {
+		const hashedToken = hashRefreshToken(refreshToken);
+		await authRepository.createSession(db, userId, hashedToken);
+	},
+
 	/**
 	 * Sign up a new user
 	 */
@@ -24,7 +30,7 @@ export const authService = {
 		}
 
 		// Hash password (business logic)
-		const hashedPassword = await bcrypt.hash(input.password, 10);
+		const hashedPassword = await hashPassword(input.password);
 
 		// Use repository to create user (DB operation)
 		const user = await authRepository.create(db, {
@@ -59,7 +65,7 @@ export const authService = {
 		}
 
 		// Verify password (business logic)
-		const isPasswordValid = await bcrypt.compare(password, user.password || "");
+		const isPasswordValid = await verifyPassword(password, user.password);
 
 		if (!isPasswordValid) {
 			throw new TRPCError({

@@ -1,98 +1,96 @@
-import {
-	Button,
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-	Input,
-	Label,
-} from "@repo/ui";
-import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button, Input } from "@repo/ui";
+import { type LoginSchema, loginSchema } from "@repo/validators";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { Field, FieldError, FieldLabel } from "~/components/ui/field";
+import { Spinner } from "~/components/ui/spinner";
 import { api } from "~/trpc/react";
 
 const Login = () => {
 	const router = useRouter();
-	const utils = api.useUtils();
 
 	const login = api.auth.login.useMutation({
-		onSuccess: async () => {
-			await utils.auth.me.invalidate();
-			console.log("user logged in successfully.");
+		onSuccess: async (opts) => {
+			toast.success(opts.message);
 			router.push("/");
+			router.refresh();
 		},
 		onError: (error) => {
 			console.error("Login failed:", error);
+			toast.error(error.message);
 		},
 	});
 
-	const [form, setForm] = useState({
-		email: "",
-		password: "",
+	const form = useForm<LoginSchema>({
+		resolver: zodResolver(loginSchema),
+		defaultValues: {
+			email: "",
+			password: "",
+		},
 	});
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		login.mutate(form);
+	const onSubmit = (values: LoginSchema) => {
+		login.mutate(values);
 	};
 
 	return (
-		<Card className="w-full max-w-sm">
-			<CardHeader>
-				<CardTitle>Login to your account</CardTitle>
-				<CardDescription>
-					Enter your email below to login to your account
-				</CardDescription>
-			</CardHeader>
-			<CardContent>
-				<form onSubmit={handleSubmit}>
-					<div className="flex flex-col gap-6">
-						<div className="grid gap-2">
-							<Label htmlFor="email">Email</Label>
-							<Input
-								id="email"
-								onChange={(e) => setForm({ ...form, email: e.target.value })}
-								placeholder="m@example.com"
-								required
-								type="email"
-								value={form.email}
-							/>
-						</div>
-						<div className="grid gap-2">
-							<div className="flex items-center">
-								<Label htmlFor="password">Password</Label>
-								<Link
-									className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-									href="#"
-								>
-									Forgot your password?
-								</Link>
-							</div>
-							<Input
-								id="password"
-								onChange={(e) => setForm({ ...form, password: e.target.value })}
-								required
-								type="password"
-								value={form.password}
-							/>
-						</div>
-						<Button className="w-full" onClick={handleSubmit} type="submit">
-							Login
-						</Button>
-
-						{login.error && (
-							<div className="rounded-md bg-destructive/10 p-2">
-								<p className="text-destructive text-sm">
-									Login failed: {login.error.message}
-								</p>
-							</div>
-						)}
+		<div className="w-full">
+			<form onSubmit={form.handleSubmit(onSubmit)}>
+				<div className="flex flex-col gap-6">
+					<div className="grid gap-2">
+						<Controller
+							control={form.control}
+							name="email"
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Email</FieldLabel>
+									<Input
+										{...field}
+										aria-invalid={fieldState.invalid}
+										id={field.name}
+										placeholder="m@example.com"
+										type="email"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)}
+						/>
 					</div>
-				</form>
-			</CardContent>
-		</Card>
+					<div className="grid gap-2">
+						<Controller
+							control={form.control}
+							name="password"
+							render={({ field, fieldState }) => (
+								<Field data-invalid={fieldState.invalid}>
+									<FieldLabel htmlFor={field.name}>Password</FieldLabel>
+									<Input
+										{...field}
+										aria-invalid={fieldState.invalid}
+										id={field.name}
+										placeholder="password"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)}
+						/>
+					</div>
+					<Button
+						className="w-full"
+						disabled={login.isPending}
+						size="xs"
+						type="submit"
+					>
+						{login.isPending ? <Spinner /> : "Login"}
+					</Button>
+				</div>
+			</form>
+		</div>
 	);
 };
 

@@ -366,6 +366,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@repo/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@t3-oss/env-core':
         specifier: ^0.13.11
         version: 0.13.11(typescript@5.9.3)(zod@4.3.6)
@@ -395,7 +398,11 @@ importers:
         specifier: ^5.8.2
         version: 5.9.3
 
-  packages/shared: {}
+  packages/shared:
+    dependencies:
+      '@tiptap/core':
+        specifier: ^3.23.2
+        version: 3.23.2(@tiptap/pm@3.23.2)
 
   packages/ui:
     dependencies:

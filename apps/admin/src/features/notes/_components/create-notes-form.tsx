@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type NotesFormValues, notesFormSchema } from "@repo/validators";
+import type { JSONContent } from "@tiptap/core";
 import { TRPCClientError } from "@trpc/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -30,7 +31,7 @@ interface CreateNotesFormProps {
 		metaDescription: string | null;
 		chapterId: string;
 		unitName: string;
-		content: any;
+		content: JSONContent;
 		pdfUrl: string | null;
 		pdfKey: string | null;
 		pdfPrice: string;

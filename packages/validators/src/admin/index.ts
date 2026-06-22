@@ -1,4 +1,5 @@
 import z from "zod";
+import { emailSchema, passwordSchema } from "../shared";
 
 export const notesFormSchema = z.object({
 	id: z.string({
@@ -38,3 +39,10 @@ export const notesFormSchema = z.object({
 });
 
 export type NotesFormValues = z.infer<typeof notesFormSchema>;
+
+export const adminLoginSchema = z.object({
+	email: emailSchema,
+	password: passwordSchema,
+});
+
+export type AdminLoginSchema = z.infer<typeof adminLoginSchema>;

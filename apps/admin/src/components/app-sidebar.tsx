@@ -15,7 +15,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type * as React from "react";
 import { NavMain } from "~/components/nav-main";
-import { NavSecondary } from "~/components/nav-secondary";
 import {
 	Sidebar,
 	SidebarContent,
@@ -144,7 +143,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
-				<NavSecondary className="mt-auto" items={data.navSecondary} />
 			</SidebarContent>
 			<SidebarFooter>
 				{currentUser && <NavUser user={currentUser} />}

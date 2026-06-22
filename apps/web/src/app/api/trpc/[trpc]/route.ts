@@ -13,7 +13,8 @@ const createContext = async (req: NextRequest) => {
 	return createTRPCContext({
 		headers: req.headers,
 		resHeaders,
-		jwtSecret: env.JWT_SECRET,
+		jwtSecret: env.USER_JWT_SECRET,
+		app: "web",
 	});
 };
 

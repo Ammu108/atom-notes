@@ -18,7 +18,8 @@ const createContext = cache(async () => {
 	return createTRPCContext({
 		headers: heads,
 		resHeaders: new Headers(),
-		jwtSecret: env.JWT_SECRET,
+		jwtSecret: env.USER_JWT_SECRET,
+		app: "web",
 	});
 });
 

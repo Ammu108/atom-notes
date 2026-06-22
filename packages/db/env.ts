@@ -10,7 +10,7 @@ dotenv.config({
 export const env = createEnv({
 	server: {
 		DATABASE_URL: z.string().url(),
-		JWT_SECRET: z.string().min(4),
+		ADMIN_JWT_SECRET: z.string().min(4),
 
 		// ✅ Add admin envs
 		ADMIN_NAME: z.string().min(1),
@@ -24,7 +24,7 @@ export const env = createEnv({
 
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
-		JWT_SECRET: process.env.JWT_SECRET,
+		ADMIN_JWT_SECRET: process.env.ADMIN_JWT_SECRET,
 
 		// ✅ Map runtime values
 		ADMIN_NAME: process.env.ADMIN_NAME,

@@ -1,8 +1,9 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@repo/ui";
-import Link from "next/link";
+import { type AdminLoginSchema, adminLoginSchema } from "@repo/validators";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
@@ -12,21 +13,25 @@ import {
 	CardHeader,
 	CardTitle,
 } from "~/components/ui/card";
-import { Field, FieldGroup, FieldLabel } from "~/components/ui/field";
+import {
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { api } from "~/trpc/react";
+import { Spinner } from "./ui/spinner";
 
 export function LoginForm({
 	className,
 	...props
 }: React.ComponentProps<"div">) {
 	const router = useRouter();
-	// const utils = api.useUtils();
 
 	const login = api.authAdmin.login.useMutation({
 		onSuccess(opts) {
 			toast.success(opts.message);
-			console.log("admin logged in successfully.");
 			router.replace("/");
 			router.refresh();
 		},
@@ -36,14 +41,16 @@ export function LoginForm({
 		},
 	});
 
-	const [form, setForm] = useState({
-		email: "",
-		password: "",
+	const form = useForm<AdminLoginSchema>({
+		resolver: zodResolver(adminLoginSchema),
+		defaultValues: {
+			email: "",
+			password: "",
+		},
 	});
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		login.mutate(form);
+	const onSubmit = (values: AdminLoginSchema) => {
+		login.mutate(values);
 	};
 
 	return (
@@ -59,42 +66,48 @@ export function LoginForm({
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<form onSubmit={handleSubmit}>
+					<form onSubmit={form.handleSubmit(onSubmit)}>
 						<FieldGroup>
+							<Controller
+								control={form.control}
+								name="email"
+								render={({ field, fieldState }) => (
+									<Field data-invalid={fieldState.invalid}>
+										<FieldLabel htmlFor={field.name}>Email</FieldLabel>
+										<Input
+											{...field}
+											aria-invalid={fieldState.invalid}
+											id={field.name}
+											placeholder="m@example.com"
+											type="email"
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+							<Controller
+								control={form.control}
+								name="password"
+								render={({ field, fieldState }) => (
+									<Field data-invalid={fieldState.invalid}>
+										<FieldLabel htmlFor={field.name}>Password</FieldLabel>
+										<Input
+											{...field}
+											aria-invalid={fieldState.invalid}
+											id={field.name}
+											placeholder="password"
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
 							<Field>
-								<FieldLabel htmlFor="email">Email</FieldLabel>
-								<Input
-									id="email"
-									onChange={(e) => setForm({ ...form, email: e.target.value })}
-									placeholder="m@example.com"
-									required
-									type="email"
-									value={form.email}
-								/>
-							</Field>
-							<Field>
-								<div className="flex items-center">
-									<FieldLabel htmlFor="password">Password</FieldLabel>
-									<Link
-										className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-										href="#"
-									>
-										Forgot your password?
-									</Link>
-								</div>
-								<Input
-									id="password"
-									onChange={(e) =>
-										setForm({ ...form, password: e.target.value })
-									}
-									required
-									type="password"
-									value={form.password}
-								/>
-							</Field>
-							<Field>
-								<Button type="submit">
-									{login.isPending ? "Logging in..." : "Login"}
+								<Button disabled={login.isPending} type="submit">
+									{login.isPending ? <Spinner /> : "Login"}
 								</Button>
 							</Field>
 

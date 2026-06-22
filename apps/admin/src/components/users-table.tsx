@@ -33,7 +33,6 @@ import {
 import { api } from "~/trpc/react";
 import { ConfirmActionDialog } from "./confirm-action-dialog";
 
-const roleOptions = ["admin", "editor", "viewer"];
 const userSkeletonRows = [
 	"user-skeleton-1",
 	"user-skeleton-2",
@@ -42,13 +41,14 @@ const userSkeletonRows = [
 
 export function UsersTable() {
 	const { data: users, isPending } = api.auth.getAllUsers.useQuery();
-	const filteredUsers = users;
 	const utils = api.useUtils();
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<{
 		id: string;
 		name: string;
 	} | null>(null);
+
+	const filteredUsers = users?.filter((user) => user.role !== "admin");
 
 	const deleteUserMutation = api.auth.deleteUser.useMutation({
 		onSuccess: async () => {
@@ -84,22 +84,6 @@ export function UsersTable() {
 					</div>
 
 					<div className="flex flex-col gap-2 sm:flex-row">
-						<Select>
-							<SelectTrigger className="w-full sm:w-40">
-								<SelectValue placeholder="Filter role" />
-							</SelectTrigger>
-							<SelectContent align="end">
-								<SelectGroup>
-									<SelectItem value="all">All Roles</SelectItem>
-									{roleOptions.map((role) => (
-										<SelectItem key={role} value={role}>
-											{role}
-										</SelectItem>
-									))}
-								</SelectGroup>
-							</SelectContent>
-						</Select>
-
 						<Select>
 							<SelectTrigger className="w-full sm:w-36">
 								<SelectValue placeholder="Sort" />

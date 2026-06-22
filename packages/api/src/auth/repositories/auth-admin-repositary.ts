@@ -26,4 +26,16 @@ export const authAdminRepository = {
 
 		return result[0];
 	},
+
+	async getRoleById(db: DB, userId: string) {
+		const result = await db
+			.select()
+			.from(users)
+			.where(eq(users.id, userId))
+			.limit(1);
+
+		const role = result[0]?.role;
+
+		return role;
+	},
 };

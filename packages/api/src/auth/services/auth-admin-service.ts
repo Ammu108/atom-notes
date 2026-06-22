@@ -29,6 +29,15 @@ export const authAdminService = {
 			});
 		}
 
+		const role = await authAdminRepository.getRoleById(db, admin.id);
+
+		if (role !== "admin") {
+			throw new TRPCError({
+				code: "FORBIDDEN",
+				message: "You do not have permission to access this resource.",
+			});
+		}
+
 		return admin;
 	},
 };

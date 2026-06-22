@@ -25,6 +25,7 @@ import {
 	useSidebar,
 } from "~/components/ui/sidebar";
 import { api } from "~/trpc/react";
+import { Skeleton } from "./ui/skeleton";
 
 export function NavUser({
 	user,
@@ -50,6 +51,23 @@ export function NavUser({
 		logout.mutate();
 	};
 
+	if (!user) {
+		return (
+			<SidebarMenu>
+				<SidebarMenuItem>
+					<div className="flex w-full items-center gap-2 rounded-md px-2 py-1.5">
+						<Skeleton className="size-8 rounded-lg" />
+						<div className="grid flex-1 gap-1.5">
+							<Skeleton className="h-3.5 w-24 rounded" />
+							<Skeleton className="h-3 w-32 rounded" />
+						</div>
+						<Skeleton className="ml-auto size-4 rounded" />
+					</div>
+				</SidebarMenuItem>
+			</SidebarMenu>
+		);
+	}
+
 	return (
 		<SidebarMenu>
 			<SidebarMenuItem>
@@ -59,9 +77,9 @@ export function NavUser({
 							<AvatarFallback className="rounded-lg">CN</AvatarFallback>
 						</Avatar>
 						<div className="grid flex-1 text-left text-sm leading-tight">
-							<span className="truncate font-medium">{user?.name}</span>
+							<span className="truncate font-medium">{user.name}</span>
 							<span className="truncate text-foreground/70 text-xs">
-								{user?.email}
+								{user.email}
 							</span>
 						</div>
 						<EllipsisVerticalIcon className="ml-auto size-4" />

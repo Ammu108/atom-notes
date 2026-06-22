@@ -1,29 +1,34 @@
 import { createHash, randomBytes } from "node:crypto";
 import { jwtVerify, SignJWT } from "jose";
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
+type TokenType = "admin" | "user";
+
+export type AccessTokenPayload = {
+	id: string;
+	name: string;
+	email: string;
+	role: string;
+	type: TokenType;
+};
 
 export async function signAccessToken(
-	userId: string,
-	name: string,
-	email: string,
-	role: string,
+	payload: AccessTokenPayload,
+	secret: string,
 ) {
-	return new SignJWT({ userId: userId, name, email, role })
+	const jwtSecret = new TextEncoder().encode(secret);
+
+	return new SignJWT(payload)
 		.setProtectedHeader({ alg: "HS256" })
 		.setIssuedAt()
 		.setExpirationTime("15m")
-		.sign(JWT_SECRET);
+		.sign(jwtSecret);
 }
 
-export async function verifyAccessToken(token: string) {
-	const { payload } = await jwtVerify(token, JWT_SECRET);
-	return payload as {
-		userId: string;
-		name: string;
-		email: string;
-		role: string;
-	};
+export async function verifyAccessToken(token: string, secret: string) {
+	const jwtSecret = new TextEncoder().encode(secret);
+
+	const { payload } = await jwtVerify(token, jwtSecret);
+	return payload as AccessTokenPayload;
 }
 
 // Refresh token — opaque, stored as HttpOnly cookie

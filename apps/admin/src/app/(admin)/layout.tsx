@@ -8,6 +8,7 @@ export default async function AdminLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	const admin = await getCurrentUser();
 
+	console.log("admin data is", admin);
 	if (!admin || admin.role !== "admin") {
 		return <LoginPage />;
 	}

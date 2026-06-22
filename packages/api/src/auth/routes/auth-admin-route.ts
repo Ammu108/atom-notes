@@ -17,11 +17,16 @@ export const authAdminRouter = createTRPCRouter({
 
 			// Create tokens
 			const accessToken = await signAccessToken(
-				admin.id,
-				admin.name,
-				admin.email,
-				admin.role,
+				{
+					id: admin.id,
+					name: admin.name,
+					email: admin.email,
+					role: admin.role,
+					type: "admin",
+				},
+				ctx.jwtSecret,
 			);
+
 			const refreshToken = generateRefreshToken();
 
 			// persist session
@@ -30,7 +35,7 @@ export const authAdminRouter = createTRPCRouter({
 			// Set secure HTTP-only cookie
 			ctx.resHeaders.append(
 				"set-cookie",
-				serialize("access_token", accessToken, {
+				serialize("admin_access_token", accessToken, {
 					httpOnly: true,
 					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
@@ -41,7 +46,7 @@ export const authAdminRouter = createTRPCRouter({
 
 			ctx.resHeaders.append(
 				"set-cookie",
-				serialize("refresh_token", refreshToken, {
+				serialize("admin_refresh_token", refreshToken, {
 					httpOnly: true,
 					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
@@ -60,7 +65,7 @@ export const authAdminRouter = createTRPCRouter({
 	logout: publicProcedure.mutation(async ({ ctx }) => {
 		ctx.resHeaders.append(
 			"set-cookie",
-			serialize("access_token", "", {
+			serialize("admin_access_token", "", {
 				httpOnly: true,
 				expires: new Date(0),
 				path: "/",
@@ -69,7 +74,7 @@ export const authAdminRouter = createTRPCRouter({
 
 		ctx.resHeaders.append(
 			"set-cookie",
-			serialize("refresh_token", "", {
+			serialize("admin_refresh_token", "", {
 				httpOnly: true,
 				expires: new Date(0),
 				path: "/",

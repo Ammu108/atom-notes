@@ -1,7 +1,7 @@
-import { fileURLToPath } from "node:url";
 import path from "node:path";
-import dotenv from "dotenv";
+import { fileURLToPath } from "node:url";
 import { createEnv } from "@t3-oss/env-nextjs";
+import dotenv from "dotenv";
 import { z } from "zod";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -14,7 +14,7 @@ export const env = createEnv({
 	 */
 	server: {
 		DATABASE_URL: z.string().url(),
-		JWT_SECRET: z.string().min(4),
+		USER_JWT_SECRET: z.string().min(4),
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
@@ -36,7 +36,7 @@ export const env = createEnv({
 	runtimeEnv: {
 		DATABASE_URL: process.env.DATABASE_URL,
 		NODE_ENV: process.env.NODE_ENV,
-		JWT_SECRET: process.env.JWT_SECRET,
+		USER_JWT_SECRET: process.env.USER_JWT_SECRET,
 		// NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 	},
 	/**

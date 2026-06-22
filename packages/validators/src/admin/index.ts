@@ -40,9 +40,9 @@ export const notesFormSchema = z.object({
 
 export type NotesFormValues = z.infer<typeof notesFormSchema>;
 
-export const loginSchema = z.object({
+export const adminLoginSchema = z.object({
 	email: emailSchema,
 	password: passwordSchema,
 });
 
-export type LoginSchema = z.infer<typeof loginSchema>;
+export type AdminLoginSchema = z.infer<typeof adminLoginSchema>;

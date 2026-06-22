@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@repo/ui";
-import { type LoginSchema, loginSchema } from "@repo/validators";
+import { type AdminLoginSchema, adminLoginSchema } from "@repo/validators";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -41,15 +41,15 @@ export function LoginForm({
 		},
 	});
 
-	const form = useForm<LoginSchema>({
-		resolver: zodResolver(loginSchema),
+	const form = useForm<AdminLoginSchema>({
+		resolver: zodResolver(adminLoginSchema),
 		defaultValues: {
 			email: "",
 			password: "",
 		},
 	});
 
-	const onSubmit = (values: LoginSchema) => {
+	const onSubmit = (values: AdminLoginSchema) => {
 		login.mutate(values);
 	};
 

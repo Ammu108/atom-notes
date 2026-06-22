@@ -30,6 +30,7 @@ export const createTRPCContext = async (opts: {
 	headers: Headers;
 	resHeaders: Headers;
 	jwtSecret: string;
+	app: "admin" | "web";
 }) => {
 	const cookieHeader = opts.headers.get("cookie");
 
@@ -52,9 +53,14 @@ export const createTRPCContext = async (opts: {
 			);
 		}
 
-		if (cookies.access_token) {
+		const token =
+			opts.app === "admin"
+				? cookies.admin_access_token
+				: cookies.user_access_token;
+
+		if (token) {
 			try {
-				user = await verifyAccessToken(cookies.access_token);
+				user = await verifyAccessToken(token, opts.jwtSecret);
 
 				if (process.env.NODE_ENV === "development") {
 					console.log("[auth][context] token verified for user");

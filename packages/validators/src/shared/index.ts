@@ -23,3 +23,16 @@ export const roleSchema = z.enum(["admin", "user"], {
 	required_error: "Role is required",
 });
 export type RoleSchema = z.infer<typeof roleSchema>;
+
+export const subjectSchema = z
+	.string({ required_error: "Subject is required" })
+	.min(5, { message: "Subject must be at least 5 characters long" })
+	.max(100, { message: "Subject cannot exceed 100 characters" });
+
+export type SubjectSchema = z.infer<typeof subjectSchema>;
+
+export const messageSchema = z
+	.string({ required_error: "Message is required" })
+	.min(10, { message: "Message must be at least 10 characters long" })
+	.max(1000, { message: "Message cannot exceed 1000 characters" });
+export type MessageSchema = z.infer<typeof messageSchema>;

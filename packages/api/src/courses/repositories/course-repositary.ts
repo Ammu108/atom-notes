@@ -78,13 +78,10 @@ export const courseRepository = {
 				// =============================================
 
 				for (const subjectData of semesterData.subjects) {
-					const normalizedSubjectName = normalizeString(subjectData.name);
-
 					const [createdSubject] = await tx
 						.insert(subjects)
 						.values({
-							name: normalizedSubjectName,
-
+							name: subjectData.name,
 							semesterId: createdSemester.id,
 						})
 						.returning({
@@ -101,12 +98,10 @@ export const courseRepository = {
 					// =========================================
 
 					for (const unitData of subjectData.units) {
-						const normalizedUnitName = normalizeString(unitData.name);
-
 						const [createdUnit] = await tx
 							.insert(chapters)
 							.values({
-								name: normalizedUnitName,
+								name: unitData.name,
 
 								subjectId: createdSubject.id,
 							})

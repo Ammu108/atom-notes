@@ -3,6 +3,7 @@
 import {
 	CameraIcon,
 	CircleHelpIcon,
+	ContactRound,
 	FileTextIcon,
 	LayoutDashboardIcon,
 	LibraryBig,
@@ -48,6 +49,11 @@ const data = {
 			title: "All Notes",
 			url: "/notes",
 			icon: <NotebookPen />,
+		},
+		{
+			title: "Contacts",
+			url: "/contacts",
+			icon: <ContactRound />,
 		},
 	],
 	navClouds: [

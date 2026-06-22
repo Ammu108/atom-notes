@@ -8,8 +8,8 @@ import { TooltipProvider } from "~/components/ui/tooltip";
 import { TRPCReactProvider } from "~/trpc/react";
 
 export const metadata: Metadata = {
-	title: "Atom Hospital - Admin Dashboard",
-	description: "Admin dashboard for Atom Hospital",
+	title: "Atom Notes - Admin Dashboard",
+	description: "Admin dashboard for Atom Notes",
 	icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 

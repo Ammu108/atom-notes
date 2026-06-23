@@ -1,6 +1,10 @@
 import { normalizeString } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, publicProcedure } from "../../trpc";
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from "../../trpc";
 import { courseRepository } from "../repositories/course-repositary";
 import { coursesService } from "../services/courses-service";
 import {
@@ -34,7 +38,7 @@ export const courseRouter = createTRPCRouter({
 			return course;
 		}),
 
-	getAllCourses: publicProcedure.query(async ({ ctx }) => {
+	getAllCourses: protectedProcedure.query(async ({ ctx }) => {
 		if (!ctx.user || ctx.user.role !== "admin") {
 			throw new TRPCError({
 				code: "FORBIDDEN",
@@ -45,7 +49,7 @@ export const courseRouter = createTRPCRouter({
 		return await courseRepository.getAllCourses(ctx.db);
 	}),
 
-	getCourseById: publicProcedure
+	getCourseById: protectedProcedure
 		.input(getCourseByIdSchema)
 		.query(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "admin") {
@@ -67,7 +71,7 @@ export const courseRouter = createTRPCRouter({
 			return course;
 		}),
 
-	getSemestersByCourseId: publicProcedure
+	getSemestersByCourseId: protectedProcedure
 		.input(getSemestersByCourseIdSchema)
 		.query(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "admin") {
@@ -92,7 +96,7 @@ export const courseRouter = createTRPCRouter({
 			return semesters;
 		}),
 
-	getSubjectsBySemesterId: publicProcedure
+	getSubjectsBySemesterId: protectedProcedure
 		.input(getSubjectsBySemesterIdSchema)
 		.query(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "admin") {
@@ -117,7 +121,7 @@ export const courseRouter = createTRPCRouter({
 			return subjects;
 		}),
 
-	getUnitsBySubjectId: publicProcedure
+	getUnitsBySubjectId: protectedProcedure
 		.input(getUnitsBySubjectIdSchema)
 		.query(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "admin") {
@@ -142,7 +146,7 @@ export const courseRouter = createTRPCRouter({
 			return subjects;
 		}),
 
-	updateCourse: publicProcedure
+	updateCourse: protectedProcedure
 		.input(updateCourseSchema)
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "admin") {
@@ -177,7 +181,7 @@ export const courseRouter = createTRPCRouter({
 			});
 		}),
 
-	deleteCourse: publicProcedure
+	deleteCourse: protectedProcedure
 		.input(getCourseByIdSchema)
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "admin") {

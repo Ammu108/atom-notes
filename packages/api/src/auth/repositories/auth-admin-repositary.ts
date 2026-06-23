@@ -17,6 +17,30 @@ export const authAdminRepository = {
 		});
 	},
 
+	async findSessionByRefreshToken(db: DB, hashedToken: string) {
+		const result = await db
+			.select()
+			.from(sessions)
+			.where(eq(sessions.refreshToken, hashedToken))
+			.limit(1);
+
+		return result[0];
+	},
+
+	async deleteSessionByRefreshToken(db: DB, hashedToken: string) {
+		await db.delete(sessions).where(eq(sessions.refreshToken, hashedToken));
+	},
+
+	async findUserById(db: DB, userId: string) {
+		const result = await db
+			.select()
+			.from(users)
+			.where(eq(users.id, userId))
+			.limit(1);
+
+		return result[0];
+	},
+
 	async findByEmail(db: DB, email: string) {
 		const result = await db
 			.select()

@@ -1,18 +1,23 @@
 import { TRPCError } from "@trpc/server";
-import { serialize } from "cookie";
+import { parse, serialize } from "cookie";
 import z from "zod";
-import { createTRPCRouter, publicProcedure } from "../../trpc";
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from "../../trpc";
 import {
 	authRepository,
 	SESSION_CONFIG,
 } from "../repositories/auth-repositary";
 import { authService } from "../services/auth-service";
-import { generateRefreshToken, signAccessToken } from "../utils/token";
+import {
+	generateRefreshToken,
+	hashRefreshToken,
+	signAccessToken,
+} from "../utils/token";
 import { deleteUserSchema, signupSchema } from "../validators/auth-validator";
 
-// async function createSession(userId: string, refreshToken: string) {
-// 	await authService.createSession(ctx.db, userId, refreshToken);
-// }
 /**
  * Auth Router
  * API endpoints only - uses service for business logic
@@ -60,7 +65,7 @@ export const authRouter = createTRPCRouter({
 					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
-					maxAge: SESSION_CONFIG.ACCESS_TOKEN_MINUTES * 60,
+					maxAge: 15 * 60, // 15 minutes
 				}),
 			);
 
@@ -113,7 +118,7 @@ export const authRouter = createTRPCRouter({
 					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
-					maxAge: SESSION_CONFIG.ACCESS_TOKEN_MINUTES * 60, // 15 minutes
+					maxAge: 15 * 60, // 15 minutes
 				}),
 			);
 
@@ -135,7 +140,21 @@ export const authRouter = createTRPCRouter({
 			return { message: "Login successful", user };
 		}),
 
-	logout: publicProcedure.mutation(async ({ ctx }) => {
+	logout: protectedProcedure.mutation(async ({ ctx }) => {
+		const cookieHeader = ctx.headers.get("cookie");
+
+		if (cookieHeader) {
+			const cookies = parse(cookieHeader);
+
+			const refreshToken = cookies.user_refresh_token;
+
+			if (refreshToken) {
+				const hashedToken = hashRefreshToken(refreshToken);
+
+				await authRepository.deleteSessionByRefreshToken(ctx.db, hashedToken);
+			}
+		}
+
 		ctx.resHeaders.append(
 			"set-cookie",
 			serialize("user_access_token", "", {
@@ -154,15 +173,10 @@ export const authRouter = createTRPCRouter({
 			}),
 		);
 
-		if (process.env.NODE_ENV === "development") {
-			console.log("[auth][logout] appended Set-Cookie header");
-		}
-
 		return { message: "Logout successful" };
 	}),
 
-	getAllUsers: publicProcedure.query(async ({ ctx }) => {
-		console.log("ADMIN ROUTE CTX USER IS :", ctx.user);
+	getAllUsers: protectedProcedure.query(async ({ ctx }) => {
 		if (!ctx.user || ctx.user.role !== "admin") {
 			throw new TRPCError({
 				code: "FORBIDDEN",
@@ -174,7 +188,7 @@ export const authRouter = createTRPCRouter({
 		return users;
 	}),
 
-	deleteUser: publicProcedure
+	deleteUser: protectedProcedure
 		.input(deleteUserSchema)
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "admin") {
@@ -197,4 +211,8 @@ export const authRouter = createTRPCRouter({
 			// Delete user using repository
 			return await authRepository.deleteById(ctx.db, input.id);
 		}),
+
+	me: publicProcedure.query(async ({ ctx }) => {
+		return ctx.user ?? null;
+	}),
 });

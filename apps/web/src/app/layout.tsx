@@ -4,9 +4,8 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { AppShell } from "~/components/app-shell";
 import { Toaster } from "~/components/ui/sonner";
-import { getCurrentUser } from "~/lib/get-current-user";
 import { TRPCReactProvider } from "~/trpc/react";
-import { HydrateClient } from "~/trpc/server";
+import { api, HydrateClient } from "~/trpc/server";
 
 export const metadata: Metadata = {
 	title: "Atom - Hospital Booking System",
@@ -22,17 +21,15 @@ const geist = Geist({
 export default async function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
-	const user = await getCurrentUser();
+	await api.auth.me.prefetch();
 
 	return (
 		<html className={`${geist.variable}`} lang="en">
 			<body className="bg-background">
 				<TRPCReactProvider>
 					<HydrateClient>
-						<AppShell user={user}>
-							{children}
-							<Toaster position="top-center" />
-						</AppShell>
+						<AppShell>{children}</AppShell>
+						<Toaster position="top-center" />
 					</HydrateClient>
 				</TRPCReactProvider>
 			</body>

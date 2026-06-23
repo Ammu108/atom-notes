@@ -17,6 +17,30 @@ export const authService = {
 		await authRepository.createSession(db, userId, hashedToken);
 	},
 
+	async refreshSession(db: DB, refreshToken: string) {
+		const hashedToken = hashRefreshToken(refreshToken);
+		const session = await authRepository.findSessionByRefreshToken(
+			db,
+			hashedToken,
+		);
+
+		if (!session) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+			});
+		}
+
+		if (session.expiresAt.getTime() < Date.now()) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+			});
+		}
+
+		const user = await authRepository.findUserById(db, session.userId);
+
+		return user;
+	},
+
 	/**
 	 * Sign up a new user
 	 */

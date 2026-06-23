@@ -12,6 +12,8 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import { parse } from "cookie";
 import superjson from "superjson";
 import { ZodError } from "zod";
+import { refreshAdminToken } from "./auth/utils/refresh-admin-access-token";
+import { refreshUserToken } from "./auth/utils/refresh-user-access-token";
 import { verifyAccessToken } from "./auth/utils/token";
 
 /**
@@ -34,43 +36,81 @@ export const createTRPCContext = async (opts: {
 }) => {
 	const cookieHeader = opts.headers.get("cookie");
 
-	if (process.env.NODE_ENV === "development") {
-		console.log(
-			"[auth][context] incoming cookie header:",
-			cookieHeader ? "present" : "missing",
-		);
-	}
-
 	let user = null;
 
 	if (cookieHeader) {
 		const cookies = parse(cookieHeader);
 
-		if (process.env.NODE_ENV === "development") {
-			console.log(
-				"[auth][context] token cookie:",
-				cookies.token ? "present" : "missing",
-			);
-		}
-
-		const token =
+		const accessToken =
 			opts.app === "admin"
 				? cookies.admin_access_token
 				: cookies.user_access_token;
 
-		if (token) {
+		const refreshToken =
+			opts.app === "admin"
+				? cookies.admin_refresh_token
+				: cookies.user_refresh_token;
+
+		if (process.env.NODE_ENV === "development") {
+			console.log(
+				`[auth][${opts.app}] access token:`,
+				accessToken ? "present" : "missing",
+			);
+
+			console.log(
+				`[auth][${opts.app}] refresh token:`,
+				refreshToken ? "present" : "missing",
+			);
+		}
+
+		// 1. Try access token first
+		if (accessToken) {
 			try {
-				user = await verifyAccessToken(token, opts.jwtSecret);
+				user = await verifyAccessToken(accessToken, opts.jwtSecret);
 
 				if (process.env.NODE_ENV === "development") {
-					console.log("[auth][context] token verified for user");
+					console.log(`[auth][${opts.app}] access token verified successfully`);
 				}
 			} catch {
+				if (process.env.NODE_ENV === "development") {
+					console.log(
+						`[auth][${opts.app}] access token expired/invalid, attempting refresh`,
+					);
+				}
+
 				user = null;
+			}
+		}
+
+		// 2. If access token missing OR invalid, use refresh token
+		if (!user && refreshToken) {
+			try {
+				user =
+					opts.app === "admin"
+						? await refreshAdminToken(
+								refreshToken,
+								db,
+								opts.jwtSecret,
+								opts.resHeaders,
+							)
+						: await refreshUserToken(
+								refreshToken,
+								db,
+								opts.jwtSecret,
+								opts.resHeaders,
+							);
 
 				if (process.env.NODE_ENV === "development") {
-					console.log("[auth][context] token verification failed");
+					console.log(
+						`[auth][${opts.app}] refreshed access token successfully`,
+					);
 				}
+			} catch {
+				if (process.env.NODE_ENV === "development") {
+					console.log(`[auth][${opts.app}] refresh token invalid/expired`);
+				}
+
+				user = null;
 			}
 		}
 	}
@@ -172,3 +212,5 @@ export const protectedProcedure = t.procedure
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+// eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImJiZGM1NmRkLWQ2NzUtNDFiOC1iMGZhLTQ2MmI1ZWQ3ZWVmZSIsIm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiYWRtaW4iLCJ0eXBlIjoiYWRtaW4iLCJpYXQiOjE3ODIxNTA5NDgsImV4cCI6MTc4MjE1MTI0OH0.FlT2MEf73Zi0LFx3TBZGghFT6gO1GAlxv-7DFVu1vQI

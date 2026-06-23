@@ -1,7 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { serialize } from "cookie";
 import z from "zod";
-import { createTRPCRouter, publicProcedure } from "../../trpc";
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from "../../trpc";
 import {
 	authRepository,
 	SESSION_CONFIG,
@@ -113,7 +117,8 @@ export const authRouter = createTRPCRouter({
 					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
-					maxAge: SESSION_CONFIG.ACCESS_TOKEN_MINUTES * 60, // 15 minutes
+					// maxAge: SESSION_CONFIG.ACCESS_TOKEN_MINUTES * 60, // 15 minutes
+					maxAge: 5 * 60, // 15 minutes --- TEMPORARY FOR TESTING ---
 				}),
 			);
 
@@ -161,8 +166,7 @@ export const authRouter = createTRPCRouter({
 		return { message: "Logout successful" };
 	}),
 
-	getAllUsers: publicProcedure.query(async ({ ctx }) => {
-		console.log("ADMIN ROUTE CTX USER IS :", ctx.user);
+	getAllUsers: protectedProcedure.query(async ({ ctx }) => {
 		if (!ctx.user || ctx.user.role !== "admin") {
 			throw new TRPCError({
 				code: "FORBIDDEN",
@@ -174,7 +178,7 @@ export const authRouter = createTRPCRouter({
 		return users;
 	}),
 
-	deleteUser: publicProcedure
+	deleteUser: protectedProcedure
 		.input(deleteUserSchema)
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "admin") {

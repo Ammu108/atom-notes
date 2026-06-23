@@ -1,6 +1,10 @@
 import { serialize } from "cookie";
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../../trpc";
+import {
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from "../../trpc";
 import { SESSION_CONFIG } from "../repositories/auth-admin-repositary";
 import { authAdminService } from "../services/auth-admin-service";
 import { generateRefreshToken, signAccessToken } from "../utils/token";
@@ -40,7 +44,7 @@ export const authAdminRouter = createTRPCRouter({
 					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
-					maxAge: SESSION_CONFIG.ACCESS_TOKEN_MINUTES * 60, // 15 minutes
+					maxAge: 5 * 60, // 15 minutes
 				}),
 			);
 
@@ -88,15 +92,11 @@ export const authAdminRouter = createTRPCRouter({
 		return { message: "Logout successful" };
 	}),
 
-	me: publicProcedure.query(async ({ ctx }) => {
+	me: protectedProcedure.query(async ({ ctx }) => {
 		if (!ctx.user) {
 			return null;
 		}
 
-		return {
-			name: ctx.user.name,
-			email: ctx.user.email,
-			role: ctx.user.role,
-		};
+		return ctx.user;
 	}),
 });

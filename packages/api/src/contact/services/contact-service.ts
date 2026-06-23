@@ -7,4 +7,8 @@ export const contactService = {
 		const result = await contactRepository.create(db, input);
 		return result;
 	},
+	async deleteById(id: string, db: DB) {
+		const result = await contactRepository.deleteById(db, id);
+		return result;
+	},
 };

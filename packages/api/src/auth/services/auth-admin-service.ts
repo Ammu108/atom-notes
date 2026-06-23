@@ -10,6 +10,30 @@ export const authAdminService = {
 		await authAdminRepository.createSession(db, userId, hashedToken);
 	},
 
+	async refreshSession(db: DB, refreshToken: string) {
+		const hashedToken = hashRefreshToken(refreshToken);
+		const session = await authAdminRepository.findSessionByRefreshToken(
+			db,
+			hashedToken,
+		);
+
+		if (!session) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+			});
+		}
+
+		if (session.expiresAt.getTime() < Date.now()) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+			});
+		}
+
+		const admin = await authAdminRepository.findUserById(db, session.userId);
+
+		return admin;
+	},
+
 	async login(email: string, password: string, db: DB) {
 		const admin = await authAdminRepository.findByEmail(db, email);
 

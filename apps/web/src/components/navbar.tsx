@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useSession } from "~/context/session-context";
 import { api } from "~/trpc/react";
 import ProfileDropdown from "./kokonutui/profile-dropdown";
 
@@ -17,25 +18,18 @@ const NAV_LINKS = [
 	{ label: "Contact", href: "/contact" },
 ];
 
-interface UserInfo {
-	name: string;
-	email: string;
-}
-
-interface NavbarProps {
-	user: UserInfo | null;
-}
-
-export default function Navbar({ user }: NavbarProps) {
+export default function Navbar() {
+	const { user } = useSession();
 	const [menuOpen, setMenuOpen] = useState(false);
 	const pathname = usePathname();
 	const router = useRouter();
 
+	const utils = api.useUtils();
+
 	const logout = api.auth.logout.useMutation({
 		onSuccess: async (opts) => {
 			toast.success(opts.message);
-			router.refresh();
-			router.refresh();
+			utils.auth.me.setData(undefined, null); // ✅ replace router.refresh() with this
 			setMenuOpen(false);
 		},
 		onError: (error) => {
@@ -52,7 +46,7 @@ export default function Navbar({ user }: NavbarProps) {
 		logout.mutate();
 	};
 
-	const profileData = user
+	const profileData = user // ✅ user comes from useSession now
 		? {
 				name: user.name,
 				email: user.email,
@@ -106,7 +100,6 @@ export default function Navbar({ user }: NavbarProps) {
 						className="inline-flex cursor-pointer items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent/80 hover:text-muted-foreground/80"
 						type="button"
 					></button>
-
 					{profileData ? (
 						<ProfileDropdown
 							className="hidden md:block"
@@ -120,9 +113,7 @@ export default function Navbar({ user }: NavbarProps) {
 							</Button>
 						</div>
 					)}
-
 					{/* Hamburger — mobile */}
-
 					<div className="flex items-center">
 						{profileData ? (
 							<ProfileDropdown
@@ -132,12 +123,7 @@ export default function Navbar({ user }: NavbarProps) {
 							/>
 						) : (
 							<div className="md:hidden">
-								<Button
-									className="w-full"
-									onClick={handleSignUp}
-									size="xs"
-									variant="primary"
-								>
+								<Button onClick={handleSignUp} size="xs" variant="primary">
 									Sign Up / Login
 								</Button>
 							</div>

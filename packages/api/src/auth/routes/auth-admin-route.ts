@@ -1,13 +1,20 @@
-import { serialize } from "cookie";
+import { parse, serialize } from "cookie";
 import { z } from "zod";
 import {
 	createTRPCRouter,
 	protectedProcedure,
 	publicProcedure,
 } from "../../trpc";
-import { SESSION_CONFIG } from "../repositories/auth-admin-repositary";
+import {
+	authAdminRepository,
+	SESSION_CONFIG,
+} from "../repositories/auth-admin-repositary";
 import { authAdminService } from "../services/auth-admin-service";
-import { generateRefreshToken, signAccessToken } from "../utils/token";
+import {
+	generateRefreshToken,
+	hashRefreshToken,
+	signAccessToken,
+} from "../utils/token";
 
 export const authAdminRouter = createTRPCRouter({
 	login: publicProcedure
@@ -44,7 +51,7 @@ export const authAdminRouter = createTRPCRouter({
 					secure: process.env.NODE_ENV === "production",
 					sameSite: "lax",
 					path: "/",
-					maxAge: 5 * 60, // 15 minutes
+					maxAge: 15 * 60, // 15 minutes
 				}),
 			);
 
@@ -67,6 +74,23 @@ export const authAdminRouter = createTRPCRouter({
 		}),
 
 	logout: publicProcedure.mutation(async ({ ctx }) => {
+		const cookieHeader = ctx.headers.get("cookie");
+
+		if (cookieHeader) {
+			const cookies = parse(cookieHeader);
+
+			const refreshToken = cookies.admin_refresh_token;
+
+			if (refreshToken) {
+				const hashedToken = hashRefreshToken(refreshToken);
+
+				await authAdminRepository.deleteSessionByRefreshToken(
+					ctx.db,
+					hashedToken,
+				);
+			}
+		}
+
 		ctx.resHeaders.append(
 			"set-cookie",
 			serialize("admin_access_token", "", {
@@ -84,10 +108,6 @@ export const authAdminRouter = createTRPCRouter({
 				path: "/",
 			}),
 		);
-
-		if (process.env.NODE_ENV === "development") {
-			console.log("[auth][logout] appended Set-Cookie header");
-		}
 
 		return { message: "Logout successful" };
 	}),

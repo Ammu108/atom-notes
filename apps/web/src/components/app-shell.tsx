@@ -6,19 +6,15 @@ import Navbar from "~/components/navbar";
 
 type AppShellProps = Readonly<{
 	children: React.ReactNode;
-	user: {
-		name: string;
-		email: string;
-	} | null;
 }>;
 
-export function AppShell({ children, user }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
 	const pathname = usePathname();
 	const hideChrome = pathname.startsWith("/auth");
 
 	return (
 		<>
-			{!hideChrome ? <Navbar user={user} /> : null}
+			{!hideChrome ? <Navbar /> : null}
 			{children}
 			{!hideChrome ? <Footer /> : null}
 		</>

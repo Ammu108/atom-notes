@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import type z from "zod";
 import { authRepository } from "../repositories/auth-repositary";
 import { hashPassword, verifyPassword } from "../utils/password";
-import { hashRefreshToken } from "../utils/token";
+import { generateRefreshToken, hashRefreshToken } from "../utils/token";
 import type { signupSchema } from "../validators/auth-validator";
 
 /**
@@ -17,7 +17,7 @@ export const authService = {
 		await authRepository.createSession(db, userId, hashedToken);
 	},
 
-	async refreshSession(db: DB, refreshToken: string) {
+	async rotateSession(db: DB, refreshToken: string) {
 		const hashedToken = hashRefreshToken(refreshToken);
 		const session = await authRepository.findSessionByRefreshToken(
 			db,
@@ -31,6 +31,8 @@ export const authService = {
 		}
 
 		if (session.expiresAt.getTime() < Date.now()) {
+			await authRepository.deleteSessionByRefreshToken(db, hashedToken);
+
 			throw new TRPCError({
 				code: "UNAUTHORIZED",
 			});
@@ -38,7 +40,26 @@ export const authService = {
 
 		const user = await authRepository.findUserById(db, session.userId);
 
-		return user;
+		// Add a check to ensure the user actually exists
+		if (!user) {
+			throw new TRPCError({
+				code: "UNAUTHORIZED",
+				message: "User associated with this session no longer exists.",
+			});
+		}
+
+		// DELETE OLD SESSION
+		await authRepository.deleteSessionByRefreshToken(db, hashedToken);
+
+		// CREATE NEW REFRESH TOKEN
+		const newRefreshToken = generateRefreshToken();
+
+		await this.createSession(db, user.id, newRefreshToken);
+
+		return {
+			user,
+			refreshToken: newRefreshToken,
+		};
 	},
 
 	/**

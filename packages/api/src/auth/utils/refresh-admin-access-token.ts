@@ -9,11 +9,13 @@ export async function refreshAdminToken(
 	jwtSecret: string,
 	resHeaders: Headers,
 ) {
-	const admin = await authAdminService.refreshSession(db, refreshToken);
+	const result = await authAdminService.rotateSession(db, refreshToken);
 
-	if (!admin) {
+	if (!result) {
 		return null;
 	}
+
+	const { admin, refreshToken: newRefreshToken } = result;
 
 	const accessToken = await signAccessToken(
 		{
@@ -33,7 +35,18 @@ export async function refreshAdminToken(
 			secure: process.env.NODE_ENV === "production",
 			sameSite: "lax",
 			path: "/",
-			maxAge: 5 * 60,
+			maxAge: 15 * 60, // 15 min
+		}),
+	);
+
+	resHeaders.append(
+		"set-cookie",
+		serialize("admin_refresh_token", newRefreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+			path: "/",
+			maxAge: 30 * 24 * 60 * 60, // 30 days
 		}),
 	);
 

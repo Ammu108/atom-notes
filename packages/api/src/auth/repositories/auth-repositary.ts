@@ -32,6 +32,10 @@ export const authRepository = {
 		return result[0];
 	},
 
+	async deleteSessionByRefreshToken(db: DB, hashedToken: string) {
+		await db.delete(sessions).where(eq(sessions.refreshToken, hashedToken));
+	},
+
 	async findUserById(db: DB, userId: string) {
 		const result = await db
 			.select()

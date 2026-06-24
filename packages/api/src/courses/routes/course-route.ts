@@ -39,12 +39,12 @@ export const courseRouter = createTRPCRouter({
 		}),
 
 	getAllCourses: protectedProcedure.query(async ({ ctx }) => {
-		if (!ctx.user || ctx.user.role !== "admin") {
-			throw new TRPCError({
-				code: "FORBIDDEN",
-				message: "Only admins can view courses",
-			});
-		}
+		// if (!ctx.user || ctx.user.role !== "admin") {
+		// 	throw new TRPCError({
+		// 		code: "FORBIDDEN",
+		// 		message: "Only admins can view courses",
+		// 	});
+		// }
 
 		return await courseRepository.getAllCourses(ctx.db);
 	}),
@@ -52,12 +52,12 @@ export const courseRouter = createTRPCRouter({
 	getCourseById: protectedProcedure
 		.input(getCourseByIdSchema)
 		.query(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
-				throw new TRPCError({
-					code: "FORBIDDEN",
-					message: "Only admins can view course details",
-				});
-			}
+			// if (!ctx.user || ctx.user.role !== "admin") {
+			// 	throw new TRPCError({
+			// 		code: "FORBIDDEN",
+			// 		message: "Only admins can view course details",
+			// 	});
+			// }
 
 			const course = await courseRepository.findCourseById(ctx.db, input.id);
 
@@ -74,12 +74,12 @@ export const courseRouter = createTRPCRouter({
 	getSemestersByCourseId: protectedProcedure
 		.input(getSemestersByCourseIdSchema)
 		.query(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
-				throw new TRPCError({
-					code: "FORBIDDEN",
-					message: "Only admins can view semester details",
-				});
-			}
+			// if (!ctx.user || ctx.user.role !== "admin") {
+			// 	throw new TRPCError({
+			// 		code: "FORBIDDEN",
+			// 		message: "Only admins can view semester details",
+			// 	});
+			// }
 
 			const semesters = await courseRepository.findSemesterByCourseId(
 				ctx.db,
@@ -99,12 +99,12 @@ export const courseRouter = createTRPCRouter({
 	getSubjectsBySemesterId: protectedProcedure
 		.input(getSubjectsBySemesterIdSchema)
 		.query(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
-				throw new TRPCError({
-					code: "FORBIDDEN",
-					message: "Only admins can view subject details",
-				});
-			}
+			// if (!ctx.user || ctx.user.role !== "admin") {
+			// 	throw new TRPCError({
+			// 		code: "FORBIDDEN",
+			// 		message: "Only admins can view subject details",
+			// 	});
+			// }
 
 			const subjects = await courseRepository.findSubjectBySemesterId(
 				ctx.db,
@@ -124,12 +124,12 @@ export const courseRouter = createTRPCRouter({
 	getUnitsBySubjectId: protectedProcedure
 		.input(getUnitsBySubjectIdSchema)
 		.query(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
-				throw new TRPCError({
-					code: "FORBIDDEN",
-					message: "Only admins can view units details",
-				});
-			}
+			// if (!ctx.user || ctx.user.role !== "admin") {
+			// 	throw new TRPCError({
+			// 		code: "FORBIDDEN",
+			// 		message: "Only admins can view units details",
+			// 	});
+			// }
 
 			const subjects = await courseRepository.findUnitsBySubjectId(
 				ctx.db,

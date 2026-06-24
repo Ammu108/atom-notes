@@ -19,6 +19,7 @@ export const authService = {
 
 	async rotateSession(db: DB, refreshToken: string) {
 		const hashedToken = hashRefreshToken(refreshToken);
+
 		const session = await authRepository.findSessionByRefreshToken(
 			db,
 			hashedToken,

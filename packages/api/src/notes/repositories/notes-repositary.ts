@@ -1,4 +1,4 @@
-import { chapters, type DB, notes, subjects } from "@repo/db";
+import { chapters, type DB, notes, semesters, subjects } from "@repo/db";
 import { and, desc, eq } from "drizzle-orm";
 import type { NoteType } from "../types";
 
@@ -64,18 +64,49 @@ export const notesRepository = {
 		return note;
 	},
 
+	async getNotesBySlug(db: DB, slug: string) {
+		const [note] = await db
+			.select({
+				id: notes.id,
+				semester: semesters.number,
+				subject: subjects.name,
+				title: notes.title,
+				metaTitle: notes.metaTitle,
+				metaDescription: notes.metaDescription,
+				chapterId: notes.chapterId,
+				unitName: chapters.name,
+				content: notes.content,
+				pdfUrl: notes.pdfUrl,
+				pdfKey: notes.pdfKey,
+				pdfPrice: notes.price,
+				isPaid: notes.isPaid,
+			})
+			.from(notes)
+			.where(eq(notes.slug, slug))
+			.innerJoin(chapters, eq(notes.chapterId, chapters.id))
+			.innerJoin(subjects, eq(chapters.subjectId, subjects.id))
+			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
+			.limit(1);
+
+		return note;
+	},
+
 	async getAllNotes(db: DB) {
 		return await db
 			.select({
 				id: notes.id,
+				slug: notes.slug,
 				title: notes.title,
+				description: notes.metaDescription,
 				chapter: chapters.name,
 				subject: subjects.name,
+				semester: semesters.number,
 				UpdatedAt: notes.updatedAt,
 			})
 			.from(notes)
 			.innerJoin(chapters, eq(notes.chapterId, chapters.id))
 			.innerJoin(subjects, eq(chapters.subjectId, subjects.id))
+			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
 			.orderBy(desc(notes.updatedAt));
 	},
 

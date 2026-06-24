@@ -220,6 +220,30 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.96.2
         version: 5.96.2(react@19.2.4)
+      '@tiptap/extension-highlight':
+        specifier: ^3.23.2
+        version: 3.23.2(@tiptap/core@3.23.2(@tiptap/pm@3.23.2))
+      '@tiptap/extension-image':
+        specifier: ^3.23.4
+        version: 3.23.4(@tiptap/core@3.23.2(@tiptap/pm@3.23.2))
+      '@tiptap/extension-table':
+        specifier: ^3.23.4
+        version: 3.23.4(@tiptap/core@3.23.2(@tiptap/pm@3.23.2))(@tiptap/pm@3.23.2)
+      '@tiptap/extension-table-cell':
+        specifier: ^3.23.4
+        version: 3.23.4(@tiptap/extension-table@3.23.4(@tiptap/core@3.23.2(@tiptap/pm@3.23.2))(@tiptap/pm@3.23.2))
+      '@tiptap/extension-table-header':
+        specifier: ^3.23.4
+        version: 3.23.4(@tiptap/extension-table@3.23.4(@tiptap/core@3.23.2(@tiptap/pm@3.23.2))(@tiptap/pm@3.23.2))
+      '@tiptap/extension-table-row':
+        specifier: ^3.23.4
+        version: 3.23.4(@tiptap/extension-table@3.23.4(@tiptap/core@3.23.2(@tiptap/pm@3.23.2))(@tiptap/pm@3.23.2))
+      '@tiptap/react':
+        specifier: ^3.23.2
+        version: 3.23.2(@floating-ui/dom@1.7.6)(@tiptap/core@3.23.2(@tiptap/pm@3.23.2))(@tiptap/pm@3.23.2)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@tiptap/starter-kit':
+        specifier: ^3.23.2
+        version: 3.23.2
       '@trpc/server':
         specifier: ^11.16.0
         version: 11.16.0(typescript@5.9.3)
@@ -268,6 +292,9 @@ importers:
       tailwind-merge:
         specifier: ^2.6.1
         version: 2.6.1
+      tiptap-extension-resize-image:
+        specifier: ^1.4.0
+        version: 1.4.0(@tiptap/core@3.23.2(@tiptap/pm@3.23.2))(@tiptap/extension-image@3.23.4(@tiptap/core@3.23.2(@tiptap/pm@3.23.2)))(@tiptap/pm@3.23.2)
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0

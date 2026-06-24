@@ -1,5 +1,6 @@
 import { generateSlug } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../../trpc";
 import { notesRepository } from "../repositories/notes-repositary";
 import { notesService } from "../services/notes-service";
@@ -118,6 +119,21 @@ export const notesRouter = createTRPCRouter({
 		.input(noteIdSchema)
 		.query(async ({ input, ctx }) => {
 			const notes = await notesRepository.getNotesById(ctx.db, input.id);
+
+			if (!notes) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Note not found!",
+				});
+			}
+
+			return notes;
+		}),
+
+	getNoteBySlug: publicProcedure
+		.input(z.object({ slug: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const notes = await notesRepository.getNotesBySlug(ctx.db, input.slug);
 
 			if (!notes) {
 				throw new TRPCError({

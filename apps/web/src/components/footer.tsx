@@ -1,4 +1,3 @@
-import { Button } from "@repo/ui";
 import Image from "next/image";
 import Link from "next/link";
 import { Container } from "./container";
@@ -68,11 +67,6 @@ export default function Footer() {
 							<p className="font-regular text-muted-foreground text-sm">
 								atomNotes@gmail.com
 							</p>
-							<div className="mt-1">
-								<Button size="sm" variant="outline">
-									Admin Panel
-								</Button>
-							</div>
 						</div>
 					</div>
 				</div>

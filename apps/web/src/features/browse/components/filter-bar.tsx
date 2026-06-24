@@ -1,8 +1,15 @@
 "use client";
 
-import { IconSearch } from "@tabler/icons-react";
-import { useState } from "react";
-import { Input } from "~/components/ui/input";
+import { IconXFilled } from "@tabler/icons-react";
+import { SearchIcon } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
+import {
+	InputGroup,
+	InputGroupAddon,
+	InputGroupInput,
+} from "~/components/ui/input-group";
 import {
 	Select,
 	SelectContent,
@@ -17,6 +24,11 @@ import {
 } from "../api";
 
 const FilterBar = () => {
+	const [search, setSearch] = useState("");
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+
 	const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 	const [selectedSemesterId, setSelectedSemesterId] = useState<string | null>(
 		null,
@@ -26,8 +38,6 @@ const FilterBar = () => {
 	);
 
 	const { data: courses, isPending, isError } = useGetAllCourses();
-
-	console.log("courses :", courses);
 
 	const selectedCourseName = courses?.find(
 		(course) => course.id === selectedCourseId,
@@ -51,14 +61,75 @@ const FilterBar = () => {
 		(sub) => sub.id === selectedSubjectId,
 	)?.name;
 
+	const [debouncedSearch] = useDebounce(search, 500);
+
+	useEffect(() => {
+		const params = new URLSearchParams(searchParams);
+
+		if (debouncedSearch.trim()) {
+			params.set("search", debouncedSearch);
+		} else {
+			params.delete("search");
+		}
+
+		if (selectedCourseName) {
+			params.set("course", selectedCourseName);
+		} else {
+			params.delete("course");
+		}
+
+		if (selectedSemesterName) {
+			params.set("sem", selectedSemesterName.toString());
+		} else {
+			params.delete("sem");
+		}
+
+		if (subjectsName) {
+			params.set("sub", subjectsName);
+		} else {
+			params.delete("sub");
+		}
+
+		router.replace(`${pathname}?${params.toString()}`);
+	}, [
+		debouncedSearch,
+		pathname,
+		router,
+		searchParams,
+		selectedCourseName,
+		selectedSemesterName,
+		subjectsName,
+	]);
+
+	const handleClearSearch = () => {
+		const params = new URLSearchParams(searchParams);
+		setSearch("");
+		params.delete("search");
+	};
+
 	return (
 		<div className="mb-6 flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:flex-row">
 			<div className="relative flex-1">
-				<IconSearch className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-				<Input
-					className="rounded-lg border-gray-200 bg-gray-50 pl-9 focus-visible:ring-1 focus-visible:ring-gray-300"
-					placeholder="Search notes..."
-				/>
+				<InputGroup>
+					<InputGroupAddon align="inline-start">
+						<SearchIcon className="text-muted-foreground" />
+					</InputGroupAddon>
+					<InputGroupInput
+						id="inline-start-input"
+						onChange={(e) => setSearch(e.target.value)}
+						placeholder="Search..."
+						value={search}
+					/>
+					{search && (
+						<InputGroupAddon
+							align="inline-end"
+							className="hover:cursor-pointer"
+							onClick={handleClearSearch}
+						>
+							<IconXFilled />
+						</InputGroupAddon>
+					)}
+				</InputGroup>
 			</div>
 
 			<Select
@@ -124,7 +195,7 @@ const FilterBar = () => {
 				value={selectedSubjectId}
 			>
 				<SelectTrigger className="w-full rounded-lg border-gray-200 bg-white sm:max-w-54">
-					<SelectValue>{() => subjectsName ?? "Select a subject"}</SelectValue>
+					<SelectValue>{() => subjectsName ?? "Subject"}</SelectValue>
 				</SelectTrigger>
 				<SelectContent>
 					{isSubjectsPending ? (

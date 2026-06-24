@@ -140,7 +140,7 @@ const ContactForm = () => {
 					<Button
 						className="w-full"
 						disabled={contact.isPending}
-						size="lg"
+						size="xs"
 						type="submit"
 						variant="primary"
 					>

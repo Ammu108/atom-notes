@@ -28,14 +28,16 @@ const RecentlyAddedNotes = () => {
 						</p>
 					</div>
 					<div>
-						<Button
-							onClick={hadnleNavigateToBrowse}
-							size="xs"
-							variant="outline"
-						>
-							View all
-							<IconChevronRight />
-						</Button>
+						<Link href={"/browse"}>
+							<Button
+								onClick={hadnleNavigateToBrowse}
+								size="xs"
+								variant="outline"
+							>
+								View all
+								<IconChevronRight />
+							</Button>
+						</Link>
 					</div>
 				</div>
 

@@ -1,5 +1,4 @@
 import { chapters, courses, type DB, semesters, subjects } from "@repo/db";
-import { normalizeString } from "@repo/shared";
 import { countDistinct, desc, eq } from "drizzle-orm";
 
 export const courseRepository = {
@@ -128,64 +127,6 @@ export const courseRepository = {
 		});
 	},
 
-	// get all courses
-	async getAllCourses(db: DB) {
-		return await db
-			.select({
-				id: courses.id,
-				name: courses.name,
-				slug: courses.slug,
-				createdAt: courses.createdAt,
-				totalSemesters: countDistinct(semesters.id),
-				totalSubjects: countDistinct(subjects.id),
-			})
-			.from(courses)
-			.leftJoin(semesters, eq(semesters.courseId, courses.id))
-			.leftJoin(subjects, eq(subjects.semesterId, semesters.id))
-			.groupBy(courses.id)
-			.orderBy(desc(courses.createdAt));
-	},
-
-	// get course by id with all its relations
-	async findCourseById(db: DB, courseId: string) {
-		return await db.query.courses.findFirst({
-			where: (course, { eq }) => eq(course.id, courseId),
-
-			with: {
-				semesters: {
-					with: {
-						subjects: {
-							with: {
-								chapters: true,
-							},
-						},
-					},
-				},
-			},
-		});
-	},
-
-	// get semesters by courses id with all its relations
-	async findSemesterByCourseId(db: DB, courseId: string) {
-		return await db.query.semesters.findMany({
-			where: (semester, { eq }) => eq(semester.courseId, courseId),
-		});
-	},
-
-	// get subjects by semester id with all its relations
-	async findSubjectBySemesterId(db: DB, semesterId: string) {
-		return await db.query.subjects.findMany({
-			where: (subjects, { eq }) => eq(subjects.semesterId, semesterId),
-		});
-	},
-
-	// get units by subject id with all its relations
-	async findUnitsBySubjectId(db: DB, subjectId: string) {
-		return await db.query.chapters.findMany({
-			where: (chapters, { eq }) => eq(chapters.subjectId, subjectId),
-		});
-	},
-
 	// update course
 	async updateCourse(
 		db: DB,
@@ -266,12 +207,10 @@ export const courseRepository = {
 				}
 
 				for (const subjectData of semesterData.subjects) {
-					const normalizedSubjectName = normalizeString(subjectData.name);
-
 					const [createdSubject] = await tx
 						.insert(subjects)
 						.values({
-							name: normalizedSubjectName,
+							name: subjectData.name,
 							semesterId: createdSemester.id,
 						})
 						.returning({
@@ -283,10 +222,8 @@ export const courseRepository = {
 					}
 
 					for (const unitData of subjectData.units) {
-						const normalizedUnitName = normalizeString(unitData.name);
-
 						await tx.insert(chapters).values({
-							name: normalizedUnitName,
+							name: unitData.name,
 							subjectId: createdSubject.id,
 						});
 					}
@@ -301,6 +238,64 @@ export const courseRepository = {
 				message: "Course updated successfully",
 				course: updatedCourse,
 			};
+		});
+	},
+
+	// get all courses
+	async getAllCourses(db: DB) {
+		return await db
+			.select({
+				id: courses.id,
+				name: courses.name,
+				slug: courses.slug,
+				createdAt: courses.createdAt,
+				totalSemesters: countDistinct(semesters.id),
+				totalSubjects: countDistinct(subjects.id),
+			})
+			.from(courses)
+			.leftJoin(semesters, eq(semesters.courseId, courses.id))
+			.leftJoin(subjects, eq(subjects.semesterId, semesters.id))
+			.groupBy(courses.id)
+			.orderBy(desc(courses.createdAt));
+	},
+
+	// get course by id with all its relations
+	async findCourseById(db: DB, courseId: string) {
+		return await db.query.courses.findFirst({
+			where: (course, { eq }) => eq(course.id, courseId),
+
+			with: {
+				semesters: {
+					with: {
+						subjects: {
+							with: {
+								chapters: true,
+							},
+						},
+					},
+				},
+			},
+		});
+	},
+
+	// get semesters by courses id with all its relations
+	async findSemesterByCourseId(db: DB, courseId: string) {
+		return await db.query.semesters.findMany({
+			where: (semester, { eq }) => eq(semester.courseId, courseId),
+		});
+	},
+
+	// get subjects by semester id with all its relations
+	async findSubjectBySemesterId(db: DB, semesterId: string) {
+		return await db.query.subjects.findMany({
+			where: (subjects, { eq }) => eq(subjects.semesterId, semesterId),
+		});
+	},
+
+	// get units by subject id with all its relations
+	async findUnitsBySubjectId(db: DB, subjectId: string) {
+		return await db.query.chapters.findMany({
+			where: (chapters, { eq }) => eq(chapters.subjectId, subjectId),
 		});
 	},
 

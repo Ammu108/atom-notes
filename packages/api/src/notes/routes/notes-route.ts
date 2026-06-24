@@ -109,11 +109,20 @@ export const notesRouter = createTRPCRouter({
 			};
 		}),
 
-	getAllNotes: publicProcedure.query(async ({ ctx }) => {
-		const notes = await notesRepository.getAllNotes(ctx.db);
+	getAllNotes: publicProcedure
+		.input(
+			z.object({
+				search: z.string().optional(),
+				course: z.string().optional(),
+				semester: z.string().optional(),
+				subject: z.string().optional(),
+			}),
+		)
+		.query(async ({ input, ctx }) => {
+			const notes = await notesRepository.getAllNotes(ctx.db, input);
 
-		return notes;
-	}),
+			return notes;
+		}),
 
 	getNoteById: publicProcedure
 		.input(noteIdSchema)

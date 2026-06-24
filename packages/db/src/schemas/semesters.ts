@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTableCreator, uuid } from "drizzle-orm/pg-core";
+import { pgTableCreator, uuid, varchar } from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
 import { courses } from "./courses";
 import { subjects } from "./subjects";
@@ -11,7 +11,7 @@ export const semesters = createTable("semesters", {
 	courseId: uuid("course_id")
 		.references(() => courses.id, { onDelete: "cascade" })
 		.notNull(),
-	number: integer("number").notNull(), // e.g., 1, 2, 3, 4, etc.
+	number: varchar("number").notNull(), // e.g., 1, 2, 3, 4, etc.
 	...timestamps,
 });
 

@@ -1,5 +1,13 @@
-import { chapters, type DB, notes, semesters, subjects } from "@repo/db";
-import { and, desc, eq } from "drizzle-orm";
+import {
+	chapters,
+	courses,
+	type DB,
+	notes,
+	semesters,
+	subjects,
+} from "@repo/db";
+import { generateSlug } from "@repo/shared";
+import { and, desc, eq, ilike, or } from "drizzle-orm";
 import type { NoteType } from "../types";
 
 export const notesRepository = {
@@ -91,8 +99,8 @@ export const notesRepository = {
 		return note;
 	},
 
-	async getAllNotes(db: DB) {
-		return await db
+	async getAllNotesAdmin(db: DB) {
+		const result = await db
 			.select({
 				id: notes.id,
 				slug: notes.slug,
@@ -108,6 +116,63 @@ export const notesRepository = {
 			.innerJoin(subjects, eq(chapters.subjectId, subjects.id))
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
 			.orderBy(desc(notes.updatedAt));
+
+		return result;
+	},
+
+	async getAllNotes(
+		db: DB,
+		input?: {
+			search?: string;
+			course?: string;
+			semester?: string;
+			subject?: string;
+		},
+	) {
+		const conditions = [];
+
+		if (input?.search?.trim()) {
+			conditions.push(
+				or(
+					ilike(notes.title, `%${input.search.trim()}%`),
+					ilike(notes.slug, `%${input.search.trim()}%`),
+				),
+			);
+		}
+
+		if (input?.course) {
+			const normalizeCourseName = generateSlug(input.course);
+			conditions.push(eq(courses.slug, normalizeCourseName));
+		}
+
+		if (input?.semester) {
+			conditions.push(eq(semesters.number, input.semester));
+		}
+
+		if (input?.subject) {
+			conditions.push(eq(subjects.name, input.subject));
+		}
+
+		const result = await db
+			.select({
+				id: notes.id,
+				slug: notes.slug,
+				title: notes.title,
+				description: notes.metaDescription,
+				chapter: chapters.name,
+				subject: subjects.name,
+				semester: semesters.number,
+				UpdatedAt: notes.updatedAt,
+			})
+			.from(notes)
+			.innerJoin(chapters, eq(notes.chapterId, chapters.id))
+			.innerJoin(subjects, eq(chapters.subjectId, subjects.id))
+			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
+			.innerJoin(courses, eq(courses.id, semesters.courseId))
+			.where(conditions.length > 0 ? and(...conditions) : undefined)
+			.orderBy(desc(notes.updatedAt));
+
+		return result;
 	},
 
 	async deleteNote(db: DB, id: string) {

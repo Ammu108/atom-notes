@@ -1,5 +1,6 @@
-import { Button } from "@repo/ui";
+import Link from "next/link";
 import { Container } from "~/components/container";
+import { Button } from "~/components/ui/button";
 
 const stats = [
 	{ value: "12+", label: "Study Notes" },
@@ -53,7 +54,9 @@ export default function HeroSection() {
 
 					{/* CTA Buttons */}
 					<div className="flex flex-col items-center gap-3 transition-all delay-300 duration-700 ease-out sm:flex-row sm:gap-4">
-						<Button>Browse Notes</Button>
+						<Link href={"/browse"}>
+							<Button>Browse Notes</Button>
+						</Link>
 						<Button variant="outline">View PYQs</Button>
 					</div>
 

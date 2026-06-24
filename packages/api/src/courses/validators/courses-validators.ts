@@ -20,7 +20,7 @@ export const subjectSchema = z.object({
 
 export const semesterSchema = z.object({
 	number: z
-		.number()
+		.string()
 		.min(1, "semester number must be at least 1")
 		.max(16, "semester number must be at most 16"),
 	subjects: z

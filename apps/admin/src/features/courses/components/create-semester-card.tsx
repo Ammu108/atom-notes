@@ -26,7 +26,7 @@ export interface Subject {
 
 export interface Semester {
 	id: string;
-	number: number;
+	number: string;
 	subjects: Subject[];
 }
 

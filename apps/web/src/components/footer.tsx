@@ -61,9 +61,6 @@ export default function Footer() {
 
 						{/* ── RIGHT: Contact + Admin Panel ── */}
 						<div className="flex flex-col items-end gap-3">
-							<p className="font-semibold text-muted-foreground text-sm">
-								+91-999-987-6368
-							</p>
 							<p className="font-regular text-muted-foreground text-sm">
 								atomNotes@gmail.com
 							</p>

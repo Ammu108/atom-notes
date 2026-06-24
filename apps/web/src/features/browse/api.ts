@@ -1,8 +1,23 @@
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
 
-export const useGetAllNotes = () => {
-	return api.notes.getAllNotes.useQuery();
+export const useGetAllNotes = ({
+	search,
+	course,
+	sem,
+	sub,
+}: {
+	search?: string;
+	course?: string;
+	sem?: string;
+	sub?: string;
+}) => {
+	return api.notes.getAllNotes.useQuery({
+		search,
+		course,
+		semester: sem,
+		subject: sub,
+	});
 };
 
 export const useGetAllCourses = () => {

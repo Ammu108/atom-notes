@@ -19,7 +19,7 @@ export const courseRepository = {
 			slug: string;
 
 			semesters: {
-				number: number;
+				number: string;
 
 				subjects: {
 					name: string;
@@ -136,7 +136,7 @@ export const courseRepository = {
 			slug: string;
 
 			semesters: {
-				number: number;
+				number: string;
 
 				subjects: {
 					name: string;

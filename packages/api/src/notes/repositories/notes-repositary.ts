@@ -99,6 +99,27 @@ export const notesRepository = {
 		return note;
 	},
 
+	async getAllNotesAdmin(db: DB) {
+		const result = await db
+			.select({
+				id: notes.id,
+				slug: notes.slug,
+				title: notes.title,
+				description: notes.metaDescription,
+				chapter: chapters.name,
+				subject: subjects.name,
+				semester: semesters.number,
+				UpdatedAt: notes.updatedAt,
+			})
+			.from(notes)
+			.innerJoin(chapters, eq(notes.chapterId, chapters.id))
+			.innerJoin(subjects, eq(chapters.subjectId, subjects.id))
+			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
+			.orderBy(desc(notes.updatedAt));
+
+		return result;
+	},
+
 	async getAllNotes(
 		db: DB,
 		input?: {

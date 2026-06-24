@@ -131,7 +131,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<SidebarMenu>
 					<SidebarMenuItem>
 						<SidebarMenuButton
-							className="data-[slot=sidebar-menu-button]:p-1.5!"
+							className="h-12 data-[slot=sidebar-menu-button]:p-1.5!"
 							render={<Link href="/" />}
 						>
 							<div className="relative aspect-square w-12">

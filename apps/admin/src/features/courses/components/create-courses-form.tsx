@@ -19,7 +19,7 @@ type CreateCoursesFormProps = {
 		slug: string;
 		semesters?: Array<{
 			id: string;
-			number: number;
+			number: string;
 			subjects?: Array<{
 				id: string;
 				name: string;
@@ -70,7 +70,7 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 	const initialSemesters =
 		course?.semesters && course.semesters.length > 0
 			? normalizeSemesters(course.semesters)
-			: [{ id: "sem-1", number: 1, subjects: [] }];
+			: [{ id: "sem-1", number: "1", subjects: [] }];
 
 	const [courseName, setCourseName] = useState(course?.name ?? "");
 	const [semesterCount, setSemesterCount] = useState<number | "">(
@@ -159,7 +159,7 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 			setSemesters([
 				{
 					id: "sem-1",
-					number: 1,
+					number: "1",
 					subjects: [],
 				},
 			]);

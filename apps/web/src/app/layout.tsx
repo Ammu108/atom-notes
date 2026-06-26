@@ -5,7 +5,7 @@ import { Geist } from "next/font/google";
 import { AppShell } from "~/components/app-shell";
 import { Toaster } from "~/components/ui/sonner";
 import { TRPCReactProvider } from "~/trpc/react";
-import { api, HydrateClient } from "~/trpc/server";
+import { HydrateClient } from "~/trpc/server";
 
 export const metadata: Metadata = {
 	title: "Atom - Hospital Booking System",
@@ -21,8 +21,6 @@ const geist = Geist({
 export default async function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
-	await api.auth.me.prefetch();
-
 	return (
 		<html className={`${geist.variable}`} lang="en">
 			<body className="bg-background">

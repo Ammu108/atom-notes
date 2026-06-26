@@ -22,8 +22,9 @@
 		"typescript": "^5.8.2"
 	},
 	"dependencies": {
-		"@t3-oss/env-core": "^0.13.11",
+		"@repo/api": "workspace:*",
 		"@repo/shared": "workspace:*",
+		"@t3-oss/env-core": "^0.13.11",
 		"bcryptjs": "^3.0.3",
 		"dotenv": "^17.4.1",
 		"drizzle-orm": "^0.41.0",

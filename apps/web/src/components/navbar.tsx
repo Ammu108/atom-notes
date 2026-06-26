@@ -1,14 +1,12 @@
 "use client";
 
+import { userAuthClient } from "@repo/api/user-client";
 import { Button } from "@repo/ui";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
-import { useSession } from "~/context/session-context";
-import { api } from "~/trpc/react";
 import ProfileDropdown from "./kokonutui/profile-dropdown";
 
 const NAV_LINKS = [
@@ -19,32 +17,24 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
-	const { user } = useSession();
 	const [menuOpen, setMenuOpen] = useState(false);
 	const pathname = usePathname();
 	const router = useRouter();
-
-	const utils = api.useUtils();
-
-	const logout = api.auth.logout.useMutation({
-		onSuccess: async (opts) => {
-			toast.success(opts.message);
-			utils.auth.me.setData(undefined, null); // ✅ replace router.refresh() with this
-			setMenuOpen(false);
-		},
-		onError: (error) => {
-			toast.error(error.message);
-		},
-	});
+	const { data: session } = userAuthClient.useSession();
 
 	const handleSignUp = () => {
 		router.push("/auth?tab=signup");
 		setMenuOpen(false);
 	};
 
-	const handleSignOut = () => {
-		logout.mutate();
+	const handleSignOut = async () => {
+		await userAuthClient.signOut();
+
+		router.push("/");
+		router.refresh();
 	};
+
+	const user = session?.user;
 
 	const profileData = user // ✅ user comes from useSession now
 		? {

@@ -1,10 +1,10 @@
 import "server-only";
 
-import { type AppRouter, createCaller, createTRPCContext } from "@repo/api";
+import { type AppRouter, createCaller } from "@repo/api";
+import { createAdminTRPCContext } from "@repo/api/trpc";
 import { createHydrationHelpers } from "@trpc/react-query/rsc";
 import { headers } from "next/headers";
 import { cache } from "react";
-import { env } from "~/env";
 import { createQueryClient } from "./query-client";
 
 /**
@@ -15,12 +15,7 @@ const createContext = cache(async () => {
 	const heads = new Headers(await headers());
 	heads.set("x-trpc-source", "rsc");
 
-	return createTRPCContext({
-		headers: heads,
-		resHeaders: new Headers(),
-		jwtSecret: env.ADMIN_JWT_SECRET,
-		app: "admin",
-	});
+	return createAdminTRPCContext({ headers: heads });
 });
 
 const getQueryClient = cache(createQueryClient);

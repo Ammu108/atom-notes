@@ -11,7 +11,7 @@
 		"check:write": "biome check --write .",
 		"dev": "next dev --turbo -p 3000",
 		"preview": "next build && next start",
-		"start": "next start",
+		"start": "next start -p 3000",
 		"format": "biome format --write .",
 		"lint": "biome lint .",
 		"typecheck": "tsc --noEmit"

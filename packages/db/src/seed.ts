@@ -1,6 +1,6 @@
 // packages/db/seed/admin.ts
 
-import { auth } from "@repo/api/auth";
+import { adminAuth } from "@repo/api/admin-auth";
 import { eq } from "drizzle-orm";
 import { db, user } from ".";
 
@@ -15,7 +15,7 @@ async function seedAdmin() {
 	});
 
 	if (!existing) {
-		await auth.api.signUpEmail({
+		await adminAuth.api.signUpEmail({
 			body: {
 				name: "Admin User",
 				email,

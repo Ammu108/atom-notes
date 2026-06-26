@@ -11,6 +11,11 @@ if (!webUrl || !adminUrl) {
 	);
 }
 
+console.log({
+	webUrl,
+	adminUrl,
+});
+
 export const adminAuth = betterAuth({
 	database: drizzleAdapter(db, {
 		provider: "pg",
@@ -27,7 +32,7 @@ export const adminAuth = betterAuth({
 		defaultCookieAttributes: {
 			sameSite: "lax",
 			secure: process.env.NODE_ENV === "production",
-			domain: process.env.COOKIE_DOMAIN,
+			// domain: process.env.COOKIE_DOMAIN,
 		},
 	},
 

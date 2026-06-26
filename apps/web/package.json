@@ -9,7 +9,7 @@
 		"clean": "git clean -xdf .cache .next .turbo node_modules",
 		"check:unsafe": "biome check --write --unsafe .",
 		"check:write": "biome check --write .",
-		"dev": "next dev --turbo",
+		"dev": "next dev --turbo -p 3000",
 		"preview": "next build && next start",
 		"start": "next start",
 		"format": "biome format --write .",

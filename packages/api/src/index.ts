@@ -10,7 +10,6 @@ export { type AppRouter, appRouter, createCaller } from "./root";
 // Export context and procedures
 export {
 	createCallerFactory,
-	createTRPCContext,
 	createTRPCRouter,
 	protectedProcedure,
 	publicProcedure,

@@ -1,27 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { userAuthClient } from "@repo/api/user-client";
 import { Button, Input } from "@repo/ui";
 import { type LoginSchema, loginSchema } from "@repo/validators";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Field, FieldError, FieldLabel } from "~/components/ui/field";
 import { Spinner } from "~/components/ui/spinner";
-import { api } from "~/trpc/react";
 
 const Login = () => {
 	const router = useRouter();
-
-	const login = api.auth.login.useMutation({
-		onSuccess: async (opts) => {
-			toast.success(opts.message);
-			router.push("/");
-			router.refresh();
-		},
-		onError: (error) => {
-			console.error("Login failed:", error);
-			toast.error(error.message);
-		},
-	});
+	const [isLoading, setIsLoading] = useState(false);
 
 	const form = useForm<LoginSchema>({
 		resolver: zodResolver(loginSchema),
@@ -31,8 +21,28 @@ const Login = () => {
 		},
 	});
 
-	const onSubmit = (values: LoginSchema) => {
-		login.mutate(values);
+	const onSubmit = async (values: LoginSchema) => {
+		try {
+			setIsLoading(true);
+
+			const { error } = await userAuthClient.signIn.email({
+				email: values.email,
+				password: values.password,
+			});
+
+			if (error) {
+				toast.error(error.message ?? "Invalid email or password");
+				return;
+			}
+
+			toast.success("Login successful");
+			router.push("/");
+			router.refresh();
+		} catch {
+			toast.error("Something went wrong");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -80,13 +90,8 @@ const Login = () => {
 							)}
 						/>
 					</div>
-					<Button
-						className="w-full"
-						disabled={login.isPending}
-						size="xs"
-						type="submit"
-					>
-						{login.isPending ? <Spinner /> : "Login"}
+					<Button disabled={isLoading} type="submit">
+						{isLoading ? <Spinner /> : "Login"}
 					</Button>
 				</div>
 			</form>

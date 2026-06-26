@@ -1,11 +1,4 @@
-/**
- * Centralized re-export from @repo/api package.
- * This file maintains backward compatibility with the old import paths.
- */
-export {
-	createCallerFactory,
-	createTRPCContext,
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure,
-} from "@repo/api";
+import type { AppRouter } from "@repo/api/";
+import { createTRPCReact } from "@trpc/react-query";
+
+export const trpc = createTRPCReact<AppRouter>();

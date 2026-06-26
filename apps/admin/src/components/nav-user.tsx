@@ -1,5 +1,6 @@
 "use client";
 
+import { adminAuthClient } from "@repo/api/admin-client";
 import {
 	BellIcon,
 	CircleUserRoundIcon,
@@ -8,7 +9,6 @@ import {
 	LogOutIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import {
 	DropdownMenu,
@@ -24,7 +24,6 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "~/components/ui/sidebar";
-import { api } from "~/trpc/react";
 import { Skeleton } from "./ui/skeleton";
 
 export function NavUser({
@@ -34,21 +33,10 @@ export function NavUser({
 }) {
 	const { isMobile } = useSidebar();
 	const router = useRouter();
-	const utils = api.useUtils();
 
-	const logout = api.authAdmin.logout.useMutation({
-		onSuccess: async (opts) => {
-			toast.success(opts.message);
-			await utils.authAdmin.me.invalidate();
-			router.refresh();
-		},
-		onError: async (error) => {
-			toast.error(error.message);
-		},
-	});
-
-	const handleSignOut = () => {
-		logout.mutate();
+	const handleSignOut = async () => {
+		await adminAuthClient.signOut();
+		router.refresh();
 	};
 
 	if (!user) {

@@ -1,14 +1,15 @@
+import { adminAuth } from "@repo/api/admin-auth";
+import { headers } from "next/headers";
 import { AppSidebar } from "~/components/app-sidebar";
 import { LoginPage } from "~/components/login-page";
 import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
-import { getCurrentUser } from "~/lib/get-current-user";
 
 export default async function AdminLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
-	const admin = await getCurrentUser();
+	const session = await adminAuth.api.getSession({ headers: await headers() });
 
-	if (!admin || admin.role !== "admin") {
+	if (!session?.user) {
 		return <LoginPage />;
 	}
 

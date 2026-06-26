@@ -11,7 +11,7 @@ export const notesRouter = createTRPCRouter({
 		.input(notesSchema)
 		.mutation(async ({ input, ctx }) => {
 			// admin check
-			if (!ctx.user || ctx.user.role !== "admin") {
+			if (!ctx.session?.user || ctx.session.user.role !== "ADMIN") {
 				throw new TRPCError({
 					code: "FORBIDDEN",
 					message: "Only admins can create notes!",
@@ -54,7 +54,7 @@ export const notesRouter = createTRPCRouter({
 	UpdateNote: publicProcedure
 		.input(notesSchema)
 		.mutation(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
+			if (!ctx.session?.user || ctx.session.user.role !== "ADMIN") {
 				throw new TRPCError({
 					code: "FORBIDDEN",
 					message: "Only admins can update notes!",
@@ -163,7 +163,7 @@ export const notesRouter = createTRPCRouter({
 	deleteNote: publicProcedure
 		.input(noteIdSchema)
 		.mutation(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
+			if (!ctx.session?.user || ctx.session.user.role !== "ADMIN") {
 				throw new TRPCError({
 					code: "FORBIDDEN",
 					message: "Only admins can delete notes!",

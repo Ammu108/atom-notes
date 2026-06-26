@@ -8,6 +8,5 @@ export * from "./contact";
 export * from "./courses";
 export * from "./notes";
 export * from "./semesters";
-export * from "./sessions";
 export * from "./subjects";
 export * from "./users";

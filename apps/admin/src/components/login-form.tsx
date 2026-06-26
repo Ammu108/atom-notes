@@ -1,8 +1,10 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { adminAuthClient } from "@repo/api/admin-client";
 import { cn } from "@repo/ui";
 import { type AdminLoginSchema, adminLoginSchema } from "@repo/validators";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -20,7 +22,6 @@ import {
 	FieldLabel,
 } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
-import { api } from "~/trpc/react";
 import { Spinner } from "./ui/spinner";
 
 export function LoginForm({
@@ -28,18 +29,7 @@ export function LoginForm({
 	...props
 }: React.ComponentProps<"div">) {
 	const router = useRouter();
-
-	const login = api.authAdmin.login.useMutation({
-		onSuccess(opts) {
-			toast.success(opts.message);
-			router.replace("/");
-			router.refresh();
-		},
-		onError: (error) => {
-			console.error("Login failed:", error);
-			toast.error(error.message);
-		},
-	});
+	const [isLoading, setIsLoading] = useState(false);
 
 	const form = useForm<AdminLoginSchema>({
 		resolver: zodResolver(adminLoginSchema),
@@ -49,8 +39,28 @@ export function LoginForm({
 		},
 	});
 
-	const onSubmit = (values: AdminLoginSchema) => {
-		login.mutate(values);
+	const onSubmit = async (values: AdminLoginSchema) => {
+		try {
+			setIsLoading(true);
+
+			const { error } = await adminAuthClient.signIn.email({
+				email: values.email,
+				password: values.password,
+			});
+
+			if (error) {
+				toast.error(error.message ?? "Invalid email or password");
+				return;
+			}
+
+			toast.success("Login successful");
+			router.push("/");
+			router.refresh();
+		} catch {
+			toast.error("Something went wrong");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -106,19 +116,9 @@ export function LoginForm({
 								)}
 							/>
 							<Field>
-								<Button disabled={login.isPending} type="submit">
-									{login.isPending ? <Spinner /> : "Login"}
+								<Button disabled={isLoading} type="submit">
+									{isLoading ? <Spinner /> : "Login"}
 								</Button>
-							</Field>
-
-							<Field>
-								{login.error && (
-									<div className="rounded-md bg-destructive/10 p-2">
-										<p className="text-destructive text-sm">
-											Login failed: {login.error.message}
-										</p>
-									</div>
-								)}
 							</Field>
 						</FieldGroup>
 					</form>

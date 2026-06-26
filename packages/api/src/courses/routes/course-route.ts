@@ -16,7 +16,7 @@ export const courseRouter = createTRPCRouter({
 	createCourse: protectedProcedure
 		.input(coursesSchema)
 		.mutation(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
+			if (!ctx.user || ctx.user.role !== "ADMIN") {
 				throw new TRPCError({
 					code: "FORBIDDEN",
 					message: "Only admins can create courses",
@@ -46,7 +46,7 @@ export const courseRouter = createTRPCRouter({
 	updateCourse: protectedProcedure
 		.input(updateCourseSchema)
 		.mutation(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
+			if (!ctx.user || ctx.user.role !== "ADMIN") {
 				throw new TRPCError({
 					code: "FORBIDDEN",
 					message: "Only admins can update courses",
@@ -153,7 +153,7 @@ export const courseRouter = createTRPCRouter({
 	deleteCourse: protectedProcedure
 		.input(getCourseByIdSchema)
 		.mutation(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
+			if (!ctx.user || ctx.user.role !== "ADMIN") {
 				throw new TRPCError({
 					code: "FORBIDDEN",
 					message: "Only admins can delete courses",

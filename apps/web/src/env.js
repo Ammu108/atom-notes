@@ -13,8 +13,11 @@ export const env = createEnv({
 	 * isn't built with invalid env vars.
 	 */
 	server: {
+		BETTER_AUTH_SECRET:
+			process.env.NODE_ENV === "production"
+				? z.string()
+				: z.string().optional(),
 		DATABASE_URL: z.string().url(),
-		USER_JWT_SECRET: z.string().min(4),
 		NODE_ENV: z
 			.enum(["development", "test", "production"])
 			.default("development"),
@@ -34,10 +37,9 @@ export const env = createEnv({
 	 * middlewares) or client-side so we need to destruct manually.
 	 */
 	runtimeEnv: {
+		BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
 		DATABASE_URL: process.env.DATABASE_URL,
 		NODE_ENV: process.env.NODE_ENV,
-		USER_JWT_SECRET: process.env.USER_JWT_SECRET,
-		// NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 	},
 	/**
 	 * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

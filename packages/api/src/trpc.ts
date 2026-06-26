@@ -9,117 +9,25 @@
 
 import { db } from "@repo/db";
 import { initTRPC, TRPCError } from "@trpc/server";
-import { parse } from "cookie";
 import superjson from "superjson";
 import { ZodError } from "zod";
-import { refreshAdminToken } from "./auth/utils/refresh-admin-access-token";
-import { refreshUserToken } from "./auth/utils/refresh-user-access-token";
-import { verifyAccessToken } from "./auth/utils/token";
+import { adminAuth } from "./auth/better-auth/admin-auth";
+import { userAuth } from "./auth/better-auth/user-auth";
 
-/**
- * 1. CONTEXT
- *
- * This section defines the "contexts" that are available in the backend API.
- *
- * These allow you to access things when processing a request, like the database, the session, etc.
- *
- * This helper generates the "internals" for a tRPC context. The API handler and RSC clients each
- * wrap this and provides the required context.
- *
- * @see https://trpc.io/docs/server/context
- */
-export const createTRPCContext = async (opts: {
-	headers: Headers;
-	resHeaders: Headers;
-	jwtSecret: string;
-	app: "admin" | "web";
-}) => {
-	const cookieHeader = opts.headers.get("cookie");
+// ─────────────────────────────────────────────────────────────────
+// 1. CONTEXTS
+// ─────────────────────────────────────────────────────────────────
 
-	let user = null;
+// Used by apps/web  →  reads "user_session" cookie
+export const createUserTRPCContext = async (opts: { headers: Headers }) => {
+	const session = await userAuth.api.getSession({ headers: opts.headers });
+	return { db, session };
+};
 
-	if (cookieHeader) {
-		const cookies = parse(cookieHeader);
-
-		const accessToken =
-			opts.app === "admin"
-				? cookies.admin_access_token
-				: cookies.user_access_token;
-
-		const refreshToken =
-			opts.app === "admin"
-				? cookies.admin_refresh_token
-				: cookies.user_refresh_token;
-
-		if (process.env.NODE_ENV === "development") {
-			console.log(
-				`[auth][${opts.app}] access token:`,
-				accessToken ? "present" : "missing",
-			);
-
-			console.log(
-				`[auth][${opts.app}] refresh token:`,
-				refreshToken ? "present" : "missing",
-			);
-		}
-
-		// 1. Try access token first
-		if (accessToken) {
-			try {
-				user = await verifyAccessToken(accessToken, opts.jwtSecret);
-
-				if (process.env.NODE_ENV === "development") {
-					console.log(`[auth][${opts.app}] access token verified successfully`);
-				}
-			} catch {
-				if (process.env.NODE_ENV === "development") {
-					console.log(
-						`[auth][${opts.app}] access token expired/invalid, attempting refresh`,
-					);
-				}
-
-				user = null;
-			}
-		}
-
-		// 2. If access token missing OR invalid, use refresh token
-		if (!user && refreshToken) {
-			try {
-				user =
-					opts.app === "admin"
-						? await refreshAdminToken(
-								refreshToken,
-								db,
-								opts.jwtSecret,
-								opts.resHeaders,
-							)
-						: await refreshUserToken(
-								refreshToken,
-								db,
-								opts.jwtSecret,
-								opts.resHeaders,
-							);
-
-				if (process.env.NODE_ENV === "development") {
-					console.log(
-						`[auth][${opts.app}] refreshed access token successfully`,
-					);
-				}
-			} catch {
-				if (process.env.NODE_ENV === "development") {
-					console.log(`[auth][${opts.app}] refresh token invalid/expired`);
-				}
-
-				user = null;
-			}
-		}
-	}
-
-	return {
-		db,
-		user,
-		...opts,
-	};
+// Used by apps/admin  →  reads "admin_session" cookie
+export const createAdminTRPCContext = async (opts: { headers: Headers }) => {
+	const session = await adminAuth.api.getSession({ headers: opts.headers });
+	return { db, session };
 };
 
 /**
@@ -129,7 +37,7 @@ export const createTRPCContext = async (opts: {
  * ZodErrors so that you get typesafety on the frontend if your procedure fails due to validation
  * errors on the backend.
  */
-const t = initTRPC.context<typeof createTRPCContext>().create({
+const t = initTRPC.context<typeof createUserTRPCContext>().create({
 	transformer: superjson,
 	errorFormatter({ shape, error }) {
 		return {
@@ -190,19 +98,45 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 export const protectedProcedure = t.procedure
 	.use(timingMiddleware)
 	.use(({ ctx, next }) => {
-		if (!ctx.user) {
+		if (!ctx.session?.user) {
 			throw new TRPCError({
 				code: "UNAUTHORIZED",
+				message: "You must be logged in.",
 			});
 		}
 
 		return next({
 			ctx: {
 				...ctx,
-				user: ctx.user,
+				session: ctx.session,
+				user: ctx.session.user,
 			},
 		});
 	});
+
+export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+	if (!ctx.session?.user) {
+		throw new TRPCError({
+			code: "UNAUTHORIZED",
+			message: "You must be logged in.",
+		});
+	}
+
+	if (ctx.session.user.role !== "ADMIN") {
+		throw new TRPCError({
+			code: "FORBIDDEN",
+			message: "Admin access only.",
+		});
+	}
+
+	return next({
+		ctx: {
+			...ctx,
+			session: ctx.session,
+			user: ctx.session.user,
+		},
+	});
+});
 
 /**
  * Public (unauthenticated) procedure
@@ -212,5 +146,3 @@ export const protectedProcedure = t.procedure
  * are logged in.
  */
 export const publicProcedure = t.procedure.use(timingMiddleware);
-
-// eyJhbGciOiJIUzI1NiJ9.eyJpZCI6ImJiZGM1NmRkLWQ2NzUtNDFiOC1iMGZhLTQ2MmI1ZWQ3ZWVmZSIsIm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiYWRtaW4iLCJ0eXBlIjoiYWRtaW4iLCJpYXQiOjE3ODIxNTA5NDgsImV4cCI6MTc4MjE1MTI0OH0.FlT2MEf73Zi0LFx3TBZGghFT6gO1GAlxv-7DFVu1vQI

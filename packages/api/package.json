@@ -8,7 +8,11 @@
 		"./verifyToken": "./src/auth/utils/token.ts",
 		"./trpc": "./src/trpc.ts",
 		"./root": "./src/root.ts",
-		"./react": "./src/react.tsx"
+		"./react": "./src/react.tsx",
+		"./user-auth": "./src/auth/better-auth/user-auth.ts",
+		"./user-client": "./src/auth/better-auth/user-client.ts",
+		"./admin-auth": "./src/auth/better-auth/admin-auth.ts",
+		"./admin-client": "./src/auth/better-auth/admin-client.ts"
 	},
 	"devDependencies": {
 		"@types/jsonwebtoken": "^9.0.10",
@@ -19,14 +23,15 @@
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1063.0",
 		"@repo/db": "workspace:*",
-		"@repo/validators": "workspace:*",
 		"@repo/shared": "workspace:*",
+		"@repo/validators": "workspace:*",
 		"@tanstack/react-query": "^5.69.0",
 		"@trpc/client": "^11.0.0",
 		"@trpc/next": "^11.0.0",
 		"@trpc/react-query": "^11.0.0",
 		"@trpc/server": "^11.0.0",
 		"bcryptjs": "^3.0.3",
+		"better-auth": "^1.6.20",
 		"cookie": "^1.1.1",
 		"drizzle-orm": "^0.41.0",
 		"jose": "^6.2.3",

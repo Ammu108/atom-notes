@@ -1,27 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { userAuthClient } from "@repo/api/user-client";
 import { Button, Input } from "@repo/ui";
 import { type SignUpSchema, signUpSchema } from "@repo/validators";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Field, FieldError, FieldLabel } from "~/components/ui/field";
 import { Spinner } from "~/components/ui/spinner";
-import { api } from "~/trpc/react";
 
 const SignUp = () => {
 	const router = useRouter();
-
-	const signUp = api.auth.signUp.useMutation({
-		onSuccess: async (opts) => {
-			toast.success(opts.message);
-			router.push("/");
-			router.refresh();
-		},
-		onError: (error) => {
-			console.error("Signup failed:", error);
-			toast.error(error.message);
-		},
-	});
+	const [isLoading, setIsLoading] = useState(false);
 
 	const form = useForm<SignUpSchema>({
 		resolver: zodResolver(signUpSchema),
@@ -32,8 +22,24 @@ const SignUp = () => {
 		},
 	});
 
-	const onSubmit = (values: SignUpSchema) => {
-		signUp.mutate(values);
+	const onSubmit = async (values: SignUpSchema) => {
+		try {
+			setIsLoading(true);
+
+			await userAuthClient.signUp.email({
+				name: values.name,
+				email: values.email,
+				password: values.password,
+			});
+
+			toast.success("Login successful");
+			router.push("/");
+			router.refresh();
+		} catch {
+			toast.error("Invalid email or password");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -104,11 +110,11 @@ const SignUp = () => {
 					</div>
 					<Button
 						className="w-full"
-						disabled={signUp.isPending}
+						disabled={isLoading}
 						size="xs"
 						type="submit"
 					>
-						{signUp.isPending ? <Spinner /> : "Sign Up"}
+						{isLoading ? <Spinner /> : "Sign Up"}
 					</Button>
 				</div>
 			</form>

@@ -1,5 +1,6 @@
 "use client";
 
+import { adminAuthClient } from "@repo/api/admin-client";
 import {
 	CameraIcon,
 	CircleHelpIcon,
@@ -25,7 +26,6 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "~/components/ui/sidebar";
-import { api } from "~/trpc/react";
 import { NavUser } from "./nav-user";
 
 const data = {
@@ -123,7 +123,7 @@ const data = {
 	],
 };
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-	const { data: currentUser } = api.authAdmin.me.useQuery();
+	const { data: session } = adminAuthClient.useSession();
 
 	return (
 		<Sidebar collapsible="offcanvas" {...props}>
@@ -151,7 +151,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<NavMain items={data.navMain} />
 			</SidebarContent>
 			<SidebarFooter>
-				{currentUser && <NavUser user={currentUser} />}
+				<NavUser user={session?.user ?? null} />
 			</SidebarFooter>
 		</Sidebar>
 	);

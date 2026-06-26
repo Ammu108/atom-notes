@@ -48,7 +48,7 @@ export function UsersTable() {
 		name: string;
 	} | null>(null);
 
-	const filteredUsers = users?.filter((user) => user.role !== "admin");
+	const filteredUsers = users?.filter((user) => user.role !== "ADMIN");
 
 	const deleteUserMutation = api.auth.deleteUser.useMutation({
 		onSuccess: async () => {

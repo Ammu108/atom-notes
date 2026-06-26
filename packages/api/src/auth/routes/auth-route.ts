@@ -1,22 +1,7 @@
 import { TRPCError } from "@trpc/server";
-import { parse, serialize } from "cookie";
-import z from "zod";
-import {
-	createTRPCRouter,
-	protectedProcedure,
-	publicProcedure,
-} from "../../trpc";
-import {
-	authRepository,
-	SESSION_CONFIG,
-} from "../repositories/auth-repositary";
-import { authService } from "../services/auth-service";
-import {
-	generateRefreshToken,
-	hashRefreshToken,
-	signAccessToken,
-} from "../utils/token";
-import { deleteUserSchema, signupSchema } from "../validators/auth-validator";
+import { adminProcedure, createTRPCRouter } from "../../trpc";
+import { authRepository } from "../repositories/auth-repositary";
+import { deleteUserSchema } from "../validators/auth-validator";
 
 /**
  * Auth Router
@@ -24,163 +9,11 @@ import { deleteUserSchema, signupSchema } from "../validators/auth-validator";
  */
 
 export const authRouter = createTRPCRouter({
-	signUp: publicProcedure
-		.input(signupSchema)
-		.mutation(async ({ input, ctx }) => {
-			// Check if user already exists using repository
-			const userExists = await authRepository.findByEmail(ctx.db, input.email);
-
-			if (userExists) {
-				throw new TRPCError({
-					code: "CONFLICT",
-					message:
-						"A user with this email already exists. Please use a different email.",
-				});
-			}
-
-			// Sign up using service (handles business logic)
-			const user = await authService.signUp(input, ctx.db);
-
-			// Create tokens
-			const accessToken = await signAccessToken(
-				{
-					id: user.id,
-					name: user.name,
-					email: user.email,
-					role: user.role,
-					type: "user",
-				},
-				ctx.jwtSecret,
-			);
-
-			const refreshToken = generateRefreshToken();
-
-			// Persist session
-			await authService.createSession(ctx.db, user.id, refreshToken);
-
-			ctx.resHeaders.append(
-				"set-cookie",
-				serialize("user_access_token", accessToken, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "lax",
-					path: "/",
-					maxAge: 15 * 60, // 15 minutes
-				}),
-			);
-
-			ctx.resHeaders.append(
-				"set-cookie",
-				serialize("user_refresh_token", refreshToken, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "lax",
-					path: "/",
-					maxAge: SESSION_CONFIG.REFRESH_TOKEN_DAYS * 24 * 60 * 60,
-				}),
-			);
-
-			if (process.env.NODE_ENV === "development") {
-				console.log("[auth][signup] appended Set-Cookie header");
-			}
-
-			return { message: "Signup successful", user };
-		}),
-
-	login: publicProcedure
-		.input(z.object({ email: z.string(), password: z.string() }))
-		.mutation(async ({ input, ctx }) => {
-			// Login using service (handles business logic & password verification)
-			const user = await authService.login(input.email, input.password, ctx.db);
-
-			// Create tokens
-			const accessToken = await signAccessToken(
-				{
-					id: user.id,
-					name: user.name,
-					email: user.email,
-					role: user.role,
-					type: "user",
-				},
-				ctx.jwtSecret,
-			);
-
-			const refreshToken = generateRefreshToken();
-
-			// Persist session
-			await authService.createSession(ctx.db, user.id, refreshToken);
-
-			// Set secure HTTP-only cookie
-			ctx.resHeaders.append(
-				"set-cookie",
-				serialize("user_access_token", accessToken, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "lax",
-					path: "/",
-					maxAge: 15 * 60, // 15 minutes
-				}),
-			);
-
-			ctx.resHeaders.append(
-				"set-cookie",
-				serialize("user_refresh_token", refreshToken, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					sameSite: "lax",
-					path: "/",
-					maxAge: SESSION_CONFIG.REFRESH_TOKEN_DAYS * 24 * 60 * 60,
-				}),
-			);
-
-			if (process.env.NODE_ENV === "development") {
-				console.log("[auth][login] appended Set-Cookie header");
-			}
-
-			return { message: "Login successful", user };
-		}),
-
-	logout: protectedProcedure.mutation(async ({ ctx }) => {
-		const cookieHeader = ctx.headers.get("cookie");
-
-		if (cookieHeader) {
-			const cookies = parse(cookieHeader);
-
-			const refreshToken = cookies.user_refresh_token;
-
-			if (refreshToken) {
-				const hashedToken = hashRefreshToken(refreshToken);
-
-				await authRepository.deleteSessionByRefreshToken(ctx.db, hashedToken);
-			}
-		}
-
-		ctx.resHeaders.append(
-			"set-cookie",
-			serialize("user_access_token", "", {
-				httpOnly: true,
-				expires: new Date(0),
-				path: "/",
-			}),
-		);
-
-		ctx.resHeaders.append(
-			"set-cookie",
-			serialize("user_refresh_token", "", {
-				httpOnly: true,
-				expires: new Date(0),
-				path: "/",
-			}),
-		);
-
-		return { message: "Logout successful" };
-	}),
-
-	getAllUsers: protectedProcedure.query(async ({ ctx }) => {
-		if (!ctx.user || ctx.user.role !== "admin") {
+	getAllUsers: adminProcedure.query(async ({ ctx }) => {
+		if (!ctx.session.user || ctx.session.user.role !== "ADMIN") {
 			throw new TRPCError({
 				code: "FORBIDDEN",
-				message: "Only admins can view users",
+				message: "Only admins can view users.",
 			});
 		}
 
@@ -188,10 +21,10 @@ export const authRouter = createTRPCRouter({
 		return users;
 	}),
 
-	deleteUser: protectedProcedure
+	deleteUser: adminProcedure
 		.input(deleteUserSchema)
 		.mutation(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "admin") {
+			if (!ctx.session.user || ctx.session.user.role !== "ADMIN") {
 				throw new TRPCError({
 					code: "FORBIDDEN",
 					message: "Only admins can delete users",
@@ -211,8 +44,4 @@ export const authRouter = createTRPCRouter({
 			// Delete user using repository
 			return await authRepository.deleteById(ctx.db, input.id);
 		}),
-
-	me: publicProcedure.query(async ({ ctx }) => {
-		return ctx.user ?? null;
-	}),
 });

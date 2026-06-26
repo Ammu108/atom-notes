@@ -1,46 +1,53 @@
-import bcrypt from "bcryptjs";
+// packages/db/seed/admin.ts
+
+import { auth } from "@repo/api/auth";
 import { eq } from "drizzle-orm";
-import { env } from "../env";
-import { db, users } from ".";
+import { db, user } from ".";
 
-async function seed() {
-	const adminEmail = env.ADMIN_EMAIL;
-	const adminPassword = env.ADMIN_PASSWORD;
-	const adminName = env.ADMIN_NAME;
+async function seedAdmin() {
+	const email = "admin@example.com";
+	const password = "password";
 
-	if (!adminEmail || !adminPassword || !adminName) {
-		throw new Error("Missing ADMIN env variables");
-	}
+	console.log("⏳ Checking admin...");
 
-	// 🔍 Check if admin already exists
-	const existingAdmin = await db
-		.select()
-		.from(users)
-		.where(eq(users.email, adminEmail))
-		.limit(1);
-
-	if (existingAdmin.length > 0) {
-		console.log("✅ Admin already exists");
-		return;
-	}
-
-	// 🔐 Hash password
-	const hashedPassword = await bcrypt.hash(adminPassword, 10);
-
-	// 💾 Insert admin
-	await db.insert(users).values({
-		name: adminName,
-		email: adminEmail,
-		password: hashedPassword,
-		role: "admin",
+	const existing = await db.query.user.findFirst({
+		where: eq(user.email, email),
 	});
 
-	console.log("🚀 Admin seeded successfully");
+	if (!existing) {
+		await auth.api.signUpEmail({
+			body: {
+				name: "Admin User",
+				email,
+				password,
+			},
+		});
+
+		console.log("✅ Admin account created.");
+	} else {
+		console.log("ℹ️ Admin already exists.");
+	}
+
+	await db
+		.update(user)
+		.set({
+			role: "ADMIN",
+		})
+		.where(eq(user.email, email));
+
+	console.log(`
+=================================
+Admin credentials
+Email:    ${email}
+Password: ${password}
+Role:     ADMIN
+=================================
+`);
 }
 
-seed()
+seedAdmin()
 	.then(() => process.exit(0))
 	.catch((err) => {
-		console.error("❌ Seeding failed:", err);
+		console.error(err);
 		process.exit(1);
 	});

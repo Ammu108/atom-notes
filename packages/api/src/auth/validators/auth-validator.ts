@@ -11,5 +11,5 @@ export const signupSchema = z.object({
 });
 
 export const deleteUserSchema = z.object({
-	id: z.string().uuid(), // Ensures the frontend sends a valid UUID
+	id: z.string().min(1, "User ID is required"),
 });

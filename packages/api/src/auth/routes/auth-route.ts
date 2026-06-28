@@ -24,10 +24,10 @@ export const authRouter = createTRPCRouter({
 	deleteUser: adminProcedure
 		.input(deleteUserSchema)
 		.mutation(async ({ input, ctx }) => {
-			if (!ctx.session.user || ctx.session.user.role !== "ADMIN") {
+			if (ctx.session.user.id === input.id) {
 				throw new TRPCError({
-					code: "FORBIDDEN",
-					message: "Only admins can delete users",
+					code: "BAD_REQUEST",
+					message: "You cannot delete your own account.",
 				});
 			}
 

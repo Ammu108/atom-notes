@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { toast } from "sonner";
 import { Container } from "~/components/container";
 import { Button } from "~/components/ui/button";
 
@@ -10,6 +13,10 @@ const stats = [
 ];
 
 export default function HeroSection() {
+	const handlePyqs = () => {
+		toast.info("Pyqs comming soon!");
+	};
+
 	return (
 		<section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-background px-4 py-28 sm:py-24">
 			{/* Subtle background texture dots */}
@@ -57,7 +64,9 @@ export default function HeroSection() {
 						<Link href={"/browse"}>
 							<Button>Browse Notes</Button>
 						</Link>
-						<Button variant="outline">View PYQs</Button>
+						<Button onClick={handlePyqs} variant="outline">
+							View PYQs
+						</Button>
 					</div>
 
 					{/* Stats Grid */}

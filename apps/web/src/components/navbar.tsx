@@ -85,11 +85,6 @@ export default function Navbar() {
 
 				{/* ── RIGHT: CTA + Hamburger ── */}
 				<div className="flex items-center gap-2">
-					<button
-						aria-label="Toggle theme"
-						className="inline-flex cursor-pointer items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-accent/80 hover:text-muted-foreground/80"
-						type="button"
-					></button>
 					{profileData ? (
 						<ProfileDropdown
 							className="hidden md:block"

@@ -26,17 +26,29 @@ const SignUp = () => {
 		try {
 			setIsLoading(true);
 
-			await userAuthClient.signUp.email({
-				name: values.name,
-				email: values.email,
-				password: values.password,
-			});
+			await userAuthClient.signUp.email(
+				{
+					name: values.name,
+					email: values.email,
+					password: values.password,
+				},
+				{
+					onSuccess() {
+						toast.success("Signup successful");
+						router.push("/");
+						router.refresh();
+					},
+					onError(ctx) {
+						toast.error(ctx.error.message);
+					},
+				},
+			);
+		} catch (error) {
+			console.error(error);
 
-			toast.success("Login successful");
-			router.push("/");
-			router.refresh();
-		} catch {
-			toast.error("Invalid email or password");
+			toast.error(
+				error instanceof Error ? error.message : "Something went wrong",
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -52,7 +64,7 @@ const SignUp = () => {
 							name="name"
 							render={({ field, fieldState }) => (
 								<Field data-invalid={fieldState.invalid}>
-									<FieldLabel htmlFor={field.name}>Email</FieldLabel>
+									<FieldLabel htmlFor={field.name}>Name</FieldLabel>
 									<Input
 										{...field}
 										aria-invalid={fieldState.invalid}

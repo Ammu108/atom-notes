@@ -1,6 +1,6 @@
 import { generateSlug } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, protectedProcedure } from "../../trpc";
+import { adminProcedure, createTRPCRouter, publicProcedure } from "../../trpc";
 import { courseRepository } from "../repositories/course-repositary";
 import { coursesService } from "../services/courses-service";
 import {
@@ -13,7 +13,7 @@ import {
 } from "../validators/courses-validators";
 
 export const courseRouter = createTRPCRouter({
-	createCourse: protectedProcedure
+	createCourse: adminProcedure
 		.input(coursesSchema)
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "ADMIN") {
@@ -43,7 +43,7 @@ export const courseRouter = createTRPCRouter({
 			return course;
 		}),
 
-	updateCourse: protectedProcedure
+	updateCourse: adminProcedure
 		.input(updateCourseSchema)
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "ADMIN") {
@@ -77,11 +77,11 @@ export const courseRouter = createTRPCRouter({
 			return course;
 		}),
 
-	getAllCourses: protectedProcedure.query(async ({ ctx }) => {
+	getAllCourses: publicProcedure.query(async ({ ctx }) => {
 		return await courseRepository.getAllCourses(ctx.db);
 	}),
 
-	getCourseById: protectedProcedure
+	getCourseById: publicProcedure
 		.input(getCourseByIdSchema)
 		.query(async ({ input, ctx }) => {
 			const course = await courseRepository.findCourseById(ctx.db, input.id);
@@ -96,7 +96,7 @@ export const courseRouter = createTRPCRouter({
 			return course;
 		}),
 
-	getSemestersByCourseId: protectedProcedure
+	getSemestersByCourseId: publicProcedure
 		.input(getSemestersByCourseIdSchema)
 		.query(async ({ input, ctx }) => {
 			const semesters = await courseRepository.findSemesterByCourseId(
@@ -114,7 +114,7 @@ export const courseRouter = createTRPCRouter({
 			return semesters;
 		}),
 
-	getSubjectsBySemesterId: protectedProcedure
+	getSubjectsBySemesterId: publicProcedure
 		.input(getSubjectsBySemesterIdSchema)
 		.query(async ({ input, ctx }) => {
 			const subjects = await courseRepository.findSubjectBySemesterId(
@@ -132,7 +132,7 @@ export const courseRouter = createTRPCRouter({
 			return subjects;
 		}),
 
-	getUnitsBySubjectId: protectedProcedure
+	getUnitsBySubjectId: publicProcedure
 		.input(getUnitsBySubjectIdSchema)
 		.query(async ({ input, ctx }) => {
 			const subjects = await courseRepository.findUnitsBySubjectId(
@@ -150,7 +150,7 @@ export const courseRouter = createTRPCRouter({
 			return subjects;
 		}),
 
-	deleteCourse: protectedProcedure
+	deleteCourse: adminProcedure
 		.input(getCourseByIdSchema)
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "ADMIN") {

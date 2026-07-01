@@ -33,6 +33,7 @@ export function NavMain({
 								<SidebarMenuItem>
 									<SidebarMenuButton
 										className={cn(
+											"py-5",
 											isActive &&
 												"cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground",
 										)}

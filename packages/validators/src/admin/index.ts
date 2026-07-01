@@ -1,15 +1,21 @@
 import z from "zod";
-import { emailSchema, passwordSchema } from "../shared";
+import {
+	emailSchema,
+	idSchema,
+	isPaidSchema,
+	passwordSchema,
+	pdfKeySchema,
+	pdfUrlSchema,
+	priceSchema,
+	subjectIdSchema,
+	titleSchema,
+	yearSchema,
+} from "../shared";
 
 export const notesFormSchema = z.object({
-	id: z.string({
-		required_error: "ID is required",
-	}),
+	id: idSchema,
 
-	title: z
-		.string({ required_error: "Title is required" })
-		.min(2, { message: "Title must be at least 2 characters long" })
-		.max(100, { message: "Title cannot exceed 100 characters" }),
+	title: titleSchema,
 
 	metaTitle: z
 		.string({ required_error: "Meta title is required" })
@@ -46,3 +52,27 @@ export const adminLoginSchema = z.object({
 });
 
 export type AdminLoginSchema = z.infer<typeof adminLoginSchema>;
+
+export const pyqsFormSchema = z.object({
+	title: titleSchema,
+	year: yearSchema,
+	subjectId: subjectIdSchema,
+	questions: z.array(
+		z.object({
+			question: z.string({ required_error: "Question text is required" }),
+		}),
+	),
+	pdfUrl: pdfUrlSchema,
+	pdfKey: pdfKeySchema,
+
+	isPaid: isPaidSchema,
+	price: priceSchema,
+});
+
+export type PyqsFormValues = z.infer<typeof pyqsFormSchema>;
+
+export const updatePyqSchema = pyqsFormSchema.extend({
+	id: idSchema,
+});
+
+export type UpdatePyqValues = z.infer<typeof updatePyqSchema>;

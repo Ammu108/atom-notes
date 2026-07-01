@@ -12,6 +12,8 @@ if (!webUrl || !adminUrl) {
 }
 
 export const userAuth = betterAuth({
+	baseURL: process.env.BETTER_AUTH_WEB_URL,
+
 	database: drizzleAdapter(db, {
 		provider: "pg",
 		schema: {

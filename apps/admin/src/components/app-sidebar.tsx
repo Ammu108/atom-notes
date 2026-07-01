@@ -9,6 +9,7 @@ import {
 	LayoutDashboardIcon,
 	LibraryBig,
 	NotebookPen,
+	NotepadText,
 	SearchIcon,
 	Settings2Icon,
 	UsersIcon,
@@ -54,6 +55,11 @@ const data = {
 			title: "Contacts",
 			url: "/contacts",
 			icon: <ContactRound />,
+		},
+		{
+			title: "PYQs",
+			url: "/pyqs",
+			icon: <NotepadText />,
 		},
 	],
 	navClouds: [
@@ -137,8 +143,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							<div className="relative aspect-square w-12">
 								<Image
 									alt="logo"
+									className="object-contain"
 									fill
-									objectFit="contain"
 									src="/atomsNote-logo.webp"
 								/>
 							</div>

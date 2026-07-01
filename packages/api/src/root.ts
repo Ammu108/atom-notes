@@ -2,6 +2,7 @@ import { authRouter } from "./auth/routes/auth-route";
 import { contactRouter } from "./contact/routes/contact-route";
 import { courseRouter } from "./courses/routes/course-route";
 import { notesRouter } from "./notes/routes/notes-route";
+import { pyqRouter } from "./pyqs/routes/pyq-route";
 import { createCallerFactory, createTRPCRouter } from "./trpc";
 
 /**
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
 	courses: courseRouter,
 	notes: notesRouter,
 	contact: contactRouter,
+	pyqs: pyqRouter,
 });
 
 // export type definition of API

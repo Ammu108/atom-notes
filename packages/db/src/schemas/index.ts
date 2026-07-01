@@ -7,6 +7,7 @@ export * from "./chapters";
 export * from "./contact";
 export * from "./courses";
 export * from "./notes";
+export * from "./pyqs";
 export * from "./semesters";
 export * from "./subjects";
 export * from "./users";

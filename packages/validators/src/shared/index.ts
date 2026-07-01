@@ -36,3 +36,31 @@ export const messageSchema = z
 	.min(10, { message: "Message must be at least 10 characters long" })
 	.max(1000, { message: "Message cannot exceed 1000 characters" });
 export type MessageSchema = z.infer<typeof messageSchema>;
+
+export const titleSchema = z
+	.string({ required_error: "Title is required" })
+	.min(2, { message: "Title must be at least 2 characters long" })
+	.max(100, { message: "Title cannot exceed 100 characters" });
+export type TitleSchema = z.infer<typeof titleSchema>;
+
+export const subjectIdSchema = z
+	.string({ required_error: "Subject ID is required" })
+	.uuid({ message: "Invalid Subject ID format (must be a valid UUID)" });
+export type SubjectIdSchema = z.infer<typeof subjectIdSchema>;
+
+export const pdfUrlSchema = z.string().optional().nullable();
+export type PdfUrlSchema = z.infer<typeof pdfUrlSchema>;
+
+export const pdfKeySchema = z.string().optional().nullable();
+export type PdfKeySchema = z.infer<typeof pdfKeySchema>;
+
+export const isPaidSchema = z.boolean().optional();
+export type IsPaidSchema = z.infer<typeof isPaidSchema>;
+
+export const priceSchema = z.string().optional();
+export type PriceSchema = z.infer<typeof priceSchema>;
+
+export const yearSchema = z
+	.string({ required_error: "Year is required" })
+	.regex(/^\d{4}$/, { message: "Year must be a 4-digit number" });
+export type YearSchema = z.infer<typeof yearSchema>;

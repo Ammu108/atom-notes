@@ -20,8 +20,8 @@ import {
 import { Input } from "~/components/ui/input";
 import { Spinner } from "~/components/ui/spinner";
 import { api } from "~/trpc/react";
+import PdfUploader from "../../../components/pdf-monetization";
 import AcademicClassification from "./academic-classification";
-import PdfUploader from "./pdf-monetization";
 
 interface CreateNotesFormProps {
 	notes?: {
@@ -122,8 +122,6 @@ const CreateNotesForm = ({ notes, notesId }: CreateNotesFormProps) => {
 	};
 
 	const onSubmit = async (data: NotesFormValues) => {
-		console.log("button is pressed.");
-
 		if (!selectedUnitId) {
 			toast.error("Please select a unit or chapter before creating notes.");
 			return;
@@ -284,7 +282,6 @@ const CreateNotesForm = ({ notes, notesId }: CreateNotesFormProps) => {
 			</Card>
 
 			{/* PDF Uploader */}
-
 			<Card>
 				<PdfUploader
 					existingPdfKey={notes?.pdfKey}

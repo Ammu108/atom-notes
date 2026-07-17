@@ -13,8 +13,8 @@ const NotesTagView = ({ semester, subject, unit }: NoteDetailProps) => {
 			<span className="rounded-full border border-slate-300 bg-slate-50 px-3 py-1 text-slate-700 text-xs">
 				{subject}
 			</span>
-			<span className="rounded-full border border-slate-300 bg-slate-50 px-3 py-1 text-slate-700 text-xs">
-				Unit - {unit}
+			<span className="rounded-full border border-slate-300 bg-slate-50 px-3 py-1 text-[10px] text-slate-700 md:text-xs">
+				{unit}
 			</span>
 		</div>
 	);

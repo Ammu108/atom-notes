@@ -22,7 +22,7 @@ export default async function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html className={`${geist.variable}`} lang="en">
+		<html className={` ${geist.variable}`} lang="en">
 			<body className="bg-background">
 				<TRPCReactProvider>
 					<HydrateClient>

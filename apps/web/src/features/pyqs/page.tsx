@@ -65,7 +65,7 @@ const PyqsPage = () => {
 						value={pyq.id}
 					>
 						{/* Card header */}
-						<div className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
+						<div className="flex flex-col items-center justify-between gap-3 p-4 md:flex-row">
 							<div className="flex flex-wrap items-start gap-3">
 								<div className="flex flex-col">
 									<h2 className="font-bold text-card-foreground text-xl capitalize">
@@ -88,14 +88,14 @@ const PyqsPage = () => {
 								</span>
 							</div>
 
-							<div className="flex items-center gap-3">
+							<div className="flex w-full items-center justify-between gap-3 md:justify-end">
 								<AccordionTrigger className="flex items-center gap-1 rounded-lg border border-stone-200 bg-white px-3 py-1.5 font-medium text-sm text-stone-700 hover:bg-stone-50 [&>svg]:size-3.5">
-									<span className="group-data-[state=open]/item:hidden">
+									<p className="text-sm group-data-[state=open]/item:hidden">
 										{pyq.questions.length} Questions
-									</span>
-									<span className="hidden group-data-[state=open]/item:inline">
+									</p>
+									<p className="hidden group-data-[state=open]/item:inline">
 										Hide
-									</span>
+									</p>
 								</AccordionTrigger>
 
 								<Button
@@ -114,7 +114,7 @@ const PyqsPage = () => {
 							<div className="divide-y divide-stone-100 border-stone-100 border-t">
 								{pyq.questions.map((question, i) => (
 									<div
-										className="flex items-start gap-4 px-6 py-4"
+										className="flex items-start gap-4 p-4"
 										key={question.question}
 									>
 										<span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-rose-100 font-semibold text-rose-600 text-xs">

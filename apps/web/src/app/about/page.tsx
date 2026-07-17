@@ -8,6 +8,7 @@ import {
 	Zap,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { Container } from "~/components/container";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
@@ -67,7 +68,7 @@ const founders = [
 		role: "Co-Founder & CEO",
 		avatar: "/rishabh-img.webp",
 		Education: "MCA - Present",
-		bio: "Rishabh Jha is the Founder & CEO of Atom Notes, responsible for shaping the platform’s design vision, user experience, and creative direction. With a strong interest in UI/UX Design, user behavior, and digital experiences, Rishabh designed the complete structure, interface, and visual identity of Atom Notes. From planning the website flow to creating an intuitive user journey, he focuses on making the platform simple, engaging, and easy for students to navigate. His work revolves around understanding student needs, creating meaningful designs, and improving the overall experience through thoughtful UX decisions. Along with design, Rishabh also contributes to product strategy, content planning, and building the overall direction of Atom Notes to ensure that the platform solves real problems faced by students.",
+		bio: "Rishabh Jha is the Co-Founder & CEO of Atom Notes, responsible for shaping the platform’s design vision, user experience, and creative direction. With a strong interest in UI/UX Design, user behavior, and digital experiences, Rishabh designed the complete structure, interface, and visual identity of Atom Notes. From planning the website flow to creating an intuitive user journey, he focuses on making the platform simple, engaging, and easy for students to navigate. His work revolves around understanding student needs, creating meaningful designs, and improving the overall experience through thoughtful UX decisions. Along with design, Rishabh also contributes to product strategy, content planning, and building the overall direction of Atom Notes to ensure that the platform solves real problems faced by students.",
 		linkedin:
 			"https://www.linkedin.com/in/rishabh-jha-7883a3270?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
 		portfolio: "https://rishabh-portfolio-tau.vercel.app/",
@@ -216,7 +217,9 @@ export default function AboutPage() {
 							Browse notes by your semester and subject — find exactly what you
 							need.
 						</p>
-						<Button size="sm"> Browse Notes</Button>
+						<Link href="/browse">
+							<Button size="sm"> Browse Notes</Button>
+						</Link>
 					</div>
 				</section>
 			</div>

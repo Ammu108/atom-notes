@@ -1,3 +1,5 @@
+import { ChevronDown } from "lucide-react";
+
 interface NotesHeaderView {
 	title: string;
 	price: string;
@@ -13,10 +15,15 @@ const NotesHeaderView = ({ title, price }: NotesHeaderView) => {
 			</div>
 			{/* Preview Banner */}
 			<div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-gray-700 text-sm">
-				<span className="text-base text-green-500">✅</span>
-				You're reading the{" "}
-				<span className="font-semibold text-green-700">free preview</span>. The
-				full note is available for download at ₹{price}.
+				<p className="text-base text-green-500">✅</p>
+				<p>
+					You're reading the{" "}
+					<span className="font-semibold text-green-700">free preview</span>.
+					The full note is available for download at ₹{price}.
+				</p>
+				<a className="md:hidden" href="#buyPdf">
+					<ChevronDown className="size-6" />
+				</a>
 			</div>
 		</div>
 	);

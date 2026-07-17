@@ -29,8 +29,8 @@ const NoteDetailPage = ({ slug }: NoteDetailPageProps) => {
 	}
 
 	return (
-		<div className="w-full pt-24">
-			<div className="flex gap-10 px-6 pb-16">
+		<div className="w-full pt-20 md:pt-24">
+			<div className="flex flex-col gap-10 pb-16 md:flex-row md:px-6">
 				{/* Main Content */}
 				<div>
 					{/* Tags */}
@@ -50,7 +50,7 @@ const NoteDetailPage = ({ slug }: NoteDetailPageProps) => {
 				</div>
 
 				{/* Sidebar */}
-				<div className="w-1/2">
+				<div className="scroll-mt-24 md:w-1/3" id="buyPdf">
 					<NoteSidebar price={notes.pdfPrice} unitName={notes.unitName} />
 				</div>
 			</div>

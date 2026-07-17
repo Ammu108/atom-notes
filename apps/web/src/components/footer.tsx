@@ -14,8 +14,8 @@ export default function Footer() {
 		<footer className="mt-16 w-full bg-card">
 			{/* ── Main footer content ── */}
 			<Container className="mx-auto">
-				<div className="w-full px-4 py-12">
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+				<div className="w-full py-12">
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 						<div className="flex max-w-sm flex-col gap-4">
 							{/* Logo */}
 							<div className="flex flex-row items-center gap-2">
@@ -43,9 +43,9 @@ export default function Footer() {
 						</div>
 
 						{/* ── CENTER: Company links ── */}
-						<div className="flex flex-col gap-4 sm:items-center">
+						<div className="flex flex-col sm:items-center md:gap-4">
 							<h3 className="font-bold text-foreground text-lg">Company</h3>
-							<ul className="flex flex-col gap-3">
+							<ul className="flex flex-col gap-1">
 								{COMPANY_LINKS.map((link) => (
 									<li key={link.href}>
 										<Link
@@ -72,7 +72,7 @@ export default function Footer() {
 			{/* ── Divider + Copyright ── */}
 			<div className="border-slate-400/40 border-t">
 				<div className="mx-auto max-w-7xl px-6 py-4 text-center">
-					<p className="text-muted-foreground text-sm">
+					<p className="text-muted-foreground text-xs md:text-sm">
 						© 2026 AtomsNote App. All Rights Reserved.
 					</p>
 				</div>

@@ -44,7 +44,7 @@ const ContactForm = () => {
 
 	return (
 		<div className="animate-fadeUp-1 lg:col-span-2">
-			<div className="rounded-2xl border border-border/50 bg-card p-8">
+			<div className="rounded-2xl border border-border/50 bg-card p-4 md:p-8">
 				<h2 className="mb-8 font-bold font-playfair text-2xl text-foreground">
 					Send us a Message
 				</h2>

@@ -274,11 +274,13 @@ const CreateNotesForm = ({ notes, notesId }: CreateNotesFormProps) => {
 
 			{/*Rich  Text Editor */}
 
-			<Card>
-				<Tiptap
-					initialContent={editorContent}
-					onChange={(json) => setEditorContent(json)}
-				/>
+			<Card className="py-0">
+				<div className="h-175 overflow-y-auto">
+					<Tiptap
+						initialContent={editorContent}
+						onChange={(json) => setEditorContent(json)}
+					/>
+				</div>
 			</Card>
 
 			{/* PDF Uploader */}

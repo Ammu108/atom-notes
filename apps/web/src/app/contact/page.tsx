@@ -9,7 +9,7 @@ const Contact = () => {
 				<section className="mx-auto max-w-6xl px-4 pt-24 pb-16">
 					<div className="text-center">
 						<div>
-							<h1 className="font-bold font-playfair text-5xl text-foreground leading-tight sm:text-6xl">
+							<h1 className="font-bold font-playfair text-4xl text-foreground leading-tight sm:text-6xl">
 								We'd Love to <span className="text-primary">Hear From You</span>
 							</h1>
 						</div>
@@ -47,7 +47,7 @@ const Contact = () => {
 								},
 							].map(({ icon, title, content }) => (
 								<div
-									className="group rounded-2xl border border-border/50 bg-card p-6 transition-all duration-300 hover:border-accent hover:bg-secondary/50"
+									className="group rounded-2xl border border-border/50 bg-card p-4"
 									key={title}
 								>
 									<div className="mb-3 text-3xl">{icon}</div>
@@ -98,7 +98,7 @@ const Contact = () => {
 							},
 						].map(({ question, answer }) => (
 							<div
-								className="group rounded-2xl border border-border/50 bg-card p-6 transition-all duration-300 hover:border-accent hover:bg-secondary/50"
+								className="group rounded-2xl border border-border/50 bg-card p-4"
 								key={question}
 							>
 								<h3 className="mb-3 font-semibold text-foreground text-lg">

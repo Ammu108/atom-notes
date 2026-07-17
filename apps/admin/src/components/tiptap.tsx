@@ -13,6 +13,7 @@ import {
 	useEditor,
 	useEditorState,
 } from "@tiptap/react";
+import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import {
 	BoldIcon,
@@ -34,6 +35,7 @@ import {
 import ResizeImage from "tiptap-extension-resize-image";
 import { useUploadThing } from "~/lib/uploadthing";
 import LinkComponent from "./link-component";
+import TabIndent from "./tab-indent";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -73,6 +75,7 @@ const Tiptap = ({
 				allowBase64: true,
 			}),
 			ResizeImage,
+			TabIndent,
 		],
 		content: initialContent ?? "<p>Hello World!</p>",
 		editorProps: {
@@ -81,11 +84,9 @@ const Tiptap = ({
 					"prose dark:prose-invert prose-sm sm:prose-base focus:outline-none max-w-none",
 			},
 		},
-		// Don't render immediately on the server to avoid SSR issues
 		immediatelyRender: false,
 		onUpdate: ({ editor }) => {
 			const json = editor.getJSON();
-			// notify parent of editor JSON changes
 			if (onChange) onChange(json);
 			console.log(json);
 		},
@@ -96,8 +97,178 @@ const Tiptap = ({
 			{editor && <ToolBar editor={editor} />}
 			<div className="mt-2 px-4">
 				<EditorContent editor={editor} />
+				{editor && (
+					<BubbleMenu editor={editor}>
+						<div className="flex items-center gap-1 rounded-md border border-border bg-background p-1 shadow-md">
+							<HeadingSelect className="h-8 w-28 text-xs" editor={editor} />
+							<Toggle
+								aria-label="Toggle bold"
+								onPressedChange={() =>
+									editor.chain().focus().toggleBold().run()
+								}
+								pressed={editor.isActive("bold")}
+								size="sm"
+								variant="outline"
+							>
+								<BoldIcon className="size-4" />
+							</Toggle>
+							<Toggle
+								aria-label="Toggle italic"
+								onPressedChange={() =>
+									editor.chain().focus().toggleItalic().run()
+								}
+								pressed={editor.isActive("italic")}
+								size="sm"
+								variant="outline"
+							>
+								<ItalicIcon className="size-4" />
+							</Toggle>
+							<Toggle
+								aria-label="Toggle underline"
+								onPressedChange={() =>
+									editor.chain().focus().toggleUnderline().run()
+								}
+								pressed={editor.isActive("underline")}
+								size="sm"
+								variant="outline"
+							>
+								<UnderlineIcon className="size-4" />
+							</Toggle>
+							<Toggle
+								aria-label="Toggle highlight"
+								onPressedChange={() =>
+									editor
+										.chain()
+										.focus()
+										.toggleHighlight({ color: "#ff3c00" })
+										.run()
+								}
+								pressed={editor.isActive("highlight")}
+								size="sm"
+								variant="outline"
+							>
+								<HighlighterIcon className="size-4" />
+							</Toggle>
+							<Toggle
+								aria-label="Toggle bullet list"
+								onPressedChange={() =>
+									editor.chain().focus().toggleBulletList().run()
+								}
+								pressed={editor.isActive("bulletList")}
+								size="sm"
+								variant="outline"
+							>
+								<ListIcon className="size-4" />
+							</Toggle>
+							<Toggle
+								aria-label="Toggle ordered list"
+								onPressedChange={() =>
+									editor.chain().focus().toggleOrderedList().run()
+								}
+								pressed={editor.isActive("orderedList")}
+								size="sm"
+								variant="outline"
+							>
+								<ListOrderedIcon className="size-4" />
+							</Toggle>
+							{editor.isActive("link") ? (
+								<Toggle
+									aria-label="Remove link"
+									onPressedChange={() =>
+										editor
+											.chain()
+											.focus()
+											.extendMarkRange("link")
+											.unsetLink()
+											.run()
+									}
+									pressed
+									size="sm"
+									variant="outline"
+								>
+									<LinkIcon className="size-4" />
+								</Toggle>
+							) : (
+								<LinkComponent editor={editor}>
+									<Toggle aria-label="Toggle link" size="sm" variant="outline">
+										<LinkIcon className="size-4" />
+									</Toggle>
+								</LinkComponent>
+							)}
+						</div>
+					</BubbleMenu>
+				)}
 			</div>
 		</>
+	);
+};
+
+/**
+ * Shared heading dropdown used by both the fixed ToolBar and the BubbleMenu.
+ * Takes a non-nullable `editor` prop so callers never need extra null-checks.
+ */
+const HeadingSelect = ({
+	editor,
+	className,
+}: {
+	editor: Editor;
+	className?: string;
+}) => {
+	const state = useEditorState({
+		editor,
+		selector: (ctx) => ({
+			isHeading2: ctx.editor.isActive("heading", { level: 2 }) ?? false,
+			isHeading3: ctx.editor.isActive("heading", { level: 3 }) ?? false,
+			isHeading4: ctx.editor.isActive("heading", { level: 4 }) ?? false,
+			isHeading5: ctx.editor.isActive("heading", { level: 5 }) ?? false,
+			isHeading6: ctx.editor.isActive("heading", { level: 6 }) ?? false,
+		}),
+	});
+
+	const handleHeadingChange = (value: string | null) => {
+		if (!value || value === "paragraph") {
+			editor.chain().focus().setParagraph().run();
+		} else {
+			const level = Number.parseInt(value.replace("heading", ""), 10) as
+				| 1
+				| 2
+				| 3
+				| 4
+				| 5
+				| 6;
+			editor.chain().focus().setHeading({ level }).run();
+		}
+	};
+
+	const value = state.isHeading2
+		? "heading2"
+		: state.isHeading3
+			? "heading3"
+			: state.isHeading4
+				? "heading4"
+				: state.isHeading5
+					? "heading5"
+					: state.isHeading6
+						? "heading6"
+						: "paragraph";
+
+	return (
+		<Select onValueChange={handleHeadingChange} value={value}>
+			<SelectTrigger className={className ?? "w-full max-w-48"}>
+				<SelectValue placeholder="paragraph" />
+			</SelectTrigger>
+			<SelectContent>
+				<SelectGroup>
+					<SelectLabel>Text Style</SelectLabel>
+					<SelectItem value="paragraph">Paragraph</SelectItem>
+					<SelectItem value="heading2">Heading 2</SelectItem>
+					<SelectItem value="heading3">Heading 3</SelectItem>
+					<SelectItem value="heading4">Heading 4</SelectItem>
+					<SelectItem value="heading5">Heading 5</SelectItem>
+					<SelectItem value="heading6">Heading 6</SelectItem>
+				</SelectGroup>
+			</SelectContent>
+		</Select>
 	);
 };
 
@@ -117,11 +288,6 @@ const ToolBar = ({ editor }: { editor: Editor }) => {
 				isLink: ctx.editor.isActive("link") ?? false,
 				isHorizontalRule: ctx.editor.isActive("horizontalRule") ?? false,
 				isTable: ctx.editor.isActive("table") ?? false,
-				isHeading2: ctx.editor.isActive("heading", { level: 2 }) ?? false,
-				isHeading3: ctx.editor.isActive("heading", { level: 3 }) ?? false,
-				isHeading4: ctx.editor.isActive("heading", { level: 4 }) ?? false,
-				isHeading5: ctx.editor.isActive("heading", { level: 5 }) ?? false,
-				isHeading6: ctx.editor.isActive("heading", { level: 6 }) ?? false,
 				paragraph: ctx.editor.isActive("paragraph") ?? false,
 			};
 		},
@@ -145,56 +311,10 @@ const ToolBar = ({ editor }: { editor: Editor }) => {
 		console.log("image url", imageUrl);
 	};
 
-	const handleHeadingChange = (value: string | null) => {
-		if (!value || value === "paragraph") {
-			editor.chain().focus().setParagraph().run();
-		} else {
-			const level = Number.parseInt(value.replace("heading", ""), 10) as
-				| 1
-				| 2
-				| 3
-				| 4
-				| 5
-				| 6;
-			editor.chain().focus().setHeading({ level }).run();
-		}
-	};
-
-	if (!editor) return null;
-
 	return (
-		<div className="flex flex-wrap items-center gap-2 border-border border-b p-2">
-			<Select
-				onValueChange={handleHeadingChange}
-				value={
-					state.isHeading2
-						? "heading2"
-						: state.isHeading3
-							? "heading3"
-							: state.isHeading4
-								? "heading4"
-								: state.isHeading5
-									? "heading5"
-									: state.isHeading6
-										? "heading6"
-										: "paragraph"
-				}
-			>
-				<SelectTrigger className="w-full max-w-48">
-					<SelectValue placeholder="paragraph" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectGroup>
-						<SelectLabel>Text Style</SelectLabel>
-						<SelectItem value="paragraph">Paragraph</SelectItem>
-						<SelectItem value="heading2">Heading 2</SelectItem>
-						<SelectItem value="heading3">Heading 3</SelectItem>
-						<SelectItem value="heading4">Heading 4</SelectItem>
-						<SelectItem value="heading5">Heading 5</SelectItem>
-						<SelectItem value="heading6">Heading 6</SelectItem>
-					</SelectGroup>
-				</SelectContent>
-			</Select>
+		<div className="sticky top-0 left-0 z-10 flex flex-wrap items-center gap-2 border-border border-b bg-card p-4">
+			<HeadingSelect className="w-full max-w-48" editor={editor} />
+
 			<Toggle
 				aria-label="Toggle bold"
 				onPressedChange={() => editor.chain().focus().toggleBold().run()}

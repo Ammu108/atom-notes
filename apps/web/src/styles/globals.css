@@ -290,3 +290,16 @@
 .dark .ProseMirror table th {
 	background: #1e293b;
 }
+
+/* TipTap table: scroll horizontally instead of squishing */
+.tableWrapper {
+	overflow-x: auto;
+	margin: 1rem 0;
+}
+
+.tableWrapper table {
+	border-collapse: collapse;
+	table-layout: auto;
+	width: max-content;
+	min-width: 100%;
+}

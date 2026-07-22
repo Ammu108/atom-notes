@@ -107,6 +107,7 @@ export function UsersTable() {
 						<TableRow>
 							<TableHead>Name</TableHead>
 							<TableHead>Email</TableHead>
+							<TableHead>Verified</TableHead>
 							<TableHead>Role</TableHead>
 							<TableHead>Created</TableHead>
 							<TableHead className="text-right">Action</TableHead>
@@ -118,6 +119,9 @@ export function UsersTable() {
 								<TableRow key={rowId}>
 									<TableCell>
 										<Skeleton className="h-4 w-32" />
+									</TableCell>
+									<TableCell>
+										<Skeleton className="h-4 w-48" />
 									</TableCell>
 									<TableCell>
 										<Skeleton className="h-4 w-48" />
@@ -149,6 +153,17 @@ export function UsersTable() {
 								<TableRow key={user.id}>
 									<TableCell className="font-medium">{user.name}</TableCell>
 									<TableCell>{user.email}</TableCell>
+									<TableCell>
+										<div
+											className={`inline-flex rounded-full border px-2 py-1 ${
+												user.emailVerified
+													? "border-green-500"
+													: "border-amber-500"
+											}`}
+										>
+											{user.emailVerified ? "Verified" : "Pending"}
+										</div>
+									</TableCell>
 									<TableCell>
 										<Badge className="capitalize" variant="outline">
 											{user.role}

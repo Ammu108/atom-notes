@@ -5,6 +5,7 @@ import { DialogHeader } from "~/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import Login from "~/features/auth/components/login";
 import SignUp from "~/features/auth/components/signup";
+import SocialProviders from "~/features/auth/components/social-providers";
 
 const AuthPage = () => {
 	const router = useRouter();
@@ -66,17 +67,19 @@ const AuthPage = () => {
 					</TabsContent>
 				</Tabs>
 
-				{/* Footer */}
-				<p className="mt-5 text-center text-gray-400 text-xs">
-					By continuing, you agree to our{" "}
-					<a
-						className="underline transition-colors hover:text-gray-600"
-						href="/terms"
-					>
-						Terms of Service
-					</a>
-					.
-				</p>
+				<div className="mt-4 flex flex-col items-center gap-2">
+					<SocialProviders />
+					<p className="text-center text-gray-400 text-xs">
+						By continuing, you agree to our{" "}
+						<a
+							className="underline transition-colors hover:text-gray-600"
+							href="/terms"
+						>
+							Terms of Service
+						</a>
+						.
+					</p>
+				</div>
 			</div>
 		</div>
 	);

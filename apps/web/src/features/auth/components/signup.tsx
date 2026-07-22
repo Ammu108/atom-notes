@@ -57,7 +57,7 @@ const SignUp = () => {
 	return (
 		<div className="w-full">
 			<form onSubmit={form.handleSubmit(onSubmit)}>
-				<div className="flex flex-col gap-6">
+				<div className="flex flex-col gap-4">
 					<div className="grid gap-2">
 						<Controller
 							control={form.control}

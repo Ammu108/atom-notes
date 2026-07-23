@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { adminAuthClient } from "@repo/api/admin-client";
 import { cn } from "@repo/ui";
 import { type AdminLoginSchema, adminLoginSchema } from "@repo/validators";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -30,6 +31,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 
 	const form = useForm<AdminLoginSchema>({
 		resolver: zodResolver(adminLoginSchema),
@@ -103,12 +105,28 @@ export function LoginForm({
 								render={({ field, fieldState }) => (
 									<Field data-invalid={fieldState.invalid}>
 										<FieldLabel htmlFor={field.name}>Password</FieldLabel>
-										<Input
-											{...field}
-											aria-invalid={fieldState.invalid}
-											id={field.name}
-											placeholder="password"
-										/>
+										<div className="relative">
+											<Input
+												{...field}
+												aria-invalid={fieldState.invalid}
+												className="pr-10"
+												id={field.name}
+												placeholder="Enter your password"
+												type={showPassword ? "text" : "password"}
+											/>
+
+											<button
+												className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+												onClick={() => setShowPassword((prev) => !prev)}
+												type="button"
+											>
+												{showPassword ? (
+													<Eye className="h-4 w-4" />
+												) : (
+													<EyeOff className="h-4 w-4" />
+												)}
+											</button>
+										</div>
 										{fieldState.invalid && (
 											<FieldError errors={[fieldState.error]} />
 										)}

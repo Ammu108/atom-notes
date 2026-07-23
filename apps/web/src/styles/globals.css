@@ -51,11 +51,11 @@
 		--secondary: hsl(210 40% 96%);
 		--secondary-foreground: hsl(222 47% 11%);
 
-		--muted: hsl(210 40% 96%);
-		--muted-foreground: hsl(215 16% 11%);
+		--muted: hsl(0, 0%, 62%);
+		--muted-foreground: hsl(229, 6%, 39%);
 
-		--accent: hsl(217 91% 60% / 0.1); /* Subtle primary tint */
-		--accent-foreground: hsl(217 91% 60%);
+		--accent: hsla(218, 66%, 71%, 0.1); /* Subtle primary tint */
+		--accent-foreground: hsl(217, 59%, 57%);
 
 		--destructive: hsl(0, 84.2%, 60.2%);
 		--destructive-foreground: hsl(210 40% 98%);

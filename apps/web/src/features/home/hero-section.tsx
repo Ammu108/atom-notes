@@ -57,7 +57,7 @@ export default function HeroSection() {
 					{/* CTA Buttons */}
 					<div className="flex flex-col items-center gap-3 transition-all delay-300 duration-700 ease-out sm:flex-row sm:gap-4">
 						<Link href={"/browse"}>
-							<Button>Browse Notes</Button>
+							<Button variant="primary">Browse Notes</Button>
 						</Link>
 						<Link href={"/pyqs"}>
 							<Button variant="outline">View PYQs</Button>

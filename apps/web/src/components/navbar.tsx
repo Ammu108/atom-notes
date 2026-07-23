@@ -1,13 +1,13 @@
 "use client";
 
 import { userAuthClient } from "@repo/api/user-client";
-import { Button } from "@repo/ui";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import ProfileDropdown from "./kokonutui/profile-dropdown";
+import { Button } from "./ui/button";
 
 const NAV_LINKS = [
 	{ label: "Home", href: "/" },

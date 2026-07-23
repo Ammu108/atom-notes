@@ -22,7 +22,7 @@ const SocialProviders = () => {
 					alt="logo"
 					className="h-full w-full"
 					fill
-					src="/google-img.png"
+					src="/google-img.webp"
 				/>
 			</div>
 			<p>Continue With Google</p>

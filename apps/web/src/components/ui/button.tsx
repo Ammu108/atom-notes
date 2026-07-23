@@ -5,15 +5,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "~/lib/utils";
 
 const buttonVariants = cva(
-	"group/button inline-flex shrink-0 cursor-pointer select-none items-center justify-center whitespace-nowrap rounded-xl border border-transparent bg-clip-padding font-medium text-sm outline-none transition-all hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+	"group/button inline-flex shrink-0 cursor-pointer select-none items-center justify-center whitespace-nowrap rounded-xl border border-transparent bg-clip-padding font-medium text-sm outline-none transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
 	{
 		variants: {
 			variant: {
 				default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
 				outline:
-					"cursor-pointer border-2 border-foreground text-foreground hover:bg-foreground hover:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 aria-expanded:bg-muted aria-expanded:text-foreground",
+					"cursor-pointer border-2 border-muted text-foreground hover:bg-muted/20 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 aria-expanded:bg-muted aria-expanded:text-foreground",
 				primary:
-					"bg-primary text-primary-foreground hover:bg-primary/80 aria-expanded:bg-primary aria-expanded:text-primary-foreground",
+					"bg-primary text-primary-foreground hover:bg-red-700 aria-expanded:bg-primary aria-expanded:text-primary-foreground",
 				ghost:
 					"hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
 				destructive:

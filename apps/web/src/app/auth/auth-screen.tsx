@@ -69,7 +69,7 @@ const AuthPage = () => {
 
 				<div className="mt-4 flex flex-col items-center gap-2">
 					<SocialProviders />
-					<p className="text-center text-gray-400 text-xs">
+					<p className="text-center text-muted-foreground text-xs">
 						By continuing, you agree to our{" "}
 						<a
 							className="underline transition-colors hover:text-gray-600"

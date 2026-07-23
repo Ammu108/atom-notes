@@ -1,17 +1,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userAuthClient } from "@repo/api/user-client";
-import { Button, Input } from "@repo/ui";
+import { Input } from "@repo/ui";
 import { type SignUpSchema, signUpSchema } from "@repo/validators";
+import { Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
 import { Field, FieldError, FieldLabel } from "~/components/ui/field";
 import { Spinner } from "~/components/ui/spinner";
 
 const SignUp = () => {
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 
 	const form = useForm<SignUpSchema>({
 		resolver: zodResolver(signUpSchema),
@@ -107,15 +110,28 @@ const SignUp = () => {
 							render={({ field, fieldState }) => (
 								<Field data-invalid={fieldState.invalid}>
 									<FieldLabel htmlFor={field.name}>Password</FieldLabel>
-									<Input
-										{...field}
-										aria-invalid={fieldState.invalid}
-										id={field.name}
-										placeholder="password"
-									/>
-									{fieldState.invalid && (
-										<FieldError errors={[fieldState.error]} />
-									)}
+									<div className="relative">
+										<Input
+											{...field}
+											aria-invalid={fieldState.invalid}
+											className="pr-10"
+											id={field.name}
+											placeholder="Enter your password"
+											type={showPassword ? "text" : "password"}
+										/>
+
+										<button
+											className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+											onClick={() => setShowPassword((prev) => !prev)}
+											type="button"
+										>
+											{showPassword ? (
+												<Eye className="h-4 w-4" />
+											) : (
+												<EyeOff className="h-4 w-4" />
+											)}
+										</button>
+									</div>
 								</Field>
 							)}
 						/>
@@ -125,6 +141,7 @@ const SignUp = () => {
 						disabled={isLoading}
 						size="xs"
 						type="submit"
+						variant="primary"
 					>
 						{isLoading ? <Spinner /> : "Sign Up"}
 					</Button>

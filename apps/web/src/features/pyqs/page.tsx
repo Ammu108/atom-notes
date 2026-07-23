@@ -102,6 +102,7 @@ const PyqsPage = () => {
 									onClick={() => handleDialog(pyq)}
 									size="xs"
 									type="button"
+									variant="primary"
 								>
 									<FileTextIcon className="size-4" />
 									Download PDF

@@ -35,6 +35,7 @@ const NoteSidebar = ({ unitName, price }: SidebarProps) => {
 						className="w-full font-semibold"
 						onClick={handleBuyNotes}
 						size="sm"
+						variant="primary"
 					>
 						Buy Now · ₹{price}
 					</Button>

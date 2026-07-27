@@ -1,5 +1,6 @@
 import { generateSlug } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
+import { z } from "zod";
 import { adminProcedure, createTRPCRouter, publicProcedure } from "../../trpc";
 import { courseRepository } from "../repositories/course-repositary";
 import { coursesService } from "../services/courses-service";
@@ -132,6 +133,25 @@ export const courseRouter = createTRPCRouter({
 			return subjects;
 		}),
 
+	getSubjectsBySemester: publicProcedure
+		.input(z.object({ courseId: z.string(), semesterId: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const semester = await courseRepository.findSubjectsBySemester(
+				ctx.db,
+				input.courseId,
+				input.semesterId,
+			);
+
+			if (!semester) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "semesters not found!",
+				});
+			}
+
+			return semester;
+		}),
+
 	getUnitsBySubjectId: publicProcedure
 		.input(getUnitsBySubjectIdSchema)
 		.query(async ({ input, ctx }) => {
@@ -170,5 +190,14 @@ export const courseRouter = createTRPCRouter({
 			}
 
 			return course;
+		}),
+
+	getRemainingSemesters: publicProcedure
+		.input(z.object({ semesterId: z.string() }))
+		.query(async ({ input, ctx }) => {
+			return await courseRepository.getRemainingSemesters(
+				ctx.db,
+				input.semesterId,
+			);
 		}),
 });

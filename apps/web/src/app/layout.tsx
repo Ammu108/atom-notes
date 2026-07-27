@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
+import Script from "next/script";
 import { AppShell } from "~/components/app-shell";
 import { Toaster } from "~/components/ui/sonner";
 import { TRPCReactProvider } from "~/trpc/react";
@@ -30,6 +31,11 @@ export default async function RootLayout({
 						<Toaster position="top-center" />
 					</HydrateClient>
 				</TRPCReactProvider>
+
+				<Script
+					src="https://checkout.razorpay.com/v1/checkout.js"
+					strategy="afterInteractive"
+				/>
 			</body>
 		</html>
 	);

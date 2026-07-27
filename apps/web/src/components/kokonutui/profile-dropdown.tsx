@@ -69,7 +69,7 @@ export default function ProfileDropdown({
 		<div className={cn("relative", className)} {...props}>
 			<DropdownMenu onOpenChange={setIsOpen}>
 				<div className="group relative">
-					<DropdownMenuTrigger className="flex items-center gap-16 rounded-full bg-muted p-0.5 transition-all duration-200 hover:cursor-pointer md:px-2 md:py-1">
+					<DropdownMenuTrigger className="flex items-center gap-16 rounded-full bg-accent p-0.5 transition-all duration-200 hover:cursor-pointer md:px-2 md:py-1">
 						<div className="h-9 w-9 rounded-full p-0.5 md:h-10 md:w-10">
 							<IconUserCircle className="h-full w-full rounded-full text-card-foreground" />
 						</div>

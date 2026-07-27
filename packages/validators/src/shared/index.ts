@@ -64,3 +64,13 @@ export const yearSchema = z
 	.string({ required_error: "Year is required" })
 	.regex(/^\d{4}$/, { message: "Year must be a 4-digit number" });
 export type YearSchema = z.infer<typeof yearSchema>;
+
+export const createOrderSchema = z.object({
+	noteId: z.string(),
+});
+
+export const paymentServiceSchema = z.object({
+	userId: idSchema,
+	noteId: idSchema,
+});
+export type PaymentServiceSchema = z.infer<typeof paymentServiceSchema>;

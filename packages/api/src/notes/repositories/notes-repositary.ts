@@ -7,7 +7,9 @@ import {
 	subjects,
 } from "@repo/db";
 import { generateSlug } from "@repo/shared";
+import { TRPCError } from "@trpc/server";
 import { and, desc, eq, ilike, or } from "drizzle-orm";
+import { paymentRepository } from "../../payment/repositories/payment-repository";
 import type { NoteType } from "../types";
 
 export const notesRepository = {
@@ -72,7 +74,7 @@ export const notesRepository = {
 		return note;
 	},
 
-	async getNotesBySlug(db: DB, slug: string) {
+	async getNotesBySlug(db: DB, userId: string | undefined, slug: string) {
 		const [note] = await db
 			.select({
 				id: notes.id,
@@ -96,7 +98,22 @@ export const notesRepository = {
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
 			.limit(1);
 
-		return note;
+		const hasPurchased =
+			note?.isPaid && userId
+				? await paymentRepository.hasPurchased(userId, note.id)
+				: false;
+
+		if (!note) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Note not found!",
+			});
+		}
+
+		return {
+			...note,
+			hasPurchased,
+		};
 	},
 
 	async getAllNotesAdmin(db: DB) {

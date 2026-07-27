@@ -32,29 +32,28 @@ const Toaster = ({ ...props }: ToasterProps) => {
 					"--normal-border": "var(--border)",
 					"--border-radius": "1rem",
 
-					// Error (Destructive) - Using color-mix for a soft 10% opacity background
+					// Error (Destructive) - Fixed syntax and clear red text fallback
 					"--error-bg":
-						"color-mix(in srgb, var(--destructive) 12%, var(--popover))",
-					"--error-text":
-						"color-mix(in srgb, var(--destructive) 120%, #ff4d4d)",
+						"color-mix(in srgb, var(--destructive, #ef4444) 12%, var(--popover))",
+					"--error-text": "var(--destructive, #dc2626)",
 					"--error-border":
-						"color-mix(in srgb, var(--destructive) 30%, transparent)",
+						"color-mix(in srgb, var(--destructive, #ef4444) 30%, transparent)",
 
-					// Success - Fallback to standard emerald/green if --success isn't in globals.css
+					// Success
 					"--success-bg":
 						"color-mix(in srgb, var(--success, #10b981) 12%, var(--popover))",
 					"--success-text": "var(--success, #059669)",
 					"--success-border":
 						"color-mix(in srgb, var(--success, #10b981) 30%, transparent)",
 
-					// Warning - Fallback to standard amber/yellow
+					// Warning
 					"--warning-bg":
 						"color-mix(in srgb, var(--warning, #f59e0b) 12%, var(--popover))",
 					"--warning-text": "var(--warning, #d97706)",
 					"--warning-border":
 						"color-mix(in srgb, var(--warning, #f59e0b) 30%, transparent)",
 
-					// Info - Fallback to standard blue
+					// Info
 					"--info-bg":
 						"color-mix(in srgb, var(--info, #3b82f6) 12%, var(--popover))",
 					"--info-text": "var(--info, #2563eb)",
@@ -66,6 +65,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
 			toastOptions={{
 				classNames: {
 					toast: "cn-toast",
+					error: "!text-red-600 dark:!text-red-400", // Guarantees red text even if CSS variables lag
 				},
 			}}
 			{...props}

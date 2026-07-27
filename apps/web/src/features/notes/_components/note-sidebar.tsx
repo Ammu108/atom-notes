@@ -1,16 +1,31 @@
-import { toast } from "sonner";
+import { Check } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
+import BuyNoteButton from "./buy-note-button";
+import DownloadNotePdf from "./download-note-button";
 
 interface SidebarProps {
+	noteId: string;
 	unitName: string;
 	price: string;
+	isPaid: boolean;
+	hasPurchased: boolean;
+	slug: string;
 }
 
-const NoteSidebar = ({ unitName, price }: SidebarProps) => {
-	const handleBuyNotes = () => {
-		toast.info("Payment Gateway coming soon...");
-	};
+const NoteSidebar = ({
+	noteId,
+	unitName,
+	price,
+	isPaid,
+	hasPurchased,
+	slug,
+}: SidebarProps) => {
+	const router = useRouter();
 
+	const handleNavigateToBrowse = () => {
+		router.push("/browse");
+	};
 	return (
 		<div className="sticky top-28">
 			{/* Download Card */}
@@ -23,22 +38,41 @@ const NoteSidebar = ({ unitName, price }: SidebarProps) => {
 
 			{/* Pricing Card */}
 			<div className="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-				<div className="flex flex-col items-baseline gap-1">
-					<span className="font-extrabold text-3xl text-primary">₹{price}</span>
-					<p className="font-medium text-green-600 text-xs">
-						✓ One-time purchase · PDF forever
-					</p>
+				<div className="flex items-center justify-between">
+					<div className="flex flex-col items-baseline gap-1">
+						<span className="font-extrabold text-3xl text-primary">
+							₹{price}
+						</span>
+						<p className="font-medium text-green-600 text-xs">
+							✓ One-time purchase · PDF forever
+						</p>
+					</div>
+					{isPaid ? (
+						hasPurchased ? (
+							<div className="flex items-center gap-2 rounded-xl border border-border bg-accent px-2 py-1">
+								<Check className="h-4 w-4 text-accent-foreground" />
+								<p className="font-medium text-accent-foreground text-sm">
+									Paid
+								</p>
+							</div>
+						) : null
+					) : (
+						<div className="flex items-center gap-2 rounded-xl border border-border bg-success/10 px-2 py-1">
+							<p className="font-medium text-sm text-success">Free</p>
+						</div>
+					)}
 				</div>
 
 				<div className="w-full">
-					<Button
-						className="w-full font-semibold"
-						onClick={handleBuyNotes}
-						size="sm"
-						variant="primary"
-					>
-						Buy Now · ₹{price}
-					</Button>
+					{isPaid ? (
+						hasPurchased ? (
+							<DownloadNotePdf noteId={noteId} />
+						) : (
+							<BuyNoteButton noteId={noteId} price={price} slug={slug} />
+						)
+					) : (
+						<DownloadNotePdf noteId={noteId} />
+					)}
 				</div>
 
 				{/* What's Included */}
@@ -53,7 +87,12 @@ const NoteSidebar = ({ unitName, price }: SidebarProps) => {
 					</ul>
 				</div>
 
-				<Button className="w-full" size="xs" variant="outline">
+				<Button
+					className="w-full"
+					onClick={handleNavigateToBrowse}
+					size="xs"
+					variant="outline"
+				>
 					Back to All Notes
 				</Button>
 			</div>

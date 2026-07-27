@@ -148,7 +148,12 @@ export const notesRouter = createTRPCRouter({
 	getNoteBySlug: publicProcedure
 		.input(z.object({ slug: z.string() }))
 		.query(async ({ input, ctx }) => {
-			const notes = await notesRepository.getNotesBySlug(ctx.db, input.slug);
+			const userId = ctx.session?.user?.id;
+			const notes = await notesRepository.getNotesBySlug(
+				ctx.db,
+				userId,
+				input.slug,
+			);
 
 			if (!notes) {
 				throw new TRPCError({

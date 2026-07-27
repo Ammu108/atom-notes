@@ -51,7 +51,14 @@ const NoteDetailPage = ({ slug }: NoteDetailPageProps) => {
 
 				{/* Sidebar */}
 				<div className="scroll-mt-24 md:w-1/3" id="buyPdf">
-					<NoteSidebar price={notes.pdfPrice} unitName={notes.unitName} />
+					<NoteSidebar
+						hasPurchased={notes.hasPurchased}
+						isPaid={notes.isPaid}
+						noteId={notes.id}
+						price={notes.pdfPrice}
+						slug={slug}
+						unitName={notes.unitName}
+					/>
 				</div>
 			</div>
 		</div>

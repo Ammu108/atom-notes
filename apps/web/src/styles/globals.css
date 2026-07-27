@@ -23,6 +23,8 @@
 	--color-accent-foreground: var(--accent-foreground);
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
 	--color-border: var(--border);
 	--color-input: var(--input);
 	--color-ring: var(--ring);
@@ -59,6 +61,9 @@
 
 		--destructive: hsl(0, 84.2%, 60.2%);
 		--destructive-foreground: hsl(210 40% 98%);
+
+		--success: hsl(142.1 76.2% 36.3%); /* #16a34a - Tailwind emerald-600 */
+		--success-foreground: hsl(355.7 100% 97.3%);
 
 		--border: hsl(214 32% 91%);
 		--input: hsl(214 32% 91%);
@@ -98,6 +103,9 @@
 
 		--destructive: hsl(0, 62.8%, 30.6%);
 		--destructive-foreground: hsl(210 40% 98%);
+
+		--success: hsl(142.1 70.6% 45.3%);
+		--success-foreground: hsl(144.3 61% 6%);
 
 		--border: hsl(217 33% 18%);
 		--input: hsl(217 33% 18%);

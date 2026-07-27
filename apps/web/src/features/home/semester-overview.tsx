@@ -1,4 +1,5 @@
 import { Forward } from "lucide-react";
+import Link from "next/link";
 import { Container } from "~/components/container";
 import { SEMESTER_OVERVIEW } from "~/lib/constant";
 
@@ -21,14 +22,15 @@ const SemesterOverView = () => {
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 					{SEMESTER_OVERVIEW.map((item) => {
 						return (
-							<div
+							<Link
 								className="flex cursor-pointer flex-col gap-4 rounded-2xl border border-border bg-background p-6 shadow-[0_6px_25px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_10px_30px_rgba(15,23,42,0.14)]"
+								href={`/semester-details/${item.id}`}
 								key={item.id}
 							>
 								<div className="flex items-center justify-between">
 									<div className="rounded-xl bg-primary/10 px-3 py-1">
 										<h3 className="font-medium text-base text-primary">
-											{item.semester}
+											Semester {item.semester}
 										</h3>
 									</div>
 									<div className="">
@@ -50,7 +52,7 @@ const SemesterOverView = () => {
 										</span>
 									))}
 								</div>
-							</div>
+							</Link>
 						);
 					})}
 				</div>

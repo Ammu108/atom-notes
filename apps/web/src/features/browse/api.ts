@@ -38,13 +38,6 @@ export const useGetAllSubjects = (semesterId?: string) => {
 	);
 };
 
-export const useGetAllUnits = (subjectId?: string) => {
-	return api.courses.getUnitsBySubjectId.useQuery(
-		{ id: subjectId ?? "" },
-		{ enabled: !!subjectId },
-	);
-};
-
 export const useGetNotesById = (noteId: string) => {
 	return api.notes.getNoteById.useQuery({ id: noteId });
 };

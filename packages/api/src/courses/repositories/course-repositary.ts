@@ -1,5 +1,5 @@
 import { chapters, courses, type DB, semesters, subjects } from "@repo/db";
-import { countDistinct, desc, eq } from "drizzle-orm";
+import { and, countDistinct, desc, eq } from "drizzle-orm";
 
 export const courseRepository = {
 	// check if slug already exists
@@ -292,6 +292,20 @@ export const courseRepository = {
 		});
 	},
 
+	async findSubjectsBySemester(db: DB, courseId: string, semesterId: string) {
+		return await db
+			.select({
+				id: subjects.id,
+				name: subjects.name,
+				semester: semesters.number,
+				course: courses.name,
+			})
+			.from(subjects)
+			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
+			.innerJoin(courses, eq(semesters.courseId, courses.id))
+			.where(and(eq(semesters.id, semesterId), eq(courses.id, courseId)));
+	},
+
 	// get units by subject id with all its relations
 	async findUnitsBySubjectId(db: DB, subjectId: string) {
 		return await db.query.chapters.findMany({
@@ -323,6 +337,12 @@ export const courseRepository = {
 				message: "Course deleted successfully",
 				course: deletedCourse,
 			};
+		});
+	},
+
+	async getRemainingSemesters(db: DB, semesterId: string) {
+		return await db.query.semesters.findMany({
+			where: (semester, { ne }) => ne(semester.id, semesterId),
 		});
 	},
 };

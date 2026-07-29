@@ -31,10 +31,13 @@ export const paymentRouter = createTRPCRouter({
 				});
 			}
 
+			const userId = ctx.session.user.id;
+
 			// Already purchased?
 			const alreadyPurchased = await paymentRepository.hasPurchased(
-				ctx.session.user.id,
+				userId,
 				input.noteId,
+				ctx.db,
 			);
 
 			if (alreadyPurchased) {
@@ -48,8 +51,8 @@ export const paymentRouter = createTRPCRouter({
 				amount: isNoteExist.price,
 			});
 
-			await paymentRepository.createPendingPurchase({
-				userId: ctx.session.user.id,
+			await paymentRepository.createPendingPurchase(ctx.db, {
+				userId: userId,
 				noteId: input.noteId,
 				amount: isNoteExist.price,
 				orderId: order.id,
@@ -76,6 +79,7 @@ export const paymentRouter = createTRPCRouter({
 
 			const purchase = await paymentRepository.findByOrderId(
 				input.razorpay_order_id,
+				ctx.db,
 			);
 
 			if (!purchase) {
@@ -134,10 +138,14 @@ export const paymentRouter = createTRPCRouter({
 				});
 			}
 
-			await paymentRepository.markAsPaid({
-				orderId: input.razorpay_order_id,
-				paymentId: input.razorpay_payment_id,
-			});
+			await paymentRepository.markAsPaid(
+				{
+					orderId: input.razorpay_order_id,
+					paymentId: input.razorpay_payment_id,
+					paymentMethod: payment.method,
+				},
+				ctx.db,
+			);
 
 			return {
 				Success: true,
@@ -167,6 +175,7 @@ export const paymentRouter = createTRPCRouter({
 			const purchased = await paymentRepository.hasPurchased(
 				ctx.session.user.id,
 				note.id,
+				ctx.db,
 			);
 
 			if (!purchased) {

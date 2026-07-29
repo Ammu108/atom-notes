@@ -43,6 +43,8 @@ const userSkeletonRows = [
 	"user-skeleton-1",
 	"user-skeleton-2",
 	"user-skeleton-3",
+	"user-skeleton-4",
+	"user-skeleton-5",
 ];
 
 export function ContactTable({ contactData, isPending }: ContactProps) {
@@ -133,26 +135,27 @@ export function ContactTable({ contactData, isPending }: ContactProps) {
 										<Skeleton className="h-4 w-32" />
 									</TableCell>
 									<TableCell>
-										<Skeleton className="h-4 w-48" />
+										<Skeleton className="h-4 w-44" />
 									</TableCell>
 									<TableCell>
-										<Skeleton className="h-6 w-16 rounded-full" />
+										<Skeleton className="h-4 w-28" />
+									</TableCell>
+									<TableCell>
+										<Skeleton className="h-4 w-48" />
 									</TableCell>
 									<TableCell>
 										<Skeleton className="h-4 w-24" />
 									</TableCell>
 									<TableCell className="text-right">
-										<div className="flex justify-end">
-											<Skeleton className="h-9 w-9 rounded-md" />
-										</div>
+										<Skeleton className="ml-auto size-8 rounded-md" />
 									</TableCell>
 								</TableRow>
 							))
 						) : contactData?.length === 0 ? (
 							<TableRow>
 								<TableCell
-									className="text-center text-muted-foreground"
-									colSpan={5}
+									className="h-32 text-center text-muted-foreground"
+									colSpan={6}
 								>
 									No users found for current filters.
 								</TableCell>
@@ -186,7 +189,7 @@ export function ContactTable({ contactData, isPending }: ContactProps) {
 													className="text-destructive"
 													onClick={() => handleDelete(data.id, data.name)}
 												>
-													Delete Course
+													Delete User
 												</DropdownMenuItem>
 											</DropdownMenuContent>
 										</DropdownMenu>

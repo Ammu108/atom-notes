@@ -25,7 +25,13 @@ import {
 } from "~/components/ui/table";
 import { useDeleteNote, useGetAllNotes } from "../api";
 
-const noteSkeletonRows = ["note-skel-1", "note-skel-2", "note-skel-3"];
+const noteSkeletonRows = [
+	"note-skel-1",
+	"note-skel-2",
+	"note-skel-3",
+	"note-skel-4",
+	"note-skel-5",
+];
 
 export function NotesTable() {
 	const router = useRouter();
@@ -43,6 +49,10 @@ export function NotesTable() {
 	const handleDeleteNote = (notesId: string) => {
 		setDeleteDialogOpen(true);
 		setSelectedNote({ id: notesId });
+	};
+
+	const handleViewDetails = (notesId: string) => {
+		router.push(`/notes-details/${notesId}`);
 	};
 
 	const handleDeleteConfirm = async () => {
@@ -89,23 +99,24 @@ export function NotesTable() {
 										<Skeleton className="h-4 w-48" />
 									</TableCell>
 									<TableCell>
-										<Skeleton className="h-4 w-40" />
+										<Skeleton className="h-4 w-20" />
 									</TableCell>
 									<TableCell>
-										<Skeleton className="h-4 w-24" />
+										<Skeleton className="h-4 w-32" />
+									</TableCell>
+									<TableCell>
+										<Skeleton className="h-4 w-28" />
 									</TableCell>
 									<TableCell className="text-right">
-										<div className="flex justify-end">
-											<Skeleton className="h-9 w-20 rounded-md" />
-										</div>
+										<Skeleton className="ml-auto size-8 rounded-md" />
 									</TableCell>
 								</TableRow>
 							))
 						) : notes?.length === 0 ? (
 							<TableRow>
 								<TableCell
-									className="text-center text-muted-foreground"
-									colSpan={4}
+									className="h-32 text-center text-muted-foreground"
+									colSpan={5}
 								>
 									No notes found.
 								</TableCell>
@@ -117,11 +128,13 @@ export function NotesTable() {
 									<TableCell>{note.chapter}</TableCell>
 									<TableCell>{note.subject}</TableCell>
 									<TableCell>
-										{note.UpdatedAt?.toLocaleDateString("en-US", {
-											year: "numeric",
-											month: "short",
-											day: "numeric",
-										})}
+										{note.UpdatedAt
+											? new Date(note.UpdatedAt).toLocaleDateString("en-US", {
+													year: "numeric",
+													month: "short",
+													day: "numeric",
+												})
+											: "-"}
 									</TableCell>
 									<TableCell className="text-right">
 										<DropdownMenu>
@@ -134,6 +147,11 @@ export function NotesTable() {
 												}
 											></DropdownMenuTrigger>
 											<DropdownMenuContent align="end" className="w-40">
+												<DropdownMenuItem
+													onClick={() => handleViewDetails(note.id)}
+												>
+													View Details
+												</DropdownMenuItem>
 												<DropdownMenuItem
 													onClick={() => handleNavigateToNotes(note.id)}
 												>
@@ -152,20 +170,22 @@ export function NotesTable() {
 							))
 						)}
 					</TableBody>
-
-					<ConfirmActionDialog
-						cancelText="Cancel"
-						confirmDisabled={!selectedNote}
-						confirmLoading={deleteNoteMutation.isPending}
-						confirmText="Continue"
-						description={`This action is permanent and cannot be undone. ${selectedNote?.id ? "This note" : "This course"} will be deleted from the system.`}
-						onCancel={() => setSelectedNote(null)}
-						onConfirm={handleDeleteConfirm}
-						onOpenChange={setDeleteDialogOpen}
-						open={deleteDialogOpen}
-						title="Delete note permanently?"
-					/>
 				</Table>
+
+				<ConfirmActionDialog
+					cancelText="Cancel"
+					confirmDisabled={!selectedNote}
+					confirmLoading={deleteNoteMutation.isPending}
+					confirmText="Continue"
+					description={`This action is permanent and cannot be undone. ${
+						selectedNote?.id ? "This note" : "This course"
+					} will be deleted from the system.`}
+					onCancel={() => setSelectedNote(null)}
+					onConfirm={handleDeleteConfirm}
+					onOpenChange={setDeleteDialogOpen}
+					open={deleteDialogOpen}
+					title="Delete note permanently?"
+				/>
 			</CardContent>
 		</Card>
 	);

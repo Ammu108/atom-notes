@@ -48,3 +48,11 @@ export const useDeleteNote = () => {
 		},
 	});
 };
+
+export const useStatsById = (noteId: string) => {
+	return api.notes.getStatsById.useQuery({ id: noteId });
+};
+
+export const useGetAllPurchasesByNoteId = (id: string) => {
+	return api.purchases.getAllPurchasesByNoteId.useQuery({ id });
+};

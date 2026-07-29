@@ -12,6 +12,7 @@ import {
 	NotepadText,
 	SearchIcon,
 	Settings2Icon,
+	ShoppingCart,
 	UsersIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -60,6 +61,11 @@ const data = {
 			title: "PYQs",
 			url: "/pyqs",
 			icon: <NotepadText />,
+		},
+		{
+			title: "Purchases",
+			url: "/purchases",
+			icon: <ShoppingCart />,
 		},
 	],
 	navClouds: [

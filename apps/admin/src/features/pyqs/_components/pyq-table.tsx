@@ -25,7 +25,13 @@ import {
 } from "~/components/ui/table";
 import { useDeletePyqs, useGetAllPyqs } from "../api";
 
-const pyqSkeletonRows = ["note-skel-1", "note-skel-2", "note-skel-3"];
+const pyqSkeletonRows = [
+	"pyq-skel-1",
+	"pyq-skel-2",
+	"pyq-skel-3",
+	"pyq-skel-4",
+	"pyq-skel-5",
+];
 
 const PyqTable = () => {
 	const router = useRouter();
@@ -89,23 +95,24 @@ const PyqTable = () => {
 										<Skeleton className="h-4 w-48" />
 									</TableCell>
 									<TableCell>
-										<Skeleton className="h-4 w-40" />
+										<Skeleton className="h-4 w-16" />
 									</TableCell>
 									<TableCell>
-										<Skeleton className="h-4 w-24" />
+										<Skeleton className="h-4 w-32" />
+									</TableCell>
+									<TableCell>
+										<Skeleton className="h-4 w-28" />
 									</TableCell>
 									<TableCell className="text-right">
-										<div className="flex justify-end">
-											<Skeleton className="h-9 w-20 rounded-md" />
-										</div>
+										<Skeleton className="ml-auto size-8 rounded-md" />
 									</TableCell>
 								</TableRow>
 							))
 						) : pyqs?.length === 0 ? (
 							<TableRow>
 								<TableCell
-									className="text-center text-muted-foreground"
-									colSpan={4}
+									className="h-32 text-center text-muted-foreground"
+									colSpan={5}
 								>
 									No notes found.
 								</TableCell>
@@ -119,11 +126,13 @@ const PyqTable = () => {
 										{pyq.subjectName}
 									</TableCell>
 									<TableCell>
-										{pyq.updatedAt?.toLocaleDateString("en-US", {
-											year: "numeric",
-											month: "short",
-											day: "numeric",
-										})}
+										{pyq.updatedAt
+											? new Date(pyq.updatedAt).toLocaleDateString("en-US", {
+													year: "numeric",
+													month: "short",
+													day: "numeric",
+												})
+											: "-"}
 									</TableCell>
 									<TableCell className="text-right">
 										<DropdownMenu>
@@ -154,20 +163,22 @@ const PyqTable = () => {
 							))
 						)}
 					</TableBody>
-
-					<ConfirmActionDialog
-						cancelText="Cancel"
-						confirmDisabled={!selectedNote}
-						confirmLoading={deleteNoteMutation.isPending}
-						confirmText="Continue"
-						description={`This action is permanent and cannot be undone. ${selectedNote?.id ? "This note" : "This course"} will be deleted from the system.`}
-						onCancel={() => setSelectedNote(null)}
-						onConfirm={handleDeleteConfirm}
-						onOpenChange={setDeleteDialogOpen}
-						open={deleteDialogOpen}
-						title="Delete note permanently?"
-					/>
 				</Table>
+
+				<ConfirmActionDialog
+					cancelText="Cancel"
+					confirmDisabled={!selectedNote}
+					confirmLoading={deleteNoteMutation.isPending}
+					confirmText="Continue"
+					description={`This action is permanent and cannot be undone. ${
+						selectedNote?.id ? "This note" : "This course"
+					} will be deleted from the system.`}
+					onCancel={() => setSelectedNote(null)}
+					onConfirm={handleDeleteConfirm}
+					onOpenChange={setDeleteDialogOpen}
+					open={deleteDialogOpen}
+					title="Delete note permanently?"
+				/>
 			</CardContent>
 		</Card>
 	);

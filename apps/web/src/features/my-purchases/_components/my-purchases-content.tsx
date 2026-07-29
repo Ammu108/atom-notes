@@ -135,6 +135,12 @@ const MyPurchasesContent = () => {
 										</div>
 									</div>
 
+									<div className="flex items-center gap-2 rounded-xl border border-border bg-accent px-2 py-1">
+										<p className="font-medium text-accent-foreground text-sm">
+											{note.status}
+										</p>
+									</div>
+
 									<div className="flex flex-col items-end gap-3">
 										<p className="font-bold text-2xl">₹{note.price}</p>
 

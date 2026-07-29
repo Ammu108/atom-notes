@@ -1,4 +1,4 @@
-import { type DB, user } from "@repo/db";
+import { type DB, notes, purchases, user } from "@repo/db";
 import { eq } from "drizzle-orm";
 
 /**
@@ -36,6 +36,31 @@ export const authRepository = {
 		const result = await db.select().from(user).where(eq(user.id, id)).limit(1);
 
 		return result[0] || null;
+	},
+
+	async findUserDetailsById(db: DB, id: string) {
+		const result = await db
+			.select({
+				id: user.id,
+				emailVerified: user.emailVerified,
+				name: user.name,
+				email: user.email,
+				amount: purchases.amount,
+				status: purchases.status,
+				purchaseId: purchases.id,
+				purchasedAt: purchases.createdAt,
+				noteId: notes.id,
+				noteTitle: notes.title,
+				createdAt: user.createdAt,
+			})
+			.from(user)
+			.leftJoin(purchases, eq(user.id, purchases.userId))
+			.leftJoin(notes, eq(purchases.noteId, notes.id))
+			.where(eq(user.id, id));
+
+		console.log("FIND USER DETAILS BY ID RESULT: ", id);
+
+		return result;
 	},
 
 	async getAllUsers(db: DB) {

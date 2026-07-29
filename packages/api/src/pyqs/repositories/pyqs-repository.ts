@@ -94,10 +94,6 @@ export const pyqRepository = {
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
 			.orderBy(desc(pyqs.updatedAt));
 
-		if (pyqsResult.length === 0) {
-			throw new Error("No PYQs found");
-		}
-
 		const result = await Promise.all(
 			pyqsResult.map(async (pyq) => {
 				const questions = await db

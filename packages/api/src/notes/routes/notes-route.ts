@@ -1,7 +1,12 @@
 import { generateSlug } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../../trpc";
+import {
+	adminProcedure,
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from "../../trpc";
 import { notesRepository } from "../repositories/notes-repositary";
 import { notesService } from "../services/notes-service";
 import { noteIdSchema, notesSchema } from "../validators/notes-validators";
@@ -130,6 +135,17 @@ export const notesRouter = createTRPCRouter({
 			return notes;
 		}),
 
+	getPurchasedNotesByUserId: protectedProcedure
+		.input(z.object({ id: z.string().optional() }))
+		.query(async ({ input, ctx }) => {
+			const notes = await notesRepository.getPurchasedNotesByUserId(
+				ctx.db,
+				input.id,
+			);
+
+			return notes;
+		}),
+
 	getNoteById: publicProcedure
 		.input(noteIdSchema)
 		.query(async ({ input, ctx }) => {
@@ -165,7 +181,15 @@ export const notesRouter = createTRPCRouter({
 			return notes;
 		}),
 
-	deleteNote: publicProcedure
+	getStatsById: adminProcedure
+		.input(noteIdSchema)
+		.query(async ({ input, ctx }) => {
+			const analytics = await notesRepository.getStats(ctx.db, input.id);
+
+			return analytics;
+		}),
+
+	deleteNote: adminProcedure
 		.input(noteIdSchema)
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.session?.user || ctx.session.user.role !== "ADMIN") {

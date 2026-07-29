@@ -3,6 +3,7 @@ import { contactRouter } from "./contact/routes/contact-route";
 import { courseRouter } from "./courses/routes/course-route";
 import { notesRouter } from "./notes/routes/notes-route";
 import { paymentRouter } from "./payment/routes/payment-route";
+import { purchaseRouter } from "./purchases/routes/purchase-router";
 import { pyqRouter } from "./pyqs/routes/pyq-route";
 import { createCallerFactory, createTRPCRouter } from "./trpc";
 
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
 	contact: contactRouter,
 	pyqs: pyqRouter,
 	payment: paymentRouter,
+	purchases: purchaseRouter,
 });
 
 // export type definition of API

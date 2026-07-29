@@ -9,7 +9,7 @@ import {
 	DropdownMenuTrigger,
 } from "@repo/ui";
 import { IconCalendar, IconUserCircle } from "@tabler/icons-react";
-import { FileText, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import Link from "next/link";
 import * as React from "react";
 
@@ -53,15 +53,9 @@ export default function ProfileDropdown({
 	const [isOpen, setIsOpen] = React.useState(false);
 	const menuItems: MenuItem[] = [
 		{
-			label: "My Appointments",
-			href: "/my-appointments",
+			label: "My Purchases",
+			href: "/my-purchases",
 			icon: <IconCalendar className="h-4 w-4" />,
-		},
-		{
-			label: "Terms & Policies",
-			href: "/privacy-policy",
-			icon: <FileText className="h-4 w-4" />,
-			external: true,
 		},
 	];
 

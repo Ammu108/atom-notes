@@ -3,12 +3,13 @@ import {
 	courses,
 	type DB,
 	notes,
+	purchases,
 	semesters,
 	subjects,
 } from "@repo/db";
 import { generateSlug } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
-import { and, desc, eq, ilike, or } from "drizzle-orm";
+import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { paymentRepository } from "../../payment/repositories/payment-repository";
 import type { NoteType } from "../types";
 
@@ -65,13 +66,47 @@ export const notesRepository = {
 				pdfKey: notes.pdfKey,
 				pdfPrice: notes.price,
 				isPaid: notes.isPaid,
+				price: notes.price,
+				course: courses.name,
+				semester: semesters.number,
+				subject: subjects.name,
+				createdAt: notes.createdAt,
+				updatedAt: notes.updatedAt,
 			})
 			.from(notes)
 			.where(eq(notes.id, id))
 			.innerJoin(chapters, eq(notes.chapterId, chapters.id))
+			.innerJoin(subjects, eq(chapters.subjectId, subjects.id))
+			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
+			.innerJoin(courses, eq(semesters.courseId, courses.id))
 			.limit(1);
 
 		return note;
+	},
+
+	async getPurchasedNotesByUserId(db: DB, id?: string) {
+		const result = await db
+			.select({
+				id: purchases.id,
+				title: notes.title,
+				course: courses.name,
+				semester: semesters.number,
+				subject: subjects.name,
+				amountPaid: purchases.amount,
+				purchasesAt: purchases.createdAt,
+				status: purchases.status,
+				price: notes.price,
+				slug: notes.slug,
+			})
+			.from(purchases)
+			.innerJoin(notes, eq(purchases.noteId, notes.id))
+			.leftJoin(chapters, eq(notes.chapterId, chapters.id))
+			.leftJoin(subjects, eq(chapters.subjectId, subjects.id))
+			.leftJoin(semesters, eq(subjects.semesterId, semesters.id))
+			.leftJoin(courses, eq(semesters.courseId, courses.id))
+			.where(id ? eq(purchases.userId, id) : undefined);
+
+		return result;
 	},
 
 	async getNotesBySlug(db: DB, userId: string | undefined, slug: string) {
@@ -100,7 +135,7 @@ export const notesRepository = {
 
 		const hasPurchased =
 			note?.isPaid && userId
-				? await paymentRepository.hasPurchased(userId, note.id)
+				? await paymentRepository.hasPurchased(userId, note.id, db)
 				: false;
 
 		if (!note) {
@@ -190,6 +225,18 @@ export const notesRepository = {
 			.orderBy(desc(notes.updatedAt));
 
 		return result;
+	},
+
+	async getStats(db: DB, noteId: string) {
+		const [stats] = await db
+			.select({
+				revenue: sql<number>`COALESCE(SUM(${purchases.amount}),0)`,
+				totalPurchases: sql<number>`COUNT(*)`,
+			})
+			.from(purchases)
+			.where(and(eq(purchases.noteId, noteId), eq(purchases.status, "PAID")));
+
+		return stats;
 	},
 
 	async deleteNote(db: DB, id: string) {

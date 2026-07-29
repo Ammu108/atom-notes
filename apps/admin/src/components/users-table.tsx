@@ -1,6 +1,7 @@
 "use client";
 
 import { EllipsisVerticalIcon, SearchIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "~/components/ui/badge";
@@ -42,6 +43,7 @@ const userSkeletonRows = [
 export function UsersTable() {
 	const { data: users, isPending } = api.auth.getAllUsers.useQuery();
 	const utils = api.useUtils();
+	const router = useRouter();
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<{
 		id: string;
@@ -195,7 +197,11 @@ export function UsersTable() {
 												/>
 											)}
 											<DropdownMenuContent align="end" className="w-36">
-												<DropdownMenuItem>View Profile</DropdownMenuItem>
+												<DropdownMenuItem
+													onClick={() => router.push(`/users/${user.id}`)}
+												>
+													View Profile
+												</DropdownMenuItem>
 												<DropdownMenuItem
 													onClick={() => handleDelete(user.id, user.name)}
 												>

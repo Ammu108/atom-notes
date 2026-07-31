@@ -4,7 +4,7 @@ interface CreateOrderInput {
 	amount: string;
 }
 
-export const paymentService = {
+export const notesPaymentService = {
 	async createOrder(input: CreateOrderInput) {
 		const order = await razorPay.orders.create({
 			amount: Math.round(Number(input.amount) * 100),

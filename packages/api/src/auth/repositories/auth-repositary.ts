@@ -1,4 +1,4 @@
-import { type DB, notes, purchases, user } from "@repo/db";
+import { type DB, notes, notesPurchases, user } from "@repo/db";
 import { eq } from "drizzle-orm";
 
 /**
@@ -45,17 +45,17 @@ export const authRepository = {
 				emailVerified: user.emailVerified,
 				name: user.name,
 				email: user.email,
-				amount: purchases.amount,
-				status: purchases.status,
-				purchaseId: purchases.id,
-				purchasedAt: purchases.createdAt,
+				amount: notesPurchases.amount,
+				status: notesPurchases.status,
+				purchaseId: notesPurchases.id,
+				purchasedAt: notesPurchases.createdAt,
 				noteId: notes.id,
 				noteTitle: notes.title,
 				createdAt: user.createdAt,
 			})
 			.from(user)
-			.leftJoin(purchases, eq(user.id, purchases.userId))
-			.leftJoin(notes, eq(purchases.noteId, notes.id))
+			.leftJoin(notesPurchases, eq(user.id, notesPurchases.userId))
+			.leftJoin(notes, eq(notesPurchases.noteId, notes.id))
 			.where(eq(user.id, id));
 
 		console.log("FIND USER DETAILS BY ID RESULT: ", id);

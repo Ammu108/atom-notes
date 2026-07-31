@@ -1,7 +1,7 @@
-import { type DB, purchases } from "@repo/db";
+import { type DB, notesPurchases } from "@repo/db";
 import { and, eq } from "drizzle-orm";
 
-export const paymentRepository = {
+export const notesPaymentRepository = {
 	createPendingPurchase: async (
 		db: DB,
 		data: {
@@ -11,7 +11,7 @@ export const paymentRepository = {
 			orderId: string;
 		},
 	) => {
-		return db.insert(purchases).values({
+		return db.insert(notesPurchases).values({
 			userId: data.userId,
 			noteId: data.noteId,
 			amount: data.amount,
@@ -21,11 +21,11 @@ export const paymentRepository = {
 	},
 
 	hasPurchased: async (userId: string, noteId: string, db: DB) => {
-		const purchase = await db.query.purchases.findFirst({
+		const purchase = await db.query.notesPurchases.findFirst({
 			where: and(
-				eq(purchases.userId, userId),
-				eq(purchases.noteId, noteId),
-				eq(purchases.status, "PAID"),
+				eq(notesPurchases.userId, userId),
+				eq(notesPurchases.noteId, noteId),
+				eq(notesPurchases.status, "PAID"),
 			),
 		});
 
@@ -33,8 +33,8 @@ export const paymentRepository = {
 	},
 
 	async findByOrderId(orderId: string, db: DB) {
-		return await db.query.purchases.findFirst({
-			where: eq(purchases.razorPayOrderId, orderId),
+		return await db.query.notesPurchases.findFirst({
+			where: eq(notesPurchases.razorPayOrderId, orderId),
 		});
 	},
 
@@ -43,12 +43,12 @@ export const paymentRepository = {
 		db: DB,
 	) {
 		return await db
-			.update(purchases)
+			.update(notesPurchases)
 			.set({
 				status: "PAID",
 				paymentMethod: data.paymentMethod,
 				razorPayPaymentId: data.paymentId,
 			})
-			.where(eq(purchases.razorPayOrderId, data.orderId));
+			.where(eq(notesPurchases.razorPayOrderId, data.orderId));
 	},
 };

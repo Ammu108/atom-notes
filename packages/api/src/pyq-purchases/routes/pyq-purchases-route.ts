@@ -1,18 +1,18 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter } from "../../trpc";
-import { purchaseRepository } from "../repositories/purchase-repository";
+import { pyqPurchaseRepository } from "../repositories/pyq-purchase-repository";
 
-export const purchaseRouter = createTRPCRouter({
+export const pyqPurchaseRouter = createTRPCRouter({
 	getAllPurchases: adminProcedure.query(async ({ ctx }) => {
-		return await purchaseRepository.getPurchases(ctx.db);
+		return await pyqPurchaseRepository.getPurchases(ctx.db);
 	}),
 
 	purchaseDetailsId: adminProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input, ctx }) => {
 			// purchase exist or not
-			const isPurchaseExist = await ctx.db.query.purchases.findFirst({
+			const isPurchaseExist = await ctx.db.query.notesPurchases.findFirst({
 				where: (purchase, { eq }) => eq(purchase.id, input.id),
 			});
 
@@ -23,7 +23,7 @@ export const purchaseRouter = createTRPCRouter({
 				});
 			}
 
-			const purchaseDetails = await purchaseRepository.purchaseDetailsId(
+			const purchaseDetails = await pyqPurchaseRepository.purchaseDetailsId(
 				input.id,
 				ctx.db,
 			);
@@ -46,7 +46,7 @@ export const purchaseRouter = createTRPCRouter({
 				});
 			}
 
-			const purchases = await purchaseRepository.getAllPurchasesByNote(
+			const purchases = await pyqPurchaseRepository.getAllPurchasesByNote(
 				input.id,
 				ctx.db,
 			);

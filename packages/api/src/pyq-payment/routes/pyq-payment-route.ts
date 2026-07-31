@@ -5,26 +5,26 @@ import { z } from "zod";
 import { notesRepository } from "../../notes/repositories/notes-repositary";
 import { createTRPCRouter, protectedProcedure } from "../../trpc";
 import { razorPay } from "../lib/razorpay";
-import { paymentRepository } from "../repositories/payment-repository";
-import { paymentService } from "../services/payment-service";
+import { pyqPaymentRepository } from "../repositories/pyq-payment-repository";
+import { pyqPaymentService } from "../services/pyq-payment-service";
 
-export const paymentRouter = createTRPCRouter({
+export const pyqPaymentRouter = createTRPCRouter({
 	createOrder: protectedProcedure
 		.input(createOrderSchema)
 		.mutation(async ({ input, ctx }) => {
-			// note exist or not
-			const isNoteExist = await ctx.db.query.notes.findFirst({
+			// pyq exist or not
+			const isPyqExist = await ctx.db.query.notes.findFirst({
 				where: (note, { eq }) => eq(note.id, input.noteId),
 			});
 
-			if (!isNoteExist) {
+			if (!isPyqExist) {
 				throw new TRPCError({
 					code: "NOT_FOUND",
 					message: "Note not found!",
 				});
 			}
 
-			if (!isNoteExist.isPaid) {
+			if (!isPyqExist.isPaid) {
 				throw new TRPCError({
 					code: "CONFLICT",
 					message: "Note is free.",
@@ -34,7 +34,7 @@ export const paymentRouter = createTRPCRouter({
 			const userId = ctx.session.user.id;
 
 			// Already purchased?
-			const alreadyPurchased = await paymentRepository.hasPurchased(
+			const alreadyPurchased = await pyqPaymentRepository.hasPurchased(
 				userId,
 				input.noteId,
 				ctx.db,
@@ -47,14 +47,14 @@ export const paymentRouter = createTRPCRouter({
 				});
 			}
 
-			const order = await paymentService.createOrder({
-				amount: isNoteExist.price,
+			const order = await pyqPaymentService.createOrder({
+				amount: isPyqExist.price,
 			});
 
-			await paymentRepository.createPendingPurchase(ctx.db, {
+			await pyqPaymentRepository.createPendingPurchase(ctx.db, {
 				userId: userId,
 				noteId: input.noteId,
-				amount: isNoteExist.price,
+				amount: isPyqExist.price,
 				orderId: order.id,
 			});
 
@@ -77,7 +77,7 @@ export const paymentRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			const body = `${input.razorpay_order_id}|${input.razorpay_payment_id}`;
 
-			const purchase = await paymentRepository.findByOrderId(
+			const purchase = await pyqPaymentRepository.findByOrderId(
 				input.razorpay_order_id,
 				ctx.db,
 			);
@@ -138,7 +138,7 @@ export const paymentRouter = createTRPCRouter({
 				});
 			}
 
-			await paymentRepository.markAsPaid(
+			await pyqPaymentRepository.markAsPaid(
 				{
 					orderId: input.razorpay_order_id,
 					paymentId: input.razorpay_payment_id,
@@ -172,7 +172,7 @@ export const paymentRouter = createTRPCRouter({
 				};
 			}
 
-			const purchased = await paymentRepository.hasPurchased(
+			const purchased = await pyqPaymentRepository.hasPurchased(
 				ctx.session.user.id,
 				note.id,
 				ctx.db,

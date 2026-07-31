@@ -55,6 +55,16 @@ const PyqsPage = () => {
 		);
 	}
 
+	if (allPyqs.length === 0) {
+		return (
+			<div className="rounded-xl border border-destructive bg-destructive/10 px-2 py-4">
+				<p className="text-center font-medium text-base text-destructive">
+					No pyqs available.
+				</p>
+			</div>
+		);
+	}
+
 	return (
 		<div>
 			<Accordion className="mt-6 flex flex-col gap-4">

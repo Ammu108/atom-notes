@@ -14,7 +14,7 @@ export const notesPaymentRouter = createTRPCRouter({
 		.mutation(async ({ input, ctx }) => {
 			// note exist or not
 			const isNoteExist = await ctx.db.query.notes.findFirst({
-				where: (note, { eq }) => eq(note.id, input.noteId),
+				where: (note, { eq }) => eq(note.id, input.id),
 			});
 
 			if (!isNoteExist) {
@@ -36,7 +36,7 @@ export const notesPaymentRouter = createTRPCRouter({
 			// Already purchased?
 			const alreadyPurchased = await notesPaymentRepository.hasPurchased(
 				userId,
-				input.noteId,
+				input.id,
 				ctx.db,
 			);
 
@@ -53,7 +53,7 @@ export const notesPaymentRouter = createTRPCRouter({
 
 			await notesPaymentRepository.createPendingPurchase(ctx.db, {
 				userId: userId,
-				noteId: input.noteId,
+				noteId: input.id,
 				amount: isNoteExist.price,
 				orderId: order.id,
 			});

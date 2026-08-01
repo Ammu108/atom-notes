@@ -1,29 +1,44 @@
-import { BadgeCheck, Download, GraduationCap, ShieldCheck } from "lucide-react";
-import { Button } from "~/components/ui/button";
+import { BadgeCheck, Check, GraduationCap, ShieldCheck } from "lucide-react";
 import { Separator } from "~/components/ui/separator";
+import BuyPyqButton from "./buy-pyq-button";
+import DownloadPyqPdf from "./download-pyq-pdf";
 
 interface PyqDetailSidebarProps {
 	price: string;
+	pyqId: string;
 	course: string;
 	semester: string;
 	subject: string;
 	year: string;
+	hasPurchased: boolean;
+	isPaid: boolean;
 }
 
 const PyqDetailSidebar = ({
+	pyqId,
 	price,
 	course,
 	semester,
 	subject,
+	hasPurchased,
+	isPaid,
 	year,
 }: PyqDetailSidebarProps) => {
 	return (
 		<div className="rounded-2xl bg-card shadow-sm">
-			<div className="rounded-t-2xl bg-primary p-6 text-primary-foreground">
-				<h2 className="font-bold text-xl">Download PYQ with Solutions</h2>
+			<div
+				className={`rounded-t-2xl bg-primary p-6 text-primary-foreground ${hasPurchased ? "bg-success" : ""}`}
+			>
+				<h2 className="font-bold text-xl">
+					{hasPurchased
+						? "Download PYQ with Solutions"
+						: "Buy PYQ with Solutions"}
+				</h2>
 
 				<p className="mt-2 font-medium text-sm">
-					Get instant access after successful payment.
+					{hasPurchased
+						? "Thankyou for your purchase! You have lifetime access to this PYQ."
+						: "Get instant access after successful payment."}
 				</p>
 			</div>
 
@@ -31,7 +46,17 @@ const PyqDetailSidebar = ({
 				<div className="flex flex-col items-center">
 					<p className="text-muted-foreground text-sm">Price</p>
 
-					<h1 className="mt-1 font-bold text-4xl">₹{price}</h1>
+					<div className="flex items-center gap-2">
+						<h1
+							className={`mt-1 font-bold text-4xl ${hasPurchased ? "text-muted/60" : ""}`}
+						>
+							₹{price}
+						</h1>
+						<div className="flex items-center gap-2 rounded-xl border border-border bg-accent px-2 py-1">
+							<Check className="h-4 w-4 text-accent-foreground" />
+							<p className="font-medium text-accent-foreground text-sm">Paid</p>
+						</div>
+					</div>
 
 					<p className="mt-1 text-green-600 text-sm">Lifetime Access</p>
 				</div>
@@ -66,17 +91,24 @@ const PyqDetailSidebar = ({
 				</div>
 
 				<div className="flex w-full flex-col gap-4">
-					<Button size="sm">
-						<Download className="mr-2 h-5 w-5" />
-						Download with Solutions
-					</Button>
+					{isPaid ? (
+						hasPurchased ? (
+							<DownloadPyqPdf pyqId={pyqId} />
+						) : (
+							<BuyPyqButton id={pyqId} price={price} />
+						)
+					) : (
+						<DownloadPyqPdf pyqId={pyqId} />
+					)}
 
-					<div className="rounded-lg border bg-accent/50 px-4 py-2">
-						<div className="flex items-center justify-center gap-2 text-sm">
-							<ShieldCheck className="h-4 w-4 text-green-600" />
-							<span>100% Secure Payment via Razorpay</span>
+					{!hasPurchased && (
+						<div className="rounded-lg border bg-accent/50 px-4 py-2">
+							<div className="flex items-center justify-center gap-2 text-sm">
+								<ShieldCheck className="h-4 w-4 text-green-600" />
+								<span>100% Secure Payment via Razorpay</span>
+							</div>
 						</div>
-					</div>
+					)}
 				</div>
 
 				<div className="rounded-lg border p-4">

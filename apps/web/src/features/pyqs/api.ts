@@ -7,3 +7,9 @@ export const useGetAllPyqs = () => {
 export const useGetPyqsById = (id: string) => {
 	return api.pyqs.getPyqsById.useQuery({ id });
 };
+
+export const useDownloadPyqPdf = (
+	options?: Parameters<typeof api.pyqPayment.downloadPyq.useMutation>[0],
+) => {
+	return api.pyqPayment.downloadPyq.useMutation(options);
+};

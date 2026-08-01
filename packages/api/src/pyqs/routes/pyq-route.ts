@@ -64,7 +64,8 @@ export const pyqRouter = createTRPCRouter({
 	getPyqsById: protectedProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input, ctx }) => {
-			const pyqs = await pyqRepository.getPyqsById(ctx.db, input.id);
+			const userId = ctx.session?.user?.id;
+			const pyqs = await pyqRepository.getPyqsById(ctx.db, userId, input.id);
 
 			if (!pyqs) {
 				throw new TRPCError({

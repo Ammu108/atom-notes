@@ -1,9 +1,9 @@
 import { api } from "~/trpc/react";
 
 export const usePurchases = () => {
-	return api.purchases.getAllPurchases.useQuery();
+	return api.notesPurchases.getAllPurchases.useQuery();
 };
 
 export const usePurchaseById = (id: string) => {
-	return api.purchases.purchaseDetailsId.useQuery({ id });
+	return api.notesPurchases.purchaseDetailsId.useQuery({ id });
 };

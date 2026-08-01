@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import { createOrderSchema } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { notesRepository } from "../../notes/repositories/notes-repositary";
+import { pyqRepository } from "../../pyqs/repositories/pyqs-repository";
 import { createTRPCRouter, protectedProcedure } from "../../trpc";
 import { razorPay } from "../lib/razorpay";
 import { pyqPaymentRepository } from "../repositories/pyq-payment-repository";
@@ -13,21 +13,21 @@ export const pyqPaymentRouter = createTRPCRouter({
 		.input(createOrderSchema)
 		.mutation(async ({ input, ctx }) => {
 			// pyq exist or not
-			const isPyqExist = await ctx.db.query.notes.findFirst({
-				where: (note, { eq }) => eq(note.id, input.noteId),
+			const isPyqExist = await ctx.db.query.pyqs.findFirst({
+				where: (note, { eq }) => eq(note.id, input.id),
 			});
 
 			if (!isPyqExist) {
 				throw new TRPCError({
 					code: "NOT_FOUND",
-					message: "Note not found!",
+					message: "Pyq not found!",
 				});
 			}
 
 			if (!isPyqExist.isPaid) {
 				throw new TRPCError({
 					code: "CONFLICT",
-					message: "Note is free.",
+					message: "Pyq is free.",
 				});
 			}
 
@@ -36,14 +36,14 @@ export const pyqPaymentRouter = createTRPCRouter({
 			// Already purchased?
 			const alreadyPurchased = await pyqPaymentRepository.hasPurchased(
 				userId,
-				input.noteId,
+				input.id,
 				ctx.db,
 			);
 
 			if (alreadyPurchased) {
 				throw new TRPCError({
 					code: "CONFLICT",
-					message: "Note is already purchased!",
+					message: "Pyq is already purchased!",
 				});
 			}
 
@@ -53,7 +53,7 @@ export const pyqPaymentRouter = createTRPCRouter({
 
 			await pyqPaymentRepository.createPendingPurchase(ctx.db, {
 				userId: userId,
-				noteId: input.noteId,
+				pyqId: input.id,
 				amount: isPyqExist.price,
 				orderId: order.id,
 			});
@@ -153,28 +153,29 @@ export const pyqPaymentRouter = createTRPCRouter({
 			};
 		}),
 
-	downloadNote: protectedProcedure
-		.input(z.object({ noteId: z.string() }))
+	downloadPyq: protectedProcedure
+		.input(z.object({ pyqId: z.string() }))
 		.mutation(async ({ input, ctx }) => {
-			const note = await notesRepository.getNotesById(ctx.db, input.noteId);
+			const userId = ctx.session.user.id;
+			const pyq = await pyqRepository.getPyqsById(ctx.db, userId, input.pyqId);
 
-			if (!note) {
+			if (!pyq) {
 				throw new TRPCError({
 					code: "NOT_FOUND",
-					message: "Note not found",
+					message: "Pyq not found",
 				});
 			}
 
 			// Free note
-			if (!note.isPaid) {
+			if (!pyq.isPaid) {
 				return {
-					url: note.pdfUrl,
+					url: pyq.pdfUrl,
 				};
 			}
 
 			const purchased = await pyqPaymentRepository.hasPurchased(
 				ctx.session.user.id,
-				note.id,
+				pyq.id,
 				ctx.db,
 			);
 
@@ -186,8 +187,8 @@ export const pyqPaymentRouter = createTRPCRouter({
 			}
 
 			return {
-				url: note.pdfUrl,
-				message: "Note downloaded successfully",
+				url: pyq.pdfUrl,
+				message: "Pyq downloaded successfully",
 			};
 		}),
 });

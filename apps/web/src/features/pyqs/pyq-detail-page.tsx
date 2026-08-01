@@ -44,7 +44,10 @@ const PyqDetailPage = ({ id }: { id: string }) => {
 				<div className="sticky top-24 h-fit">
 					<PyqDetailSidebar
 						course={pyq.course}
+						hasPurchased={pyq.hasPurchased}
+						isPaid={pyq.isPaid}
 						price={pyq.price}
+						pyqId={pyq.id}
 						semester={pyq.semester}
 						subject={pyq.subjectName}
 						year={pyq.year}

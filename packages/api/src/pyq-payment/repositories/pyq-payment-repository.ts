@@ -1,4 +1,4 @@
-import { type DB, notesPurchases } from "@repo/db";
+import { type DB, pyqPurchases } from "@repo/db";
 import { and, eq } from "drizzle-orm";
 
 export const pyqPaymentRepository = {
@@ -6,26 +6,26 @@ export const pyqPaymentRepository = {
 		db: DB,
 		data: {
 			userId: string;
-			noteId: string;
+			pyqId: string;
 			amount: string;
 			orderId: string;
 		},
 	) => {
-		return db.insert(notesPurchases).values({
+		return db.insert(pyqPurchases).values({
 			userId: data.userId,
-			noteId: data.noteId,
+			pyqId: data.pyqId,
 			amount: data.amount,
 			status: "PENDING",
 			razorPayOrderId: data.orderId,
 		});
 	},
 
-	hasPurchased: async (userId: string, noteId: string, db: DB) => {
-		const purchase = await db.query.notesPurchases.findFirst({
+	hasPurchased: async (userId: string, pyqId: string, db: DB) => {
+		const purchase = await db.query.pyqPurchases.findFirst({
 			where: and(
-				eq(notesPurchases.userId, userId),
-				eq(notesPurchases.noteId, noteId),
-				eq(notesPurchases.status, "PAID"),
+				eq(pyqPurchases.userId, userId),
+				eq(pyqPurchases.pyqId, pyqId),
+				eq(pyqPurchases.status, "PAID"),
 			),
 		});
 
@@ -33,8 +33,8 @@ export const pyqPaymentRepository = {
 	},
 
 	async findByOrderId(orderId: string, db: DB) {
-		return await db.query.notesPurchases.findFirst({
-			where: eq(notesPurchases.razorPayOrderId, orderId),
+		return await db.query.pyqPurchases.findFirst({
+			where: eq(pyqPurchases.razorPayOrderId, orderId),
 		});
 	},
 
@@ -43,12 +43,12 @@ export const pyqPaymentRepository = {
 		db: DB,
 	) {
 		return await db
-			.update(notesPurchases)
+			.update(pyqPurchases)
 			.set({
 				status: "PAID",
 				paymentMethod: data.paymentMethod,
 				razorPayPaymentId: data.paymentId,
 			})
-			.where(eq(notesPurchases.razorPayOrderId, data.orderId));
+			.where(eq(pyqPurchases.razorPayOrderId, data.orderId));
 	},
 };

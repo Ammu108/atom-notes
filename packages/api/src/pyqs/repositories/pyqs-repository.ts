@@ -9,6 +9,7 @@ import {
 import type { PyqsFormValues } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
 import { count, desc, eq } from "drizzle-orm";
+import { pyqPaymentRepository } from "../../pyq-payment/repositories/pyq-payment-repository";
 
 export const pyqRepository = {
 	async create(db: DB, data: PyqsFormValues) {
@@ -130,7 +131,7 @@ export const pyqRepository = {
 		return result;
 	},
 
-	async getPyqsById(db: DB, id: string) {
+	async getPyqsById(db: DB, userId: string | undefined, id: string) {
 		const [pyq] = await db
 			.select({
 				id: pyqs.id,
@@ -153,8 +154,16 @@ export const pyqRepository = {
 			.where(eq(pyqs.id, id))
 			.limit(1);
 
+		const hasPurchased =
+			pyq?.isPaid && userId
+				? await pyqPaymentRepository.hasPurchased(userId, pyq.id, db)
+				: false;
+
 		if (!pyq) {
-			throw new Error("PYQ not found");
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Pyq not found!",
+			});
 		}
 
 		const questions = await db
@@ -165,7 +174,7 @@ export const pyqRepository = {
 			.from(pyqQuestions)
 			.where(eq(pyqQuestions.pyqId, id));
 
-		return { ...pyq, questions, questionCount: questions.length };
+		return { ...pyq, questions, questionCount: questions.length, hasPurchased };
 	},
 
 	async deletePyq(db: DB, id: string) {

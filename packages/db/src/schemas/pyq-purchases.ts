@@ -1,12 +1,12 @@
 import { numeric, pgTable, text, uuid } from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
-import { notes } from "./notes";
+import { pyqs } from "./pyqs";
 import { user } from "./users";
 
 export const pyqPurchases = pgTable("pyqPurchases", {
 	id: uuid("id").defaultRandom().primaryKey(),
 	userId: text("user_id").references(() => user.id),
-	noteId: uuid("note_id").references(() => notes.id),
+	pyqId: uuid("pyq_id").references(() => pyqs.id),
 	amount: numeric("amount").notNull(),
 	status: text("status").$type<"PENDING" | "PAID" | "FAILED">(),
 	paymentMethod: text("payment_method"),

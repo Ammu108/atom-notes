@@ -12,7 +12,7 @@ export const pyqPurchaseRouter = createTRPCRouter({
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input, ctx }) => {
 			// purchase exist or not
-			const isPurchaseExist = await ctx.db.query.notesPurchases.findFirst({
+			const isPurchaseExist = await ctx.db.query.pyqPurchases.findFirst({
 				where: (purchase, { eq }) => eq(purchase.id, input.id),
 			});
 
@@ -31,22 +31,22 @@ export const pyqPurchaseRouter = createTRPCRouter({
 			return purchaseDetails;
 		}),
 
-	getAllPurchasesByNoteId: adminProcedure
+	getAllPurchasesByPyqId: adminProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input, ctx }) => {
 			// purchase exist or not
-			const isNoteExist = await ctx.db.query.notes.findFirst({
-				where: (note, { eq }) => eq(note.id, input.id),
+			const isPyqExist = await ctx.db.query.pyqs.findFirst({
+				where: (pyq, { eq }) => eq(pyq.id, input.id),
 			});
 
-			if (!isNoteExist) {
+			if (!isPyqExist) {
 				throw new TRPCError({
 					code: "NOT_FOUND",
-					message: "Note not found!",
+					message: "Pyq not found!",
 				});
 			}
 
-			const purchases = await pyqPurchaseRepository.getAllPurchasesByNote(
+			const purchases = await pyqPurchaseRepository.getAllPurchasesByPyq(
 				input.id,
 				ctx.db,
 			);

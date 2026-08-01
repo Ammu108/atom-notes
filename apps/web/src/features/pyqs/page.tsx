@@ -1,22 +1,10 @@
 "use client";
 
-import { FileTextIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
-import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "~/components/ui/dialog";
 import PyqCardSkeleton from "./_components/pyqs-loading-skeleton";
 import { useGetAllPyqs } from "./api";
-import type { ALL_PYQS } from "./types";
 
 const badgeStyles = {
 	semester: "bg-blue-100 text-blue-700",
@@ -26,17 +14,8 @@ const badgeStyles = {
 
 const PyqsPage = () => {
 	const { data: allPyqs, isPending, isError } = useGetAllPyqs();
-	const [dialogOpen, setdialogOpen] = useState(false);
-	const [selectedPyq, setSelectedPyq] = useState<ALL_PYQS | null>(null);
-
-	const handleDialog = (pyq: ALL_PYQS) => {
-		setdialogOpen(true);
-		setSelectedPyq(pyq);
-	};
-
-	const handleDownloadPyq = () => {
-		toast.info("Payment Gateway Coming Soon...");
-	};
+	// const [dialogOpen, setdialogOpen] = useState(false);
+	// const [selectedPyq, setSelectedPyq] = useState<ALL_PYQS | null>(null);
 
 	if (!allPyqs || isPending) {
 		return <PyqCardSkeleton />;
@@ -106,7 +85,7 @@ const PyqsPage = () => {
 									</Button>
 								</Link>
 
-								<Button
+								{/* <Button
 									onClick={() => handleDialog(pyq)}
 									size="xs"
 									type="button"
@@ -114,14 +93,14 @@ const PyqsPage = () => {
 								>
 									<FileTextIcon className="size-4" />
 									Download PDF
-								</Button>
+								</Button> */}
 							</div>
 						</div>
 					</CardContent>
 				</Card>
 			))}
 
-			<Dialog onOpenChange={setdialogOpen} open={dialogOpen}>
+			{/* <Dialog onOpenChange={setdialogOpen} open={dialogOpen}>
 				<DialogContent className="sm:max-w-sm">
 					<DialogHeader className="items-center text-center">
 						<div className="mb-2 flex size-14 items-center justify-center rounded-xl bg-blue-50">
@@ -147,7 +126,7 @@ const PyqsPage = () => {
 								questions from the {selectedPyq.year} exam.
 							</div>
 
-							<div className="flex items-center justify-between rounded-lg bg-muted px-4 py-3">
+							<div className="flex items-center justify-between rounded-lg bg-accent px-4 py-3">
 								<span className="text-muted-foreground text-sm">
 									PYQ Answer PDF
 								</span>
@@ -159,9 +138,7 @@ const PyqsPage = () => {
 					)}
 
 					<DialogFooter className="flex-col gap-2 sm:flex-col">
-						<Button onClick={handleDownloadPyq} size="xs" type="button">
-							Download Answers · ₹{selectedPyq?.price}
-						</Button>
+						<BuyPyqButton id={selectedPyq?.id} price={selectedPyq?.price} />
 						<DialogClose
 							render={
 								<Button className="w-full" size="xs" variant="outline">
@@ -171,7 +148,7 @@ const PyqsPage = () => {
 						/>
 					</DialogFooter>
 				</DialogContent>
-			</Dialog>
+			</Dialog> */}
 		</div>
 	);
 };

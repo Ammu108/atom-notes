@@ -5,10 +5,9 @@ import { Button } from "~/components/ui/button";
 import { Spinner } from "~/components/ui/spinner";
 import { api } from "~/trpc/react";
 
-interface BuyNoteButtonProps {
-	noteId: string;
-	price: string;
-	slug: string;
+interface BuyPyqButtonProps {
+	id: string | undefined;
+	price: string | undefined;
 }
 
 interface RazorpayPaymentResponse {
@@ -17,10 +16,10 @@ interface RazorpayPaymentResponse {
 	razorpay_signature: string;
 }
 
-const BuyNoteButton = ({ price, noteId, slug }: BuyNoteButtonProps) => {
+const BuyPyqButton = ({ id, price }: BuyPyqButtonProps) => {
 	const utils = api.useUtils();
 	const router = useRouter();
-	const createOrder = api.notesPayment.createOrder.useMutation({
+	const createOrder = api.pyqPayment.createOrder.useMutation({
 		onSuccess: async (opts) => {
 			toast.success(opts.message);
 		},
@@ -34,10 +33,11 @@ const BuyNoteButton = ({ price, noteId, slug }: BuyNoteButtonProps) => {
 			toast.error(err.message);
 		},
 	});
-	const verifyPayment = api.notesPayment.verifyPayment.useMutation({
+
+	const verifyPayment = api.pyqPayment.verifyPayment.useMutation({
 		onSuccess: async (opts) => {
 			toast.success(opts.message);
-			await utils.notes.getNoteBySlug.invalidate({ slug: slug });
+			await utils.pyqs.getPyqsById.invalidate({ id: id });
 		},
 		onError: (err) => {
 			toast.error(err.message);
@@ -47,10 +47,13 @@ const BuyNoteButton = ({ price, noteId, slug }: BuyNoteButtonProps) => {
 	const { data: session } = userAuthClient.useSession();
 	const user = session?.user;
 
-	const handleBuyNotes = async () => {
-		const order = await createOrder.mutateAsync({
-			id: noteId,
-		});
+	const handleBuyPyq = async () => {
+		if (!id) {
+			toast.error("Something went wrong. Please refresh and try again.");
+			return;
+		}
+
+		const order = await createOrder.mutateAsync({ id });
 
 		const options = {
 			key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -61,7 +64,7 @@ const BuyNoteButton = ({ price, noteId, slug }: BuyNoteButtonProps) => {
 
 			name: "Atoms Note",
 
-			description: "Purchase Premium Note",
+			description: "Purchase Premium Pyq",
 
 			order_id: order.orderId,
 
@@ -92,11 +95,10 @@ const BuyNoteButton = ({ price, noteId, slug }: BuyNoteButtonProps) => {
 
 	return (
 		<Button
-			className="w-full font-semibold"
 			disabled={createOrder.isPending || verifyPayment.isPending}
-			onClick={handleBuyNotes}
-			size="sm"
-			variant="primary"
+			onClick={handleBuyPyq}
+			size="xs"
+			type="button"
 		>
 			{createOrder.isPending || verifyPayment.isPending ? (
 				<Spinner />
@@ -107,4 +109,4 @@ const BuyNoteButton = ({ price, noteId, slug }: BuyNoteButtonProps) => {
 	);
 };
 
-export default BuyNoteButton;
+export default BuyPyqButton;

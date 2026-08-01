@@ -41,3 +41,11 @@ export const useDeletePyqs = () => {
 		},
 	});
 };
+
+export const usePyqStatsById = (pyqId: string) => {
+	return api.pyqs.getStatsById.useQuery({ id: pyqId });
+};
+
+export const useGetAllPurchasesByPyqId = (id: string) => {
+	return api.pyqPurchases.getAllPurchasesByPyqId.useQuery({ id });
+};

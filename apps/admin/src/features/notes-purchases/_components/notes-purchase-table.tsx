@@ -24,7 +24,7 @@ const purchaseSkeletonRows = [
 	"purchase-skel-5",
 ];
 
-export function PurchasesTable() {
+export function NotesPurchasesTable() {
 	const { data: purchases, isLoading } = usePurchases();
 
 	return (
@@ -126,7 +126,7 @@ export function PurchasesTable() {
 									</TableCell>
 
 									<TableCell className="text-right">
-										<Link href={`/purchases/${purchase.id}`}>
+										<Link href={`/notes-purchases/${purchase.id}`}>
 											<Button size="sm" variant="ghost">
 												<ExternalLink className="size-4" />
 											</Button>

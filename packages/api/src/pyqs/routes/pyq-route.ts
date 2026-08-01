@@ -77,6 +77,14 @@ export const pyqRouter = createTRPCRouter({
 			return pyqs;
 		}),
 
+	getStatsById: adminProcedure
+		.input(z.object({ id: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const analytics = await pyqRepository.getStats(ctx.db, input.id);
+
+			return analytics;
+		}),
+
 	deletePyq: adminProcedure
 		.input(z.object({ id: z.string() }))
 		.mutation(async ({ input, ctx }) => {

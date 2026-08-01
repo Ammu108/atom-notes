@@ -51,6 +51,10 @@ const PyqTable = () => {
 		setSelectedNote({ id: notesId });
 	};
 
+	const handleViewDetails = (notesId: string) => {
+		router.push(`/pyqs-details/${notesId}`);
+	};
+
 	const handleDeleteConfirm = async () => {
 		if (!selectedNote) return;
 
@@ -145,6 +149,11 @@ const PyqTable = () => {
 												}
 											></DropdownMenuTrigger>
 											<DropdownMenuContent align="end" className="w-40">
+												<DropdownMenuItem
+													onClick={() => handleViewDetails(pyq.id)}
+												>
+													View Details
+												</DropdownMenuItem>
 												<DropdownMenuItem
 													onClick={() => handleNavigateToNotes(pyq.id)}
 												>

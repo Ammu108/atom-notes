@@ -1,5 +1,5 @@
 import { SiteHeader } from "~/components/site-header";
-import PurchasesDetails from "~/features/purchases/_components/purchases-details";
+import NotesPurchasesDetails from "~/features/notes-purchases/_components/notes-purchases-details";
 import { BackButton } from "~/lib/back-button";
 
 interface RowProps {
@@ -8,7 +8,7 @@ interface RowProps {
 	}>;
 }
 
-const PurchasesIdPage = async ({ params }: RowProps) => {
+const page = async ({ params }: RowProps) => {
 	const { id } = await params;
 
 	return (
@@ -18,10 +18,10 @@ const PurchasesIdPage = async ({ params }: RowProps) => {
 				<BackButton />
 			</div>
 			<div>
-				<PurchasesDetails id={id} />
+				<NotesPurchasesDetails id={id} />
 			</div>
 		</div>
 	);
 };
 
-export default PurchasesIdPage;
+export default page;

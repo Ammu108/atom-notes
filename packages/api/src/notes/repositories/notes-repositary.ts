@@ -3,14 +3,14 @@ import {
 	courses,
 	type DB,
 	notes,
-	purchases,
+	notesPurchases,
 	semesters,
 	subjects,
 } from "@repo/db";
 import { generateSlug } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
-import { paymentRepository } from "../../payment/repositories/payment-repository";
+import { notesPaymentRepository } from "../../notes-payment/repositories/notes-payment-repository";
 import type { NoteType } from "../types";
 
 export const notesRepository = {
@@ -87,24 +87,24 @@ export const notesRepository = {
 	async getPurchasedNotesByUserId(db: DB, id?: string) {
 		const result = await db
 			.select({
-				id: purchases.id,
+				id: notesPurchases.id,
 				title: notes.title,
 				course: courses.name,
 				semester: semesters.number,
 				subject: subjects.name,
-				amountPaid: purchases.amount,
-				purchasesAt: purchases.createdAt,
-				status: purchases.status,
+				amountPaid: notesPurchases.amount,
+				purchasesAt: notesPurchases.createdAt,
+				status: notesPurchases.status,
 				price: notes.price,
 				slug: notes.slug,
 			})
-			.from(purchases)
-			.innerJoin(notes, eq(purchases.noteId, notes.id))
+			.from(notesPurchases)
+			.innerJoin(notes, eq(notesPurchases.noteId, notes.id))
 			.leftJoin(chapters, eq(notes.chapterId, chapters.id))
 			.leftJoin(subjects, eq(chapters.subjectId, subjects.id))
 			.leftJoin(semesters, eq(subjects.semesterId, semesters.id))
 			.leftJoin(courses, eq(semesters.courseId, courses.id))
-			.where(id ? eq(purchases.userId, id) : undefined);
+			.where(id ? eq(notesPurchases.userId, id) : undefined);
 
 		return result;
 	},
@@ -135,7 +135,7 @@ export const notesRepository = {
 
 		const hasPurchased =
 			note?.isPaid && userId
-				? await paymentRepository.hasPurchased(userId, note.id, db)
+				? await notesPaymentRepository.hasPurchased(userId, note.id, db)
 				: false;
 
 		if (!note) {
@@ -230,11 +230,16 @@ export const notesRepository = {
 	async getStats(db: DB, noteId: string) {
 		const [stats] = await db
 			.select({
-				revenue: sql<number>`COALESCE(SUM(${purchases.amount}),0)`,
+				revenue: sql<number>`COALESCE(SUM(${notesPurchases.amount}),0)`,
 				totalPurchases: sql<number>`COUNT(*)`,
 			})
-			.from(purchases)
-			.where(and(eq(purchases.noteId, noteId), eq(purchases.status, "PAID")));
+			.from(notesPurchases)
+			.where(
+				and(
+					eq(notesPurchases.noteId, noteId),
+					eq(notesPurchases.status, "PAID"),
+				),
+			);
 
 		return stats;
 	},

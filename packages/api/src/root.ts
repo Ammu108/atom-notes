@@ -2,8 +2,10 @@ import { authRouter } from "./auth/routes/auth-route";
 import { contactRouter } from "./contact/routes/contact-route";
 import { courseRouter } from "./courses/routes/course-route";
 import { notesRouter } from "./notes/routes/notes-route";
-import { paymentRouter } from "./payment/routes/payment-route";
-import { purchaseRouter } from "./purchases/routes/purchase-router";
+import { notesPaymentRouter } from "./notes-payment/routes/notes-payment-route";
+import { notesPurchaseRouter } from "./notes-purchases/routes/notes-purchase-route";
+import { pyqPaymentRouter } from "./pyq-payment/routes/pyq-payment-route";
+import { pyqPurchaseRouter } from "./pyq-purchases/routes/pyq-purchases-route";
 import { pyqRouter } from "./pyqs/routes/pyq-route";
 import { createCallerFactory, createTRPCRouter } from "./trpc";
 
@@ -18,8 +20,10 @@ export const appRouter = createTRPCRouter({
 	notes: notesRouter,
 	contact: contactRouter,
 	pyqs: pyqRouter,
-	payment: paymentRouter,
-	purchases: purchaseRouter,
+	notesPayment: notesPaymentRouter,
+	notesPurchases: notesPurchaseRouter,
+	pyqPayment: pyqPaymentRouter,
+	pyqPurchases: pyqPurchaseRouter,
 });
 
 // export type definition of API

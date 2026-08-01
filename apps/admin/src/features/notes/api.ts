@@ -54,5 +54,5 @@ export const useStatsById = (noteId: string) => {
 };
 
 export const useGetAllPurchasesByNoteId = (id: string) => {
-	return api.purchases.getAllPurchasesByNoteId.useQuery({ id });
+	return api.notesPurchases.getAllPurchasesByNoteId.useQuery({ id });
 };

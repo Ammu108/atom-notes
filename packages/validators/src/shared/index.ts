@@ -66,7 +66,7 @@ export const yearSchema = z
 export type YearSchema = z.infer<typeof yearSchema>;
 
 export const createOrderSchema = z.object({
-	noteId: z.string(),
+	id: z.string(),
 });
 
 export const paymentServiceSchema = z.object({

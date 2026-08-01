@@ -1,18 +1,18 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter } from "../../trpc";
-import { purchaseRepository } from "../repositories/purchase-repository";
+import { notesPurchaseRepository } from "../repositories/notes-purchase-repository";
 
-export const purchaseRouter = createTRPCRouter({
+export const notesPurchaseRouter = createTRPCRouter({
 	getAllPurchases: adminProcedure.query(async ({ ctx }) => {
-		return await purchaseRepository.getPurchases(ctx.db);
+		return await notesPurchaseRepository.getPurchases(ctx.db);
 	}),
 
 	purchaseDetailsId: adminProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input, ctx }) => {
 			// purchase exist or not
-			const isPurchaseExist = await ctx.db.query.purchases.findFirst({
+			const isPurchaseExist = await ctx.db.query.notesPurchases.findFirst({
 				where: (purchase, { eq }) => eq(purchase.id, input.id),
 			});
 
@@ -23,7 +23,7 @@ export const purchaseRouter = createTRPCRouter({
 				});
 			}
 
-			const purchaseDetails = await purchaseRepository.purchaseDetailsId(
+			const purchaseDetails = await notesPurchaseRepository.purchaseDetailsId(
 				input.id,
 				ctx.db,
 			);
@@ -46,7 +46,7 @@ export const purchaseRouter = createTRPCRouter({
 				});
 			}
 
-			const purchases = await purchaseRepository.getAllPurchasesByNote(
+			const purchases = await notesPurchaseRepository.getAllPurchasesByNote(
 				input.id,
 				ctx.db,
 			);

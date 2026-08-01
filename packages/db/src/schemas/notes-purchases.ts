@@ -3,7 +3,7 @@ import { timestamps } from "../helpers";
 import { notes } from "./notes";
 import { user } from "./users";
 
-export const purchases = pgTable("purchases", {
+export const notesPurchases = pgTable("notesPurchases", {
 	id: uuid("id").defaultRandom().primaryKey(),
 	userId: text("user_id").references(() => user.id),
 	noteId: uuid("note_id").references(() => notes.id),

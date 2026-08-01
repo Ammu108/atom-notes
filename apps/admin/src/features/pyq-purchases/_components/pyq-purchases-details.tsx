@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
-import { usePurchaseById } from "../api";
+import { usePyqPurchaseById } from "../api";
 
 const Row = ({
 	label,
@@ -31,8 +31,8 @@ const Row = ({
 	</div>
 );
 
-const PurchasesDetails = ({ id }: { id: string }) => {
-	const { data: purchase, isLoading } = usePurchaseById(id);
+const PyqPurchasesDetails = ({ id }: { id: string }) => {
+	const { data: purchase, isLoading } = usePyqPurchaseById(id);
 
 	const purchaseId = purchase?.id.toString().slice(-4);
 
@@ -125,13 +125,13 @@ const PurchasesDetails = ({ id }: { id: string }) => {
 					<CardHeader className="flex items-center justify-between">
 						<CardTitle className="flex items-center gap-2">
 							<FileText className="h-5 w-5" />
-							Purchased Note
+							Purchased PYQ
 						</CardTitle>
 
 						{isLoading ? (
 							<Skeleton className="h-8 w-8 rounded-md" />
 						) : purchase?.status === "PAID" ? (
-							<Link href={`/notes-details/${purchase.noteId}`}>
+							<Link href={`/notes-details/${purchase.id}`}>
 								<Button size="sm" variant="ghost">
 									<ExternalLink className="size-4" />
 								</Button>
@@ -144,7 +144,7 @@ const PurchasesDetails = ({ id }: { id: string }) => {
 							isLoading={isLoading}
 							label="Title"
 							skeletonWidth="w-56"
-							value={purchase?.noteTitle}
+							value={purchase?.pyqTitle}
 						/>
 						<Separator />
 
@@ -268,4 +268,4 @@ const PurchasesDetails = ({ id }: { id: string }) => {
 	);
 };
 
-export default PurchasesDetails;
+export default PyqPurchasesDetails;

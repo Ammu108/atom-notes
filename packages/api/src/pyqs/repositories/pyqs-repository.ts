@@ -1,6 +1,7 @@
 import {
 	courses,
 	type DB,
+	pyqPurchases,
 	pyqQuestions,
 	pyqs,
 	semesters,
@@ -8,7 +9,7 @@ import {
 } from "@repo/db";
 import type { PyqsFormValues } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, sql } from "drizzle-orm";
 import { pyqPaymentRepository } from "../../pyq-payment/repositories/pyq-payment-repository";
 
 export const pyqRepository = {
@@ -145,6 +146,8 @@ export const pyqRepository = {
 				price: pyqs.price,
 				course: courses.name,
 				semester: semesters.number,
+				createdAt: pyqs.createdAt,
+				updatedAt: pyqs.updatedAt,
 			})
 			.from(pyqs)
 			.innerJoin(subjects, eq(pyqs.subjectId, subjects.id))
@@ -175,6 +178,20 @@ export const pyqRepository = {
 			.where(eq(pyqQuestions.pyqId, id));
 
 		return { ...pyq, questions, questionCount: questions.length, hasPurchased };
+	},
+
+	async getStats(db: DB, noteId: string) {
+		const [stats] = await db
+			.select({
+				revenue: sql<number>`COALESCE(SUM(${pyqPurchases.amount}),0)`,
+				totalPurchases: sql<number>`COUNT(*)`,
+			})
+			.from(pyqPurchases)
+			.where(
+				and(eq(pyqPurchases.pyqId, noteId), eq(pyqPurchases.status, "PAID")),
+			);
+
+		return stats;
 	},
 
 	async deletePyq(db: DB, id: string) {

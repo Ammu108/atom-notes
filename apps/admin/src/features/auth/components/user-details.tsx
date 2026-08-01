@@ -26,13 +26,11 @@ const UserDetails = ({ id }: { id: string }) => {
 				<CardContent className="flex items-center justify-between pt-6">
 					<div className="space-y-2">
 						<h1 className="font-bold text-3xl">
-							<h1 className="font-bold text-3xl">
-								{isLoading ? (
-									<Skeleton className="h-9 w-56" />
-								) : (
-									userDetails?.name
-								)}
-							</h1>
+							{isLoading ? (
+								<Skeleton className="h-9 w-56" />
+							) : (
+								userDetails?.name
+							)}
 						</h1>
 
 						<div className="flex flex-wrap gap-6 text-muted-foreground">

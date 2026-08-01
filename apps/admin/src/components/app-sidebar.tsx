@@ -63,8 +63,13 @@ const data = {
 			icon: <NotepadText />,
 		},
 		{
-			title: "Purchases",
-			url: "/purchases",
+			title: "Notes Purchases",
+			url: "/notes-purchases",
+			icon: <ShoppingCart />,
+		},
+		{
+			title: "PYQ Purchases",
+			url: "/pyq-purchases",
 			icon: <ShoppingCart />,
 		},
 	],

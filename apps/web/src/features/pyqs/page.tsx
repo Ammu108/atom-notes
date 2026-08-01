@@ -1,15 +1,11 @@
 "use client";
 
 import { FileTextIcon } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
 import {
 	Dialog,
 	DialogClose,
@@ -25,6 +21,7 @@ import type { ALL_PYQS } from "./types";
 const badgeStyles = {
 	semester: "bg-blue-100 text-blue-700",
 	year: "bg-purple-100 text-purple-700",
+	questions: "bg-green-100 text-green-700",
 };
 
 const PyqsPage = () => {
@@ -49,7 +46,7 @@ const PyqsPage = () => {
 		return (
 			<div className="rounded-xl border border-destructive bg-destructive/10 px-2 py-4">
 				<p className="font-medium text-base text-destructive">
-					Filed to load pyqs.
+					Failed to load pyqs.
 				</p>
 			</div>
 		);
@@ -66,16 +63,12 @@ const PyqsPage = () => {
 	}
 
 	return (
-		<div>
-			<Accordion className="mt-6 flex flex-col gap-4">
-				{allPyqs.map((pyq) => (
-					<AccordionItem
-						className="group/item overflow-hidden rounded-xl border border-border bg-card"
-						key={pyq.id}
-						value={pyq.id}
-					>
+		<div className="flex flex-col gap-4">
+			{allPyqs.map((pyq) => (
+				<Card key={pyq.id}>
+					<CardContent>
 						{/* Card header */}
-						<div className="flex flex-col items-center justify-between gap-3 p-4 md:flex-row">
+						<div className="flex flex-col items-center justify-between gap-3 md:flex-row">
 							<div className="flex flex-wrap items-start gap-3">
 								<div className="flex flex-col">
 									<h2 className="font-bold text-card-foreground text-xl capitalize">
@@ -85,28 +78,33 @@ const PyqsPage = () => {
 										{pyq.subjectName}
 									</h2>
 								</div>
-								<span
-									className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${badgeStyles.semester}`}
-								>
-									semester {pyq.semester}
-								</span>
+								<div className="flex flex-wrap items-center gap-2">
+									<span
+										className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${badgeStyles.semester}`}
+									>
+										semester {pyq.semester}
+									</span>
 
-								<span
-									className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${badgeStyles.year}`}
-								>
-									{pyq.year}
-								</span>
+									<span
+										className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${badgeStyles.year}`}
+									>
+										{pyq.year}
+									</span>
+
+									<span
+										className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${badgeStyles.questions}`}
+									>
+										{pyq.questionsLength} Questions
+									</span>
+								</div>
 							</div>
 
 							<div className="flex w-full items-center justify-between gap-3 md:justify-end">
-								<AccordionTrigger className="flex items-center gap-1 rounded-lg border border-stone-200 bg-white px-3 py-1.5 font-medium text-sm text-stone-700 hover:bg-stone-50 [&>svg]:size-3.5">
-									<p className="text-sm group-data-[state=open]/item:hidden">
-										{pyq.questions.length} Questions
-									</p>
-									<p className="hidden group-data-[state=open]/item:inline">
-										Hide
-									</p>
-								</AccordionTrigger>
+								<Link href={`/pyqs/${pyq.id}`}>
+									<Button size="xs" variant="outline">
+										View Questions
+									</Button>
+								</Link>
 
 								<Button
 									onClick={() => handleDialog(pyq)}
@@ -119,28 +117,9 @@ const PyqsPage = () => {
 								</Button>
 							</div>
 						</div>
-
-						{/* Questions */}
-						<AccordionContent>
-							<div className="divide-y divide-stone-100 border-stone-100 border-t">
-								{pyq.questions.map((question, i) => (
-									<div
-										className="flex items-start gap-4 p-4"
-										key={question.question}
-									>
-										<span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-rose-100 font-semibold text-rose-600 text-xs">
-											{i + 1}
-										</span>
-										<p className="text-[15px] text-stone-700">
-											{question.question}
-										</p>
-									</div>
-								))}
-							</div>
-						</AccordionContent>
-					</AccordionItem>
-				))}
-			</Accordion>
+					</CardContent>
+				</Card>
+			))}
 
 			<Dialog onOpenChange={setdialogOpen} open={dialogOpen}>
 				<DialogContent className="sm:max-w-sm">
@@ -164,7 +143,7 @@ const PyqsPage = () => {
 					{selectedPyq && (
 						<>
 							<div className="rounded-lg border border-rose-100 bg-rose-50 px-4 py-3 text-rose-600 text-sm">
-								Contains detailed answers to all {selectedPyq.questions.length}{" "}
+								Contains detailed answers to all {selectedPyq.questionsLength}{" "}
 								questions from the {selectedPyq.year} exam.
 							</div>
 

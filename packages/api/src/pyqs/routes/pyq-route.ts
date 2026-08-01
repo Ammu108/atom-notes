@@ -1,7 +1,12 @@
 import { pyqsFormSchema, updatePyqSchema } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { adminProcedure, createTRPCRouter, publicProcedure } from "../../trpc";
+import {
+	adminProcedure,
+	createTRPCRouter,
+	protectedProcedure,
+	publicProcedure,
+} from "../../trpc";
 import { pyqRepository } from "../repositories/pyqs-repository";
 import { pyqService } from "../services/pyq-service";
 
@@ -56,7 +61,7 @@ export const pyqRouter = createTRPCRouter({
 		return pyqs;
 	}),
 
-	getPyqsById: adminProcedure
+	getPyqsById: protectedProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input, ctx }) => {
 			const pyqs = await pyqRepository.getPyqsById(ctx.db, input.id);

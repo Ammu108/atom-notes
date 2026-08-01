@@ -10,7 +10,7 @@ import {
 import { generateSlug } from "@repo/shared";
 import { TRPCError } from "@trpc/server";
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
-import { paymentRepository } from "../../payment/repositories/payment-repository";
+import { notesPaymentRepository } from "../../notes-payment/repositories/notes-payment-repository";
 import type { NoteType } from "../types";
 
 export const notesRepository = {
@@ -135,7 +135,7 @@ export const notesRepository = {
 
 		const hasPurchased =
 			note?.isPaid && userId
-				? await paymentRepository.hasPurchased(userId, note.id, db)
+				? await notesPaymentRepository.hasPurchased(userId, note.id, db)
 				: false;
 
 		if (!note) {

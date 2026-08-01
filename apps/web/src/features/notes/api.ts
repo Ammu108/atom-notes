@@ -5,7 +5,7 @@ export const useGetNotesBySlug = (slug: string) => {
 };
 
 export const useDownloadNotePdf = (
-	options?: Parameters<typeof api.payment.downloadNote.useMutation>[0],
+	options?: Parameters<typeof api.notesPayment.downloadNote.useMutation>[0],
 ) => {
-	return api.payment.downloadNote.useMutation(options);
+	return api.notesPayment.downloadNote.useMutation(options);
 };

@@ -20,7 +20,7 @@ interface RazorpayPaymentResponse {
 const BuyNoteButton = ({ price, noteId, slug }: BuyNoteButtonProps) => {
 	const utils = api.useUtils();
 	const router = useRouter();
-	const createOrder = api.payment.createOrder.useMutation({
+	const createOrder = api.notesPayment.createOrder.useMutation({
 		onSuccess: async (opts) => {
 			toast.success(opts.message);
 		},
@@ -34,7 +34,7 @@ const BuyNoteButton = ({ price, noteId, slug }: BuyNoteButtonProps) => {
 			toast.error(err.message);
 		},
 	});
-	const verifyPayment = api.payment.verifyPayment.useMutation({
+	const verifyPayment = api.notesPayment.verifyPayment.useMutation({
 		onSuccess: async (opts) => {
 			toast.success(opts.message);
 			await utils.notes.getNoteBySlug.invalidate({ slug: slug });

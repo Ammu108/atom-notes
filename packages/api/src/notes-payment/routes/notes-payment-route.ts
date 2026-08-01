@@ -6,7 +6,7 @@ import { notesRepository } from "../../notes/repositories/notes-repositary";
 import { createTRPCRouter, protectedProcedure } from "../../trpc";
 import { razorPay } from "../lib/razorpay";
 import { notesPaymentRepository } from "../repositories/notes-payment-repository";
-import { paymentService } from "../services/notes-payment-service";
+import { notesPaymentService } from "../services/notes-payment-service";
 
 export const notesPaymentRouter = createTRPCRouter({
 	createOrder: protectedProcedure
@@ -47,7 +47,7 @@ export const notesPaymentRouter = createTRPCRouter({
 				});
 			}
 
-			const order = await paymentService.createOrder({
+			const order = await notesPaymentService.createOrder({
 				amount: isNoteExist.price,
 			});
 

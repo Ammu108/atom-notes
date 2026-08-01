@@ -1,7 +1,14 @@
-import { type DB, pyqQuestions, pyqs, semesters, subjects } from "@repo/db";
+import {
+	courses,
+	type DB,
+	pyqQuestions,
+	pyqs,
+	semesters,
+	subjects,
+} from "@repo/db";
 import type { PyqsFormValues } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { desc, eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 
 export const pyqRepository = {
 	async create(db: DB, data: PyqsFormValues) {
@@ -79,7 +86,7 @@ export const pyqRepository = {
 	},
 
 	async getAllPyqs(db: DB) {
-		const pyqsResult = await db
+		const result = await db
 			.select({
 				id: pyqs.id,
 				title: pyqs.title,
@@ -87,28 +94,38 @@ export const pyqRepository = {
 				subjectName: subjects.name,
 				semester: semesters.number,
 				price: pyqs.price,
+				questionsLength: count(pyqQuestions.id),
 				updatedAt: pyqs.updatedAt,
 			})
 			.from(pyqs)
 			.innerJoin(subjects, eq(pyqs.subjectId, subjects.id))
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
+			.leftJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
+			.groupBy(
+				pyqs.id,
+				pyqs.title,
+				pyqs.year,
+				subjects.name,
+				semesters.number,
+				pyqs.updatedAt,
+			)
 			.orderBy(desc(pyqs.updatedAt));
 
-		const result = await Promise.all(
-			pyqsResult.map(async (pyq) => {
-				const questions = await db
-					.select({
-						question: pyqQuestions.question,
-					})
-					.from(pyqQuestions)
-					.where(eq(pyqQuestions.pyqId, pyq.id));
+		// const result = await Promise.all(
+		// 	pyqsResult.map(async (pyq) => {
+		// 		const questions = await db
+		// 			.select({
+		// 				question: pyqQuestions.question,
+		// 			})
+		// 			.from(pyqQuestions)
+		// 			.where(eq(pyqQuestions.pyqId, pyq.id));
 
-				return {
-					...pyq,
-					questions,
-				};
-			}),
-		);
+		// 		return {
+		// 			...pyq,
+		// 			questions,
+		// 		};
+		// 	}),
+		// );
 
 		return result;
 	},
@@ -125,9 +142,13 @@ export const pyqRepository = {
 				pdfKey: pyqs.pdfKey,
 				isPaid: pyqs.isPaid,
 				price: pyqs.price,
+				course: courses.name,
+				semester: semesters.number,
 			})
 			.from(pyqs)
 			.innerJoin(subjects, eq(pyqs.subjectId, subjects.id))
+			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
+			.innerJoin(courses, eq(semesters.courseId, courses.id))
 			.innerJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
 			.where(eq(pyqs.id, id))
 			.limit(1);
@@ -138,12 +159,13 @@ export const pyqRepository = {
 
 		const questions = await db
 			.select({
+				id: pyqQuestions.id,
 				question: pyqQuestions.question,
 			})
 			.from(pyqQuestions)
 			.where(eq(pyqQuestions.pyqId, id));
 
-		return { ...pyq, questions };
+		return { ...pyq, questions, questionCount: questions.length };
 	},
 
 	async deletePyq(db: DB, id: string) {

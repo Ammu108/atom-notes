@@ -1,4 +1,4 @@
-import { type DB, notes, notesPurchases, user } from "@repo/db";
+import { type DB, notes, notesPurchases, pyqPurchases, user } from "@repo/db";
 import { eq } from "drizzle-orm";
 
 /**
@@ -66,6 +66,67 @@ export const authRepository = {
 	async getAllUsers(db: DB) {
 		const result = await db.select().from(user);
 		return result;
+	},
+
+	async getUserDetails(db: DB, id: string) {
+		const result = await db
+			.select({
+				id: user.id,
+				name: user.name,
+				email: user.email,
+				emailVerified: user.emailVerified,
+				createdAt: user.createdAt,
+			})
+			.from(user)
+			.where(eq(user.id, id))
+			.limit(1);
+
+		return result[0] || null;
+	},
+
+	async getUserStats(db: DB, id: string) {
+		const notesPurchase = await db
+			.select()
+			.from(notesPurchases)
+			.where(eq(notesPurchases.userId, id));
+		const pyqPurchase = await db
+			.select()
+			.from(pyqPurchases)
+			.where(eq(pyqPurchases.userId, id));
+
+		const paidNotesPurchases = notesPurchase.filter(
+			(purchase) => purchase.status === "PAID",
+		);
+		const pendingNotesPurchases = notesPurchase.filter(
+			(purchase) => purchase.status === "PENDING",
+		);
+
+		const paidPyqPurchases = pyqPurchase.filter(
+			(purchase) => purchase.status === "PAID",
+		);
+		const pendingPyqPurchases = pyqPurchase.filter(
+			(purchase) => purchase.status === "PENDING",
+		);
+
+		const totalSpent =
+			paidNotesPurchases.reduce(
+				(sum, purchase) => sum + Number(purchase.amount ?? 0),
+				0,
+			) +
+			paidPyqPurchases.reduce(
+				(sum, purchase) => sum + Number(purchase.amount ?? 0),
+				0,
+			);
+
+		const totalPurchases = paidNotesPurchases.length + paidPyqPurchases.length;
+		const totalPendingPurchases =
+			pendingNotesPurchases.length + pendingPyqPurchases.length;
+
+		return {
+			totalPurchases,
+			totalPendingPurchases,
+			totalSpent,
+		};
 	},
 
 	async deleteById(db: DB, id: string) {

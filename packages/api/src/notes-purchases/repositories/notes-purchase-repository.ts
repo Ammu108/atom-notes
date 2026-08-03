@@ -76,4 +76,21 @@ export const notesPurchaseRepository = {
 			.innerJoin(user, eq(notesPurchases.userId, user.id))
 			.where(eq(notesPurchases.noteId, noteId));
 	},
+
+	async getAllPurchasesByUserId(userId: string, db: DB) {
+		return await db
+			.select({
+				id: notesPurchases.id,
+				userName: user.name,
+				userEmail: user.email,
+				title: notes.title,
+				amountPaid: notesPurchases.amount,
+				status: notesPurchases.status,
+				purchasesAt: notesPurchases.createdAt,
+			})
+			.from(notesPurchases)
+			.innerJoin(user, eq(notesPurchases.userId, user.id))
+			.innerJoin(notes, eq(notesPurchases.noteId, notes.id))
+			.where(eq(notesPurchases.userId, userId));
+	},
 };

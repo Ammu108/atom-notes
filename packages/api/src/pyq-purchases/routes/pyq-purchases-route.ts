@@ -53,4 +53,27 @@ export const pyqPurchaseRouter = createTRPCRouter({
 
 			return purchases;
 		}),
+
+	getAllPurchasesByUserId: adminProcedure
+		.input(z.object({ id: z.string() }))
+		.query(async ({ input, ctx }) => {
+			// purchase exist or not
+			const isUserExist = await ctx.db.query.user.findFirst({
+				where: (user, { eq }) => eq(user.id, input.id),
+			});
+
+			if (!isUserExist) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "User not found!",
+				});
+			}
+
+			const purchases = await pyqPurchaseRepository.getAllPurchasesByUserId(
+				input.id,
+				ctx.db,
+			);
+
+			return purchases;
+		}),
 });

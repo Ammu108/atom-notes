@@ -53,4 +53,26 @@ export const notesPurchaseRouter = createTRPCRouter({
 
 			return purchases;
 		}),
+
+	getAllPurchasesByUserId: adminProcedure
+		.input(z.object({ id: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const isUserExist = await ctx.db.query.user.findFirst({
+				where: (currentUser, { eq }) => eq(currentUser.id, input.id),
+			});
+
+			if (!isUserExist) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "User not found!",
+				});
+			}
+
+			const purchases = await notesPurchaseRepository.getAllPurchasesByUserId(
+				input.id,
+				ctx.db,
+			);
+
+			return purchases;
+		}),
 });

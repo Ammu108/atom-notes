@@ -2,7 +2,6 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { adminProcedure, createTRPCRouter } from "../../trpc";
 import { authRepository } from "../repositories/auth-repositary";
-import { authService } from "../services/auth-service";
 import { deleteUserSchema } from "../validators/auth-validator";
 
 /**
@@ -30,7 +29,7 @@ export const authRouter = createTRPCRouter({
 			}),
 		)
 		.query(async ({ input, ctx }) => {
-			const userDetails = await authService.getUserDetails(ctx.db, input.id);
+			const userDetails = await authRepository.getUserDetails(ctx.db, input.id);
 
 			if (!userDetails) {
 				throw new TRPCError({
@@ -40,6 +39,21 @@ export const authRouter = createTRPCRouter({
 			}
 
 			return userDetails;
+		}),
+
+	getUserStats: adminProcedure
+		.input(z.object({ id: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const userStats = await authRepository.getUserStats(ctx.db, input.id);
+
+			if (!userStats) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Stats not found.",
+				});
+			}
+
+			return userStats;
 		}),
 
 	deleteUser: adminProcedure

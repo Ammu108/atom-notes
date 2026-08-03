@@ -73,4 +73,21 @@ export const pyqPurchaseRepository = {
 			.innerJoin(user, eq(pyqPurchases.userId, user.id))
 			.where(eq(pyqPurchases.pyqId, pyqId));
 	},
+
+	async getAllPurchasesByUserId(userId: string, db: DB) {
+		return await db
+			.select({
+				id: pyqPurchases.id,
+				userName: user.name,
+				userEmail: user.email,
+				title: pyqs.title,
+				amountPaid: pyqPurchases.amount,
+				status: pyqPurchases.status,
+				purchasesAt: pyqPurchases.createdAt,
+			})
+			.from(pyqPurchases)
+			.innerJoin(user, eq(pyqPurchases.userId, user.id))
+			.innerJoin(pyqs, eq(pyqPurchases.pyqId, pyqs.id))
+			.where(eq(pyqPurchases.userId, userId));
+	},
 };

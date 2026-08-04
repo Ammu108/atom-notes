@@ -113,22 +113,6 @@ export const pyqRepository = {
 			)
 			.orderBy(desc(pyqs.updatedAt));
 
-		// const result = await Promise.all(
-		// 	pyqsResult.map(async (pyq) => {
-		// 		const questions = await db
-		// 			.select({
-		// 				question: pyqQuestions.question,
-		// 			})
-		// 			.from(pyqQuestions)
-		// 			.where(eq(pyqQuestions.pyqId, pyq.id));
-
-		// 		return {
-		// 			...pyq,
-		// 			questions,
-		// 		};
-		// 	}),
-		// );
-
 		return result;
 	},
 

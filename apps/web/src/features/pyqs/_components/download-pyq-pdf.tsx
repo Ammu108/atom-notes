@@ -2,9 +2,16 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Spinner } from "~/components/ui/spinner";
+import { cn } from "~/lib/utils";
 import { useDownloadPyqPdf } from "../api";
 
-const DownloadPyqPdf = ({ pyqId }: { pyqId: string }) => {
+const DownloadPyqPdf = ({
+	pyqId,
+	className,
+}: {
+	pyqId: string;
+	className?: string;
+}) => {
 	const router = useRouter();
 	const { mutateAsync: downloadPyqPdf, isPending: isDownloadingPyqPdf } =
 		useDownloadPyqPdf({
@@ -31,7 +38,7 @@ const DownloadPyqPdf = ({ pyqId }: { pyqId: string }) => {
 
 	return (
 		<Button
-			className="w-full font-semibold"
+			className={cn("font-semibold", className)}
 			disabled={isDownloadingPyqPdf}
 			onClick={handleDownloadPyqPdf}
 			size="sm"

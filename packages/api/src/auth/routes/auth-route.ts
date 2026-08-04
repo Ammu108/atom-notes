@@ -1,6 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { adminProcedure, createTRPCRouter } from "../../trpc";
+import {
+	adminProcedure,
+	createTRPCRouter,
+	protectedProcedure,
+} from "../../trpc";
 import { authRepository } from "../repositories/auth-repositary";
 import { deleteUserSchema } from "../validators/auth-validator";
 
@@ -55,6 +59,21 @@ export const authRouter = createTRPCRouter({
 
 			return userStats;
 		}),
+
+	// for web
+	getStatsByUser: protectedProcedure.query(async ({ ctx }) => {
+		const userId = ctx.session.user.id;
+		const userStats = await authRepository.getStatsByUser(ctx.db, userId);
+
+		if (!userStats) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Stats not found.",
+			});
+		}
+
+		return userStats;
+	}),
 
 	getUserSupportById: adminProcedure
 		.input(z.object({ id: z.string() }))

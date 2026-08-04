@@ -94,4 +94,22 @@ export const notesPurchaseRepository = {
 			.innerJoin(notes, eq(notesPurchases.noteId, notes.id))
 			.where(eq(notesPurchases.userId, userId));
 	},
+
+	async getAllPurchasesByUser(userId: string, db: DB) {
+		return await db
+			.select({
+				id: notesPurchases.id,
+				slug: notes.slug,
+				resourceId: notes.id,
+				title: notes.title,
+				amountPaid: notesPurchases.amount,
+				status: notesPurchases.status,
+				price: notes.price,
+				purchasesAt: notesPurchases.createdAt,
+				orderId: notesPurchases.razorPayOrderId,
+			})
+			.from(notesPurchases)
+			.innerJoin(notes, eq(notesPurchases.noteId, notes.id))
+			.where(eq(notesPurchases.userId, userId));
+	},
 };

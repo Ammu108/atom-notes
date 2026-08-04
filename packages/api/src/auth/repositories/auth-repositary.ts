@@ -146,6 +146,67 @@ export const authRepository = {
 		};
 	},
 
+	async getStatsByUser(db: DB, id: string) {
+		const [notesPurchase, pyqPurchase] = await Promise.all([
+			db
+				.select({
+					status: notesPurchases.status,
+					amount: notesPurchases.amount,
+				})
+				.from(notesPurchases)
+				.where(eq(notesPurchases.userId, id)),
+			db
+				.select({ status: pyqPurchases.status, amount: pyqPurchases.amount })
+				.from(pyqPurchases)
+				.where(eq(pyqPurchases.userId, id)),
+		]);
+
+		const paidNotesPurchases = notesPurchase.filter(
+			(purchase) => purchase.status === "PAID",
+		);
+		const pendingNotesPurchases = notesPurchase.filter(
+			(purchase) => purchase.status === "PENDING",
+		);
+
+		const paidPyqPurchases = pyqPurchase.filter(
+			(purchase) => purchase.status === "PAID",
+		);
+		const pendingPyqPurchases = pyqPurchase.filter(
+			(purchase) => purchase.status === "PENDING",
+		);
+
+		const failedNotesPurchases = notesPurchase.filter(
+			(purchase) => purchase.status === "FAILED",
+		);
+		const failedPyqPurchases = pyqPurchase.filter(
+			(purchase) => purchase.status === "FAILED",
+		);
+
+		const totalSpent =
+			paidNotesPurchases.reduce(
+				(sum, purchase) => sum + Number(purchase.amount ?? 0),
+				0,
+			) +
+			paidPyqPurchases.reduce(
+				(sum, purchase) => sum + Number(purchase.amount ?? 0),
+				0,
+			);
+
+		const totalPurchases = paidNotesPurchases.length + paidPyqPurchases.length;
+		const totalPendingPurchases =
+			pendingNotesPurchases.length + pendingPyqPurchases.length;
+
+		const totalFailedPurchases =
+			failedNotesPurchases.length + failedPyqPurchases.length;
+
+		return {
+			totalPurchases,
+			totalPendingPurchases,
+			totalSpent,
+			totalFailedPurchases,
+		};
+	},
+
 	async getUserSupportById(db: DB, id: string) {
 		const result = await db
 			.select({

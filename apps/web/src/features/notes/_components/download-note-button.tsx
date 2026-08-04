@@ -2,9 +2,16 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Spinner } from "~/components/ui/spinner";
+import { cn } from "~/lib/utils";
 import { useDownloadNotePdf } from "../api";
 
-const DownloadNotePdf = ({ noteId }: { noteId: string }) => {
+const DownloadNotePdf = ({
+	noteId,
+	className,
+}: {
+	noteId: string;
+	className?: string;
+}) => {
 	const router = useRouter();
 	const { mutateAsync: downloadNote, isPending: isDownloadingNote } =
 		useDownloadNotePdf({
@@ -31,7 +38,7 @@ const DownloadNotePdf = ({ noteId }: { noteId: string }) => {
 
 	return (
 		<Button
-			className="w-full font-semibold"
+			className={cn("font-semibold", className)}
 			disabled={isDownloadingNote}
 			onClick={handleDownloadNote}
 			size="sm"

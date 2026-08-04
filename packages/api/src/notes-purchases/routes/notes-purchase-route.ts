@@ -1,6 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { adminProcedure, createTRPCRouter } from "../../trpc";
+import {
+	adminProcedure,
+	createTRPCRouter,
+	protectedProcedure,
+} from "../../trpc";
 import { notesPurchaseRepository } from "../repositories/notes-purchase-repository";
 
 export const notesPurchaseRouter = createTRPCRouter({
@@ -75,4 +79,27 @@ export const notesPurchaseRouter = createTRPCRouter({
 
 			return purchases;
 		}),
+
+	// get all purchases by user id for user on web
+	getAllPurchasesByUser: protectedProcedure.query(async ({ ctx }) => {
+		// user exist or not
+		const userId = ctx.session.user.id;
+		const isUserExist = await ctx.db.query.user.findFirst({
+			where: (user, { eq }) => eq(user.id, userId),
+		});
+
+		if (!isUserExist) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "User not found!",
+			});
+		}
+
+		const purchases = await notesPurchaseRepository.getAllPurchasesByUser(
+			userId,
+			ctx.db,
+		);
+
+		return purchases;
+	}),
 });

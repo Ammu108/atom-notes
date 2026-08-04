@@ -66,12 +66,12 @@ const NoteSidebar = ({
 				<div className="w-full">
 					{isPaid ? (
 						hasPurchased ? (
-							<DownloadNotePdf noteId={noteId} />
+							<DownloadNotePdf className="w-full" noteId={noteId} />
 						) : (
 							<BuyNoteButton noteId={noteId} price={price} slug={slug} />
 						)
 					) : (
-						<DownloadNotePdf noteId={noteId} />
+						<DownloadNotePdf className="w-full" noteId={noteId} />
 					)}
 				</div>
 

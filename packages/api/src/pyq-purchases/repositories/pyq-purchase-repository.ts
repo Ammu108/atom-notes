@@ -91,4 +91,21 @@ export const pyqPurchaseRepository = {
 			.innerJoin(pyqs, eq(pyqPurchases.pyqId, pyqs.id))
 			.where(eq(pyqPurchases.userId, userId));
 	},
+
+	async getAllPurchasesByUser(userId: string, db: DB) {
+		return await db
+			.select({
+				id: pyqPurchases.id,
+				resourceId: pyqs.id,
+				title: pyqs.title,
+				amountPaid: pyqPurchases.amount,
+				status: pyqPurchases.status,
+				price: pyqs.price,
+				purchasesAt: pyqPurchases.createdAt,
+				orderId: pyqPurchases.razorPayOrderId,
+			})
+			.from(pyqPurchases)
+			.innerJoin(pyqs, eq(pyqPurchases.pyqId, pyqs.id))
+			.where(eq(pyqPurchases.userId, userId));
+	},
 };

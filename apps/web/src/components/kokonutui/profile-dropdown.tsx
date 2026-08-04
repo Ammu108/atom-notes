@@ -53,8 +53,8 @@ export default function ProfileDropdown({
 	const [isOpen, setIsOpen] = React.useState(false);
 	const menuItems: MenuItem[] = [
 		{
-			label: "My Purchases",
-			href: "/my-purchases",
+			label: "My Dashboard",
+			href: "/my-dashboard",
 			icon: <IconCalendar className="h-4 w-4" />,
 		},
 	];

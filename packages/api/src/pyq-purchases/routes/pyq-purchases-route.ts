@@ -1,6 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { adminProcedure, createTRPCRouter } from "../../trpc";
+import {
+	adminProcedure,
+	createTRPCRouter,
+	protectedProcedure,
+} from "../../trpc";
 import { pyqPurchaseRepository } from "../repositories/pyq-purchase-repository";
 
 export const pyqPurchaseRouter = createTRPCRouter({
@@ -57,7 +61,7 @@ export const pyqPurchaseRouter = createTRPCRouter({
 	getAllPurchasesByUserId: adminProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input, ctx }) => {
-			// purchase exist or not
+			// user exist or not
 			const isUserExist = await ctx.db.query.user.findFirst({
 				where: (user, { eq }) => eq(user.id, input.id),
 			});
@@ -76,4 +80,27 @@ export const pyqPurchaseRouter = createTRPCRouter({
 
 			return purchases;
 		}),
+
+	// get all purchases by user id for user on web
+	getAllPurchasesByUser: protectedProcedure.query(async ({ ctx }) => {
+		const userId = ctx.session.user.id;
+		// user exist or not
+		const isUserExist = await ctx.db.query.user.findFirst({
+			where: (user, { eq }) => eq(user.id, userId),
+		});
+
+		if (!isUserExist) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "User not found!",
+			});
+		}
+
+		const purchases = await pyqPurchaseRepository.getAllPurchasesByUser(
+			userId,
+			ctx.db,
+		);
+
+		return purchases;
+	}),
 });

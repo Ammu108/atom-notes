@@ -52,10 +52,14 @@ const PyqDetailSidebar = ({
 						>
 							₹{price}
 						</h1>
-						<div className="flex items-center gap-2 rounded-xl border border-border bg-accent px-2 py-1">
-							<Check className="h-4 w-4 text-accent-foreground" />
-							<p className="font-medium text-accent-foreground text-sm">Paid</p>
-						</div>
+						{hasPurchased ? (
+							<div className="flex items-center gap-2 rounded-xl border border-border bg-accent px-2 py-1">
+								<Check className="h-4 w-4 text-accent-foreground" />
+								<p className="font-medium text-accent-foreground text-sm">
+									Paid
+								</p>
+							</div>
+						) : null}
 					</div>
 
 					<p className="mt-1 text-green-600 text-sm">Lifetime Access</p>
@@ -93,12 +97,12 @@ const PyqDetailSidebar = ({
 				<div className="flex w-full flex-col gap-4">
 					{isPaid ? (
 						hasPurchased ? (
-							<DownloadPyqPdf pyqId={pyqId} />
+							<DownloadPyqPdf className="w-full" pyqId={pyqId} />
 						) : (
 							<BuyPyqButton id={pyqId} price={price} />
 						)
 					) : (
-						<DownloadPyqPdf pyqId={pyqId} />
+						<DownloadPyqPdf className="w-full" pyqId={pyqId} />
 					)}
 
 					{!hasPurchased && (

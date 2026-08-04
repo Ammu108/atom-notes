@@ -1,10 +1,20 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, Input } from "@repo/ui";
-import { ExternalLink, SearchIcon } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui";
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
+import {
+	Select,
+	SelectContent,
+	SelectGroup,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "~/components/ui/select";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
 	Table,
@@ -14,7 +24,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "~/components/ui/table";
-import { usePurchases } from "../api";
+import { useGetAllNotesPurchases, useGetAllPyqPurchases } from "../api";
 
 const purchaseSkeletonRows = [
 	"purchase-skel-1",
@@ -24,21 +34,57 @@ const purchaseSkeletonRows = [
 	"purchase-skel-5",
 ];
 
-export function NotesPurchasesTable() {
-	const { data: purchases, isLoading } = usePurchases();
+type PurchaseFilter = "Notes" | "Pyqs";
+
+export function PurchasesTable() {
+	const pathName = usePathname();
+	const router = useRouter();
+	const [filter, setFilter] = useState<PurchaseFilter>("Notes");
+	const { data: notesPurchases, isLoading: isNotesPurchasesLoading } =
+		useGetAllNotesPurchases(filter === "Notes");
+	const { data: pyqPurchases, isLoading: isPyqPurchasesLoading } =
+		useGetAllPyqPurchases(filter === "Pyqs");
+
+	const purchases =
+		filter === "Notes" ? (notesPurchases ?? []) : (pyqPurchases ?? []);
+
+	const isPurchasesLoading =
+		filter === "Notes" ? isNotesPurchasesLoading : isPyqPurchasesLoading;
+
+	useEffect(() => {
+		const params = new URLSearchParams();
+
+		if (filter) {
+			params.set("filter", filter);
+		}
+
+		router.replace(`${pathName}?${params.toString()}`);
+	}, [filter, router, pathName]);
+
+	const handleFilterChange = (value: PurchaseFilter | null) => {
+		if (!value) return;
+
+		setFilter(value);
+	};
 
 	return (
 		<Card>
 			<CardHeader className="gap-3">
-				<CardTitle>Purchases Directory</CardTitle>
-
 				<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-					<div className="relative w-full md:max-w-sm">
-						<SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-						<Input
-							className="pl-9"
-							placeholder="Search user, email or note..."
-						/>
+					<CardTitle>Purchases Directory</CardTitle>
+
+					<div className="flex flex-col gap-2 sm:flex-row">
+						<Select onValueChange={handleFilterChange} value={filter}>
+							<SelectTrigger className="w-full sm:w-36">
+								<SelectValue />
+							</SelectTrigger>
+							<SelectContent align="end">
+								<SelectGroup>
+									<SelectItem value="Notes">Notes</SelectItem>
+									<SelectItem value="Pyqs">Pyqs</SelectItem>
+								</SelectGroup>
+							</SelectContent>
+						</Select>
 					</div>
 				</div>
 			</CardHeader>
@@ -59,7 +105,7 @@ export function NotesPurchasesTable() {
 					</TableHeader>
 
 					<TableBody>
-						{isLoading ? (
+						{isPurchasesLoading ? (
 							purchaseSkeletonRows.map((key) => (
 								<TableRow key={key}>
 									<TableCell>
@@ -97,7 +143,7 @@ export function NotesPurchasesTable() {
 
 									<TableCell>{purchase.userEmail}</TableCell>
 
-									<TableCell>{purchase.noteTitle}</TableCell>
+									<TableCell>{purchase.title}</TableCell>
 
 									<TableCell>₹{purchase.amount}</TableCell>
 
@@ -126,7 +172,9 @@ export function NotesPurchasesTable() {
 									</TableCell>
 
 									<TableCell className="text-right">
-										<Link href={`/notes-purchases/${purchase.id}`}>
+										<Link
+											href={`/purchases/${filter === "Notes" ? "notes" : "pyq"}/${purchase.id}`}
+										>
 											<Button size="sm" variant="ghost">
 												<ExternalLink className="size-4" />
 											</Button>

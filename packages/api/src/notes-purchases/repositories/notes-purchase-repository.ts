@@ -8,7 +8,7 @@ import {
 	subjects,
 	user,
 } from "@repo/db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export const notesPurchaseRepository = {
 	async getPurchases(db: DB) {
@@ -17,7 +17,7 @@ export const notesPurchaseRepository = {
 				id: notesPurchases.id,
 				userName: user.name,
 				userEmail: user.email,
-				noteTitle: notes.title,
+				title: notes.title,
 				amount: notesPurchases.amount,
 				paymentMethod: notesPurchases.paymentMethod,
 				status: notesPurchases.status,
@@ -35,8 +35,9 @@ export const notesPurchaseRepository = {
 				userName: user.name,
 				userEmail: user.email,
 				userId: user.id,
-				noteId: notes.id,
-				noteTitle: notes.title,
+				type: sql<"notes">`'notes'`.as("type"),
+				resourceId: notes.id,
+				title: notes.title,
 				course: courses.name,
 				semester: semesters.number,
 				subject: subjects.name,

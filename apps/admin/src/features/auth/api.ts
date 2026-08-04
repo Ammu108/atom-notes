@@ -21,3 +21,10 @@ export const useFilterPyq = (id?: string, enabled = true) => {
 		{ enabled: !!id && enabled },
 	);
 };
+
+export const useUserSupportById = (id?: string, enabled = true) => {
+	return api.auth.getUserSupportById.useQuery(
+		{ id: id ?? "" },
+		{ enabled: !!id && enabled },
+	);
+};

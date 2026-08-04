@@ -53,8 +53,8 @@ const data = {
 			icon: <NotebookPen />,
 		},
 		{
-			title: "Contacts",
-			url: "/contacts",
+			title: "Support",
+			url: "/support",
 			icon: <ContactRound />,
 		},
 		{

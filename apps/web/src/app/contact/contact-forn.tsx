@@ -39,7 +39,9 @@ const ContactForm = () => {
 	});
 
 	const onSubmit = async (values: ContactSchema) => {
+		console.log("BUTTON CLICKED");
 		contact.mutate(values);
+		console.log("MUTATE CALLED");
 	};
 
 	return (
@@ -122,7 +124,7 @@ const ContactForm = () => {
 						name="message"
 						render={({ field, fieldState }) => (
 							<Field data-invalid={fieldState.invalid}>
-								<FieldLabel htmlFor={field.name}>Email</FieldLabel>
+								<FieldLabel htmlFor={field.name}>Message</FieldLabel>
 								<Input
 									{...field}
 									aria-invalid={fieldState.invalid}

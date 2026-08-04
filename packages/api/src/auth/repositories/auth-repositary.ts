@@ -1,4 +1,11 @@
-import { type DB, notes, notesPurchases, pyqPurchases, user } from "@repo/db";
+import {
+	contacts,
+	type DB,
+	notes,
+	notesPurchases,
+	pyqPurchases,
+	user,
+} from "@repo/db";
 import { eq } from "drizzle-orm";
 
 /**
@@ -85,14 +92,23 @@ export const authRepository = {
 	},
 
 	async getUserStats(db: DB, id: string) {
-		const notesPurchase = await db
-			.select()
-			.from(notesPurchases)
-			.where(eq(notesPurchases.userId, id));
-		const pyqPurchase = await db
-			.select()
-			.from(pyqPurchases)
-			.where(eq(pyqPurchases.userId, id));
+		const [notesPurchase, pyqPurchase, totalSupport] = await Promise.all([
+			db
+				.select({
+					status: notesPurchases.status,
+					amount: notesPurchases.amount,
+				})
+				.from(notesPurchases)
+				.where(eq(notesPurchases.userId, id)),
+			db
+				.select({ status: pyqPurchases.status, amount: pyqPurchases.amount })
+				.from(pyqPurchases)
+				.where(eq(pyqPurchases.userId, id)),
+			db
+				.select({ id: contacts.id })
+				.from(contacts)
+				.where(eq(contacts.userId, id)),
+		]);
 
 		const paidNotesPurchases = notesPurchase.filter(
 			(purchase) => purchase.status === "PAID",
@@ -126,7 +142,25 @@ export const authRepository = {
 			totalPurchases,
 			totalPendingPurchases,
 			totalSpent,
+			totalSupport: totalSupport.length,
 		};
+	},
+
+	async getUserSupportById(db: DB, id: string) {
+		const result = await db
+			.select({
+				id: contacts.id,
+				name: contacts.name,
+				email: contacts.email,
+				subject: contacts.subject,
+				message: contacts.message,
+				createdAt: contacts.createdAt,
+			})
+			.from(contacts)
+			.innerJoin(user, eq(contacts.userId, user.id))
+			.where(eq(contacts.userId, id));
+
+		return result;
 	},
 
 	async deleteById(db: DB, id: string) {

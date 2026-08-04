@@ -14,14 +14,6 @@ import {
 	DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "~/components/ui/select";
 import { Skeleton } from "~/components/ui/skeleton";
 import {
 	Table,
@@ -47,7 +39,7 @@ const userSkeletonRows = [
 	"user-skeleton-5",
 ];
 
-export function ContactTable({ contactData, isPending }: ContactProps) {
+export function SupportTable({ contactData, isPending }: ContactProps) {
 	const utils = api.useUtils();
 	const router = useRouter();
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -87,6 +79,10 @@ export function ContactTable({ contactData, isPending }: ContactProps) {
 		}
 	};
 
+	const handleViewDetails = (id: string) => {
+		router.push(`/support/${id}`);
+	};
+
 	return (
 		<Card>
 			<CardHeader className="gap-3">
@@ -95,22 +91,6 @@ export function ContactTable({ contactData, isPending }: ContactProps) {
 					<div className="relative w-full md:max-w-sm">
 						<SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
 						<Input className="pl-9" placeholder="Search name, email or id..." />
-					</div>
-
-					<div className="flex flex-col gap-2 sm:flex-row">
-						<Select>
-							<SelectTrigger className="w-full sm:w-36">
-								<SelectValue placeholder="Sort" />
-							</SelectTrigger>
-							<SelectContent align="end">
-								<SelectGroup>
-									<SelectItem value="newest">Newest</SelectItem>
-									<SelectItem value="oldest">Oldest</SelectItem>
-									<SelectItem value="name-asc">A-Z</SelectItem>
-									<SelectItem value="name-desc">Z-A</SelectItem>
-								</SelectGroup>
-							</SelectContent>
-						</Select>
 					</div>
 				</div>
 			</CardHeader>
@@ -122,7 +102,9 @@ export function ContactTable({ contactData, isPending }: ContactProps) {
 							<TableHead>Name</TableHead>
 							<TableHead>Email</TableHead>
 							<TableHead>Subject</TableHead>
-							<TableHead>Message</TableHead>
+							<TableHead className="max-w-xs overflow-hidden text-ellipsis">
+								Message
+							</TableHead>
 							<TableHead>Created At</TableHead>
 							<TableHead className="text-right">Action</TableHead>
 						</TableRow>
@@ -166,7 +148,9 @@ export function ContactTable({ contactData, isPending }: ContactProps) {
 									<TableCell className="font-medium">{data.name}</TableCell>
 									<TableCell>{data.email}</TableCell>
 									<TableCell>{data.subject}</TableCell>
-									<TableCell>{data.message}</TableCell>
+									<TableCell className="max-w-xs overflow-hidden text-ellipsis">
+										{data.message}
+									</TableCell>
 									<TableCell>
 										{new Date(data.createdAt).toLocaleDateString("en-US", {
 											year: "numeric",
@@ -185,6 +169,11 @@ export function ContactTable({ contactData, isPending }: ContactProps) {
 												}
 											></DropdownMenuTrigger>
 											<DropdownMenuContent align="end" className="w-40">
+												<DropdownMenuItem
+													onClick={() => handleViewDetails(data.id)}
+												>
+													View Details
+												</DropdownMenuItem>
 												<DropdownMenuItem
 													className="text-destructive"
 													onClick={() => handleDelete(data.id, data.name)}

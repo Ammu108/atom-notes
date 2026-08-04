@@ -56,6 +56,24 @@ export const authRouter = createTRPCRouter({
 			return userStats;
 		}),
 
+	getUserSupportById: adminProcedure
+		.input(z.object({ id: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const userSupport = await authRepository.getUserSupportById(
+				ctx.db,
+				input.id,
+			);
+
+			if (!userSupport) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Support not found.",
+				});
+			}
+
+			return userSupport;
+		}),
+
 	deleteUser: adminProcedure
 		.input(deleteUserSchema)
 		.mutation(async ({ input, ctx }) => {

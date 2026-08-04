@@ -7,7 +7,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
 import { Skeleton } from "~/components/ui/skeleton";
-import { usePyqPurchaseById } from "../api";
+import { useGetNotesPurchasesById, useGetPyqPurchasesById } from "../api";
 
 const Row = ({
 	label,
@@ -31,8 +31,20 @@ const Row = ({
 	</div>
 );
 
-const PyqPurchasesDetails = ({ id }: { id: string }) => {
-	const { data: purchase, isLoading } = usePyqPurchaseById(id);
+type PurchaseType = "notes" | "pyq";
+
+const PurchasesDetails = ({ id, type }: { id: string; type: PurchaseType }) => {
+	const isNotes = type === "notes";
+
+	const { data: notesPurchase, isLoading: isNotesLoading } =
+		useGetNotesPurchasesById(id, isNotes);
+	const { data: pyqPurchase, isLoading: isPyqLoading } = useGetPyqPurchasesById(
+		id,
+		!isNotes,
+	);
+
+	const purchase = isNotes ? notesPurchase : pyqPurchase;
+	const isLoading = isNotes ? isNotesLoading : isPyqLoading;
 
 	const purchaseId = purchase?.id.toString().slice(-4);
 
@@ -125,13 +137,19 @@ const PyqPurchasesDetails = ({ id }: { id: string }) => {
 					<CardHeader className="flex items-center justify-between">
 						<CardTitle className="flex items-center gap-2">
 							<FileText className="h-5 w-5" />
-							Purchased PYQ
+							Purchased Note
 						</CardTitle>
 
 						{isLoading ? (
 							<Skeleton className="h-8 w-8 rounded-md" />
 						) : purchase?.status === "PAID" ? (
-							<Link href={`/notes-details/${purchase.id}`}>
+							<Link
+								href={
+									purchase.type === "notes"
+										? `/notes-details/${purchase.resourceId}`
+										: `/pyqs-details/${purchase.resourceId}`
+								}
+							>
 								<Button size="sm" variant="ghost">
 									<ExternalLink className="size-4" />
 								</Button>
@@ -144,7 +162,7 @@ const PyqPurchasesDetails = ({ id }: { id: string }) => {
 							isLoading={isLoading}
 							label="Title"
 							skeletonWidth="w-56"
-							value={purchase?.pyqTitle}
+							value={purchase?.title}
 						/>
 						<Separator />
 
@@ -268,4 +286,4 @@ const PyqPurchasesDetails = ({ id }: { id: string }) => {
 	);
 };
 
-export default PyqPurchasesDetails;
+export default PurchasesDetails;

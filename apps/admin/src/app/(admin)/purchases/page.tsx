@@ -1,14 +1,14 @@
 import { SiteHeader } from "~/components/site-header";
-import { PyqPurchasesTable } from "~/features/pyq-purchases/_components/pyq-purchase-table";
+import { PurchasesTable } from "~/features/purchases/_components/purchases-table";
 
 const page = () => {
 	return (
 		<>
-			<SiteHeader title="PYQ Purchases" />
+			<SiteHeader title="Purchases" />
 
 			<div className="p-4 lg:p-6">
 				<div className="flex flex-col gap-4">
-					<PyqPurchasesTable />
+					<PurchasesTable />
 				</div>
 			</div>
 		</>

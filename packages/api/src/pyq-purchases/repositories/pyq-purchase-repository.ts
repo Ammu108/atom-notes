@@ -7,7 +7,7 @@ import {
 	subjects,
 	user,
 } from "@repo/db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 export const pyqPurchaseRepository = {
 	async getPurchases(db: DB) {
@@ -16,7 +16,7 @@ export const pyqPurchaseRepository = {
 				id: pyqPurchases.id,
 				userName: user.name,
 				userEmail: user.email,
-				pyqTitle: pyqs.title,
+				title: pyqs.title,
 				amount: pyqPurchases.amount,
 				paymentMethod: pyqPurchases.paymentMethod,
 				status: pyqPurchases.status,
@@ -34,8 +34,9 @@ export const pyqPurchaseRepository = {
 				userName: user.name,
 				userEmail: user.email,
 				userId: user.id,
-				pyqId: pyqs.id,
-				pyqTitle: pyqs.title,
+				type: sql<"pyq">`'pyq'`.as("type"),
+				resourceId: pyqs.id,
+				title: pyqs.title,
 				course: courses.name,
 				semester: semesters.number,
 				subject: subjects.name,

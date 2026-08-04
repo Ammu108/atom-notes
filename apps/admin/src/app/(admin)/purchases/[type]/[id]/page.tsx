@@ -1,24 +1,25 @@
 import { SiteHeader } from "~/components/site-header";
-import NotesPurchasesDetails from "~/features/notes-purchases/_components/notes-purchases-details";
+import PurchasesDetails from "~/features/purchases/_components/purchases-details";
 import { BackButton } from "~/lib/back-button";
 
-interface RowProps {
+interface Props {
 	params: Promise<{
+		type: "notes" | "pyq";
 		id: string;
 	}>;
 }
 
-const page = async ({ params }: RowProps) => {
-	const { id } = await params;
+const page = async ({ params }: Props) => {
+	const { id, type } = await params;
 
 	return (
 		<div className="flex flex-col gap-1">
-			<SiteHeader title="Edit Notes" />
+			<SiteHeader title="Edit PYQs" />
 			<div className="flex flex-row items-center justify-start p-4">
 				<BackButton />
 			</div>
 			<div>
-				<NotesPurchasesDetails id={id} />
+				<PurchasesDetails id={id} type={type} />
 			</div>
 		</div>
 	);

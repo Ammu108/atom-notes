@@ -24,6 +24,13 @@ export const userAuth = betterAuth({
 		},
 	}),
 
+	session: {
+		cookieCache: {
+			enabled: true,
+			maxAge: 5 * 60, // 5 minutes cache duration
+		},
+	},
+
 	advanced: {
 		cookiePrefix: "user", // → cookie: "user.session_token"
 		defaultCookieAttributes: {

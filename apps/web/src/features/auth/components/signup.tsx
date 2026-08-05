@@ -39,7 +39,6 @@ const SignUp = () => {
 					onSuccess() {
 						toast.success("Signup successful");
 						router.push("/");
-						router.refresh();
 					},
 					onError(ctx) {
 						toast.error(ctx.error.message);

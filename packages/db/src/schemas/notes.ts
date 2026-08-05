@@ -2,6 +2,7 @@ import type { EditorContent } from "@repo/shared";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
+	index,
 	jsonb,
 	numeric,
 	pgTableCreator,
@@ -30,7 +31,9 @@ export const notes = createTable("notes", {
 		.default("0.00")
 		.notNull(), // Supports INR perfectly
 	...timestamps,
-});
+}, (table) => ({
+	chapterIdIdx: index("notes_chapter_id_idx").on(table.chapterId),
+}));
 
 export const notesRelations = relations(notes, ({ one }) => ({
 	chapter: one(chapters, {

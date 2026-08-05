@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, timestamp, index } from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
 
 export const user = pgTable("user", {
@@ -24,7 +24,9 @@ export const session = pgTable("session", {
 	userId: text("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
-});
+}, (table) => ({
+	userIdIdx: index("session_user_id_idx").on(table.userId),
+}));
 
 export const account = pgTable("account", {
 	id: text("id").primaryKey(),
@@ -42,7 +44,9 @@ export const account = pgTable("account", {
 	password: text("password"),
 	createdAt: timestamp("created_at").notNull(),
 	updatedAt: timestamp("updated_at").notNull(),
-});
+}, (table) => ({
+	userIdIdx: index("account_user_id_idx").on(table.userId),
+}));
 
 export const verification = pgTable("verification", {
 	id: text("id").primaryKey(),

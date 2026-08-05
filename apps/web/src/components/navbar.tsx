@@ -32,7 +32,6 @@ export default function Navbar() {
 		await userAuthClient.signOut();
 
 		router.push("/");
-		router.refresh();
 	};
 
 	const user = session?.user;

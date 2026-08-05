@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { pgTableCreator, uuid, varchar } from "drizzle-orm/pg-core";
+import { pgTableCreator, uuid, varchar, index } from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
 import { notes } from "./notes";
 import { subjects } from "./subjects";
@@ -13,7 +13,9 @@ export const chapters = createTable("chapters", {
 		.notNull(),
 	name: varchar("name", { length: 256 }).notNull(),
 	...timestamps,
-});
+}, (table) => ({
+	subjectIdIdx: index("chapters_subject_id_idx").on(table.subjectId),
+}));
 
 export const chaptersRelations = relations(chapters, ({ one, many }) => ({
 	subject: one(subjects, {

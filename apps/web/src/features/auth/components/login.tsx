@@ -40,7 +40,6 @@ const Login = () => {
 
 			toast.success("Login successful");
 			router.push("/");
-			router.refresh();
 		} catch {
 			toast.error("Something went wrong");
 		} finally {

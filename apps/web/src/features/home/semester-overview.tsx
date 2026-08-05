@@ -23,7 +23,7 @@ const SemesterOverView = () => {
 					{SEMESTER_OVERVIEW.map((item) => {
 						return (
 							<Link
-								className="flex cursor-pointer flex-col gap-4 rounded-2xl border border-border bg-background p-6 shadow-[0_6px_25px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_10px_30px_rgba(15,23,42,0.14)]"
+								className="flex cursor-pointer flex-col gap-4 rounded-2xl border border-border bg-background p-6 shadow-[0_6px_25px_rgba(15,23,42,0.08)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_10px_30px_rgba(15,23,42,0.14)] active:scale-95"
 								href={`/semester-details/${item.id}`}
 								key={item.id}
 							>

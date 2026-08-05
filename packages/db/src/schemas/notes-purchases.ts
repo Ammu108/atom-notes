@@ -1,4 +1,4 @@
-import { numeric, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { numeric, pgTable, text, uuid, index } from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
 import { notes } from "./notes";
 import { user } from "./users";
@@ -13,4 +13,7 @@ export const notesPurchases = pgTable("notesPurchases", {
 	razorPayOrderId: text("razorpay_order_id"),
 	razorPayPaymentId: text("razorpay_payment_id"),
 	...timestamps,
-});
+}, (table) => ({
+	userIdIdx: index("notes_purchases_user_id_idx").on(table.userId),
+	noteIdIdx: index("notes_purchases_note_id_idx").on(table.noteId),
+}));

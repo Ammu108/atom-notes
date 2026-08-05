@@ -1,4 +1,4 @@
-import { numeric, pgTable, text, uuid } from "drizzle-orm/pg-core";
+import { numeric, pgTable, text, uuid, index } from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
 import { pyqs } from "./pyqs";
 import { user } from "./users";
@@ -13,4 +13,7 @@ export const pyqPurchases = pgTable("pyqPurchases", {
 	razorPayOrderId: text("razorpay_order_id"),
 	razorPayPaymentId: text("razorpay_payment_id"),
 	...timestamps,
-});
+}, (table) => ({
+	userIdIdx: index("pyq_purchases_user_id_idx").on(table.userId),
+	pyqIdIdx: index("pyq_purchases_pyq_id_idx").on(table.pyqId),
+}));

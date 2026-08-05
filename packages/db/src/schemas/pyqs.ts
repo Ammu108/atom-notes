@@ -5,6 +5,7 @@ import {
 	text,
 	uuid,
 	varchar,
+	index,
 } from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
 import { subjects } from "./subjects";
@@ -23,7 +24,9 @@ export const pyqs = pgTable("pyqs", {
 		.default("0.00")
 		.notNull(),
 	...timestamps,
-});
+}, (table) => ({
+	subjectIdIdx: index("pyqs_subject_id_idx").on(table.subjectId),
+}));
 
 export const pyqQuestions = pgTable("pyq_questions", {
 	id: uuid("id").primaryKey().defaultRandom(),
@@ -36,4 +39,6 @@ export const pyqQuestions = pgTable("pyq_questions", {
 
 	question: text("question").notNull(),
 	...timestamps,
-});
+}, (table) => ({
+	pyqIdIdx: index("pyq_questions_pyq_id_idx").on(table.pyqId),
+}));

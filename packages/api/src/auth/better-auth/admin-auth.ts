@@ -24,6 +24,13 @@ export const adminAuth = betterAuth({
 		},
 	}),
 
+	session: {
+		cookieCache: {
+			enabled: true,
+			maxAge: 5 * 60, // 5 minutes cache duration
+		},
+	},
+
 	advanced: {
 		cookiePrefix: "admin", // → cookie: "admin.session_token"
 		defaultCookieAttributes: {

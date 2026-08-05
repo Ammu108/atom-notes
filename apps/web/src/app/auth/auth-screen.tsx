@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { DialogHeader } from "~/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
@@ -71,12 +72,12 @@ const AuthPage = () => {
 					<SocialProviders />
 					<p className="text-center text-muted-foreground text-xs">
 						By continuing, you agree to our{" "}
-						<a
+						<Link
 							className="underline transition-colors hover:text-gray-600"
-							href="/terms"
+							href="/privacy-policy"
 						>
-							Terms of Service
-						</a>
+							Privacy Policy
+						</Link>
 						.
 					</p>
 				</div>

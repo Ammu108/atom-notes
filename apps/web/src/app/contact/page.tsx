@@ -23,7 +23,7 @@ const Contact = () => {
 
 				{/* ── MAIN CONTENT ── */}
 				<section className="mx-auto max-w-6xl px-4 pb-20">
-					<div className="grid items-center justify-center gap-12 lg:grid-cols-3">
+					<div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-3">
 						{/* ── CONTACT FORM ── */}
 						<ContactForm />
 						{/* ── CONTACT INFO ── */}

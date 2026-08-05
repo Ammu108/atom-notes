@@ -11,7 +11,11 @@ const NoteCardView = ({ note }: NoteCardProps) => {
 	return (
 		<div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 			{note.map((note) => (
-				<Link href={`/notes/${note.slug}`} key={note.id}>
+				<Link
+					className="rounded-2xl border transition-all duration-300 hover:border-primary/50 hover:shadow-lg active:scale-95"
+					href={`/notes/${note.slug}`}
+					key={note.id}
+				>
 					<Card className="rounded-2xl">
 						<CardContent className="flex flex-col gap-4">
 							<div className="flex items-center justify-between gap-3">

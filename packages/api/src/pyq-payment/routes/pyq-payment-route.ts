@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { pyqDownloads } from "@repo/db";
 import { createOrderSchema } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -185,6 +186,17 @@ export const pyqPaymentRouter = createTRPCRouter({
 					message: "Purchase required",
 				});
 			}
+
+			// Record first download only
+			await ctx.db
+				.insert(pyqDownloads)
+				.values({
+					pyqId: input.pyqId,
+					userId: ctx.session.user.id,
+				})
+				.onConflictDoNothing({
+					target: [pyqDownloads.userId, pyqDownloads.pyqId],
+				});
 
 			return {
 				url: pyq.pdfUrl,

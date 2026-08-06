@@ -26,6 +26,12 @@ export const authRouter = createTRPCRouter({
 		return users;
 	}),
 
+	getAllUsersCount: adminProcedure.query(async ({ ctx }) => {
+		const result = await authRepository.getAllUsersCount(ctx.db);
+
+		return result;
+	}),
+
 	getUserDetails: adminProcedure
 		.input(
 			z.object({

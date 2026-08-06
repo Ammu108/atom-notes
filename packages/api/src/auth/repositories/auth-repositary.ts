@@ -6,7 +6,7 @@ import {
 	pyqPurchases,
 	user,
 } from "@repo/db";
-import { eq } from "drizzle-orm";
+import { count, eq, ne } from "drizzle-orm";
 
 /**
  * Auth Repository
@@ -22,6 +22,15 @@ export const authRepository = {
 			.limit(1);
 
 		return result[0];
+	},
+
+	async getAllUsersCount(db: DB) {
+		const result = await db
+			.select({ total: count() })
+			.from(user)
+			.where(ne(user.role, "ADMIN"));
+
+		return result[0]?.total ?? 0;
 	},
 	/**
 	 * Find user by email

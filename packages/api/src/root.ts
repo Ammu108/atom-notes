@@ -2,8 +2,10 @@ import { authRouter } from "./auth/routes/auth-route";
 import { contactRouter } from "./contact/routes/contact-route";
 import { courseRouter } from "./courses/routes/course-route";
 import { notesRouter } from "./notes/routes/notes-route";
+import { notesDownloadRouter } from "./notes-download/routes/notes-download-route";
 import { notesPaymentRouter } from "./notes-payment/routes/notes-payment-route";
 import { notesPurchaseRouter } from "./notes-purchases/routes/notes-purchase-route";
+import { pyqDownloadRouter } from "./pyq-download/routes/pyq-download-route";
 import { pyqPaymentRouter } from "./pyq-payment/routes/pyq-payment-route";
 import { pyqPurchaseRouter } from "./pyq-purchases/routes/pyq-purchases-route";
 import { pyqRouter } from "./pyqs/routes/pyq-route";
@@ -22,6 +24,8 @@ export const appRouter = createTRPCRouter({
 	pyqs: pyqRouter,
 	notesPayment: notesPaymentRouter,
 	notesPurchases: notesPurchaseRouter,
+	notesDownload: notesDownloadRouter,
+	pyqDownload: pyqDownloadRouter,
 	pyqPayment: pyqPaymentRouter,
 	pyqPurchases: pyqPurchaseRouter,
 });

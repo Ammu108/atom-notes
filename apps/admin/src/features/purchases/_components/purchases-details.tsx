@@ -137,7 +137,7 @@ const PurchasesDetails = ({ id, type }: { id: string; type: PurchaseType }) => {
 					<CardHeader className="flex items-center justify-between">
 						<CardTitle className="flex items-center gap-2">
 							<FileText className="h-5 w-5" />
-							Purchased Note
+							{isNotes ? "Purchased Note" : "Purchased PYQ"}
 						</CardTitle>
 
 						{isLoading ? (

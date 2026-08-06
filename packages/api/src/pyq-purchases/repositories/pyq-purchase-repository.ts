@@ -82,6 +82,7 @@ export const pyqPurchaseRepository = {
 				userName: user.name,
 				userEmail: user.email,
 				title: pyqs.title,
+				type: sql<"pyqs">`'pyqs'`.as("type"),
 				amountPaid: pyqPurchases.amount,
 				status: pyqPurchases.status,
 				purchasesAt: pyqPurchases.createdAt,

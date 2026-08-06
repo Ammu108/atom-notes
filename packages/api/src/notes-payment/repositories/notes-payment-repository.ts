@@ -1,5 +1,5 @@
-import { type DB, notesPurchases } from "@repo/db";
-import { and, eq } from "drizzle-orm";
+import { type DB, notesPurchases, pyqPurchases } from "@repo/db";
+import { and, eq, sum } from "drizzle-orm";
 
 export const notesPaymentRepository = {
 	createPendingPurchase: async (
@@ -50,5 +50,27 @@ export const notesPaymentRepository = {
 				razorPayPaymentId: data.paymentId,
 			})
 			.where(eq(notesPurchases.razorPayOrderId, data.orderId));
+	},
+
+	async getTotalSpent(db: DB) {
+		const [notesResult, pyqResult] = await Promise.all([
+			db
+				.select({ total: sum(notesPurchases.amount) })
+				.from(notesPurchases)
+				.where(eq(notesPurchases.status, "PAID")),
+			db
+				.select({ total: sum(pyqPurchases.amount) })
+				.from(pyqPurchases)
+				.where(eq(pyqPurchases.status, "PAID")),
+		]);
+
+		const notesTotal = Number(notesResult[0]?.total ?? 0);
+		const pyqTotal = Number(pyqResult[0]?.total ?? 0);
+
+		return {
+			notes: notesTotal,
+			pyq: pyqTotal,
+			total: notesTotal + pyqTotal,
+		};
 	},
 };

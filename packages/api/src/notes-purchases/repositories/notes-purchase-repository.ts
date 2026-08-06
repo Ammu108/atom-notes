@@ -4,11 +4,12 @@ import {
 	type DB,
 	notes,
 	notesPurchases,
+	pyqPurchases,
 	semesters,
 	subjects,
 	user,
 } from "@repo/db";
-import { eq, sql } from "drizzle-orm";
+import { count, eq, sql } from "drizzle-orm";
 
 export const notesPurchaseRepository = {
 	async getPurchases(db: DB) {
@@ -26,6 +27,22 @@ export const notesPurchaseRepository = {
 			.from(notesPurchases)
 			.leftJoin(user, eq(user.id, notesPurchases.userId))
 			.leftJoin(notes, eq(notes.id, notesPurchases.noteId));
+	},
+
+	async getAllPurchasesCount(db: DB) {
+		const [notesResult, pyqResult] = await Promise.all([
+			db.select({ total: count() }).from(notesPurchases),
+			db.select({ total: count() }).from(pyqPurchases),
+		]);
+
+		const notesTotal = notesResult[0]?.total ?? 0;
+		const pyqTotal = pyqResult[0]?.total ?? 0;
+
+		return {
+			notes: notesTotal,
+			pyq: pyqTotal,
+			total: notesTotal + pyqTotal,
+		};
 	},
 
 	async purchaseDetailsId(purchaseId: string, db: DB) {
@@ -85,6 +102,7 @@ export const notesPurchaseRepository = {
 				userName: user.name,
 				userEmail: user.email,
 				title: notes.title,
+				type: sql<"notes">`'notes'`.as("type"),
 				amountPaid: notesPurchases.amount,
 				status: notesPurchases.status,
 				purchasesAt: notesPurchases.createdAt,

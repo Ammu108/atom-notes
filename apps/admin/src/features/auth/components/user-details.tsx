@@ -158,6 +158,7 @@ const UserDetails = ({ id }: { id: string }) => {
 					</div>
 				</CardContent>
 			</Card>
+			{/* TODO: REMOVE THIS COMMENT WHEN YOU SEE IT. */}
 
 			{/* Stats */}
 			<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

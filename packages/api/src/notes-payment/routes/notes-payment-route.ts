@@ -1,9 +1,14 @@
 import crypto from "node:crypto";
+import { noteDownloads } from "@repo/db";
 import { createOrderSchema } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { notesRepository } from "../../notes/repositories/notes-repositary";
-import { createTRPCRouter, protectedProcedure } from "../../trpc";
+import {
+	adminProcedure,
+	createTRPCRouter,
+	protectedProcedure,
+} from "../../trpc";
 import { razorPay } from "../lib/razorpay";
 import { notesPaymentRepository } from "../repositories/notes-payment-repository";
 import { notesPaymentService } from "../services/notes-payment-service";
@@ -185,9 +190,24 @@ export const notesPaymentRouter = createTRPCRouter({
 				});
 			}
 
+			// Record first download only
+			await ctx.db
+				.insert(noteDownloads)
+				.values({
+					noteId: input.noteId,
+					userId: ctx.session.user.id,
+				})
+				.onConflictDoNothing({
+					target: [noteDownloads.userId, noteDownloads.noteId],
+				});
+
 			return {
 				url: note.pdfUrl,
 				message: "Note downloaded successfully",
 			};
 		}),
+
+	totalSpent: adminProcedure.query(async ({ ctx }) => {
+		return await notesPaymentRepository.getTotalSpent(ctx.db);
+	}),
 });

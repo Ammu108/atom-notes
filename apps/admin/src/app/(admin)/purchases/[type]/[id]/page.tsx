@@ -14,7 +14,9 @@ const page = async ({ params }: Props) => {
 
 	return (
 		<div className="flex flex-col gap-1">
-			<SiteHeader title="Edit PYQs" />
+			<SiteHeader
+				title={`${type === "notes" ? "Notes" : "PYQs"} Purchases Details`}
+			/>
 			<div className="flex flex-row items-center justify-start p-4">
 				<BackButton />
 			</div>

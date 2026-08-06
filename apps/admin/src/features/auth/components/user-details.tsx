@@ -307,7 +307,9 @@ const UserDetails = ({ id }: { id: string }) => {
 									<TableRow
 										className="cursor-pointer"
 										key={purchase.id}
-										onClick={() => router.push(`/purchases/${purchase.id}`)}
+										onClick={() =>
+											router.push(`/purchases/${purchase.type}/${purchase.id}`)
+										}
 									>
 										<TableCell className="font-medium">
 											{purchase.title}
@@ -333,7 +335,7 @@ const UserDetails = ({ id }: { id: string }) => {
 										</TableCell>
 
 										<TableCell>
-											<Link href={`/notes-purchases/${purchase.id}`}>
+											<Link href={`/purchases/${purchase.type}/${purchase.id}`}>
 												<Button size="sm" variant="ghost">
 													<ExternalLink className="size-4" />
 												</Button>

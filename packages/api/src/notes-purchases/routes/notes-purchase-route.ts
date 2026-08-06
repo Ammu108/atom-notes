@@ -12,6 +12,10 @@ export const notesPurchaseRouter = createTRPCRouter({
 		return await notesPurchaseRepository.getPurchases(ctx.db);
 	}),
 
+	getAllPurchasesCount: adminProcedure.query(async ({ ctx }) => {
+		return await notesPurchaseRepository.getAllPurchasesCount(ctx.db);
+	}),
+
 	purchaseDetailsId: adminProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ input, ctx }) => {

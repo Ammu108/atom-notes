@@ -1,6 +1,7 @@
 import { authRouter } from "./auth/routes/auth-route";
 import { contactRouter } from "./contact/routes/contact-route";
 import { courseRouter } from "./courses/routes/course-route";
+import { dashboardRouter } from "./dashboard/router";
 import { notesRouter } from "./notes/routes/notes-route";
 import { notesDownloadRouter } from "./notes-download/routes/notes-download-route";
 import { notesPaymentRouter } from "./notes-payment/routes/notes-payment-route";
@@ -19,6 +20,7 @@ import { createCallerFactory, createTRPCRouter } from "./trpc";
 export const appRouter = createTRPCRouter({
 	auth: authRouter,
 	courses: courseRouter,
+	dashboard: dashboardRouter,
 	notes: notesRouter,
 	contact: contactRouter,
 	pyqs: pyqRouter,

@@ -20,7 +20,7 @@ const TotalRevenue = () => {
 		<Card className="@container/card">
 			<CardHeader>
 				<CardDescription>Total Revenue</CardDescription>
-				<CardTitle className="font-semibold @[250px]/card:text-3xl text-2xl tabular-nums">
+				<CardTitle className="flex font-semibold @[250px]/card:text-3xl text-2xl tabular-nums">
 					₹{" "}
 					{isTotalRevenueLoading ? (
 						<Skeleton className="h-9 w-12" />

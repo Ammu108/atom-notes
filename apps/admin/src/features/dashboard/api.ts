@@ -4,6 +4,10 @@ export const useGetAllTotalRevenue = () => {
 	return api.notesPayment.totalSpent.useQuery();
 };
 
+export const useGetRevenueAnalytics = (period: "7d" | "30d") => {
+	return api.dashboard.getRevenueAnalytics.useQuery({ period });
+};
+
 export const useGetAllUsersCount = () => {
 	return api.auth.getAllUsersCount.useQuery();
 };

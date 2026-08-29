@@ -3,7 +3,7 @@
  * This allows easy importing of all schemas throughout the application
  */
 
-export * from "./chapters";
+export * from "./unit";
 export * from "./contact";
 export * from "./courses";
 export * from "./notes";

@@ -1,4 +1,4 @@
-import { chapters, courses, type DB, semesters, subjects } from "@repo/db";
+import { unit, courses, type DB, semesters, subjects } from "@repo/db";
 import { and, countDistinct, desc, eq } from "drizzle-orm";
 
 export const courseRepository = {
@@ -17,13 +17,11 @@ export const courseRepository = {
 		data: {
 			name: string;
 			slug: string;
-
 			semesters: {
 				number: string;
-
 				subjects: {
 					name: string;
-
+					code?: string | null;
 					units: {
 						name: string;
 					}[];
@@ -31,10 +29,29 @@ export const courseRepository = {
 			}[];
 		},
 	) {
+		type CreatedUnit = {
+			id: string;
+			name: string;
+		};
+
+		type CreatedSubject = {
+			id: string;
+			name: string;
+			code: string | null;
+			units: CreatedUnit[];
+		};
+
+		type CreatedSemester = {
+			id: string;
+			number: string;
+			subjects: CreatedSubject[];
+		};
+
 		return await db.transaction(async (tx) => {
 			// =================================================
 			// CREATE COURSE
 			// =================================================
+
 			const [createdCourse] = await tx
 				.insert(courses)
 				.values({
@@ -55,13 +72,14 @@ export const courseRepository = {
 			// CREATE SEMESTERS
 			// =================================================
 
+			const createdSemesters: CreatedSemester[] = [];
+
 			for (const semesterData of data.semesters) {
 				const [createdSemester] = await tx
 					.insert(semesters)
 					.values({
-						number: semesterData.number,
-
 						courseId: createdCourse.id,
+						number: semesterData.number,
 					})
 					.returning({
 						id: semesters.id,
@@ -72,48 +90,61 @@ export const courseRepository = {
 					throw new Error("Failed to create semester");
 				}
 
-				// =============================================
+				// =================================================
 				// CREATE SUBJECTS
-				// =============================================
+				// =================================================
+
+				const createdSubjects: CreatedSubject[] = [];
 
 				for (const subjectData of semesterData.subjects) {
 					const [createdSubject] = await tx
 						.insert(subjects)
 						.values({
-							name: subjectData.name,
 							semesterId: createdSemester.id,
+							name: subjectData.name,
+							code: subjectData.code ?? null,
 						})
 						.returning({
 							id: subjects.id,
 							name: subjects.name,
+							code: subjects.code,
 						});
 
 					if (!createdSubject) {
 						throw new Error("Failed to create subject");
 					}
 
-					// =========================================
+					// =================================================
 					// CREATE UNITS
-					// =========================================
+					// =================================================
 
-					for (const unitData of subjectData.units) {
-						const [createdUnit] = await tx
-							.insert(chapters)
-							.values({
-								name: unitData.name,
+					const createdUnits: CreatedUnit[] =
+						subjectData.units.length > 0
+							? await tx
+									.insert(unit)
+									.values(
+										subjectData.units.map((unitData) => ({
+											subjectId: createdSubject.id,
+											name: unitData.name,
+										})),
+									)
+									.returning({
+										id: unit.id,
+										name: unit.name,
+									})
+							: [];
 
-								subjectId: createdSubject.id,
-							})
-							.returning({
-								id: chapters.id,
-								name: chapters.name,
-							});
-
-						if (!createdUnit) {
-							throw new Error("Failed to create unit");
-						}
-					}
+					createdSubjects.push({
+						...createdSubject,
+						code: createdSubject.code ?? null,
+						units: createdUnits,
+					});
 				}
+
+				createdSemesters.push({
+					...createdSemester,
+					subjects: createdSubjects,
+				});
 			}
 
 			// =================================================
@@ -122,7 +153,11 @@ export const courseRepository = {
 
 			return {
 				message: "Course created successfully",
-				course: createdCourse,
+
+				course: {
+					...createdCourse,
+					semesters: createdSemesters,
+				},
 			};
 		});
 	},
@@ -136,12 +171,16 @@ export const courseRepository = {
 			slug: string;
 
 			semesters: {
+				id?: string;
 				number: string;
 
 				subjects: {
+					id?: string;
 					name: string;
+					code?: string | null;
 
 					units: {
+						id?: string;
 						name: string;
 					}[];
 				}[];
@@ -149,6 +188,10 @@ export const courseRepository = {
 		},
 	) {
 		return await db.transaction(async (tx) => {
+			// =================================================
+			// 1. CHECK COURSE EXISTS
+			// =================================================
+
 			const existingCourse = await tx.query.courses.findFirst({
 				where: (course, { eq }) => eq(course.id, courseId),
 			});
@@ -157,12 +200,16 @@ export const courseRepository = {
 				throw new Error("Course not found");
 			}
 
-			// update course
+			// =================================================
+			// 2. UPDATE COURSE
+			// =================================================
+
 			const [updatedCourse] = await tx
 				.update(courses)
 				.set({
 					name: data.name,
 					slug: data.slug,
+					updatedAt: new Date(),
 				})
 				.where(eq(courses.id, courseId))
 				.returning({
@@ -171,68 +218,181 @@ export const courseRepository = {
 					slug: courses.slug,
 				});
 
-			// ============================================
-			// DELETE OLD RELATIONS
-			// ============================================
-
-			const existingSemesters = await tx.query.semesters.findMany({
-				where: (semester, { eq }) => eq(semester.courseId, courseId),
-			});
-
-			// delete subjects
-			for (const semester of existingSemesters) {
-				await tx.delete(subjects).where(eq(subjects.semesterId, semester.id));
+			if (!updatedCourse) {
+				throw new Error("Failed to update course");
 			}
 
-			// delete semesters
-			await tx.delete(semesters).where(eq(semesters.courseId, courseId));
-
-			// ============================================
-			// RE-CREATE NEW RELATIONS
-			// ============================================
+			// =================================================
+			// 3. PROCESS SEMESTERS
+			// =================================================
 
 			for (const semesterData of data.semesters) {
-				const [createdSemester] = await tx
-					.insert(semesters)
-					.values({
-						number: semesterData.number,
-						courseId: courseId,
-					})
-					.returning({
-						id: semesters.id,
-					});
+				let semesterId: string;
 
-				if (!createdSemester) {
-					throw new Error("Failed to create semester");
-				}
+				// -------------------------------------------------
+				// EXISTING SEMESTER → UPDATE
+				// -------------------------------------------------
 
-				for (const subjectData of semesterData.subjects) {
-					const [createdSubject] = await tx
-						.insert(subjects)
-						.values({
-							name: subjectData.name,
-							semesterId: createdSemester.id,
+				if (semesterData.id) {
+					const [updatedSemester] = await tx
+						.update(semesters)
+						.set({
+							number: semesterData.number,
+							updatedAt: new Date(),
 						})
+						.where(
+							and(
+								eq(semesters.id, semesterData.id),
+								eq(semesters.courseId, courseId),
+							),
+						)
 						.returning({
-							id: subjects.id,
+							id: semesters.id,
 						});
 
-					if (!createdSubject) {
-						throw new Error("Failed to create subject");
+					if (!updatedSemester) {
+						throw new Error("Semester not found");
 					}
 
-					for (const unitData of subjectData.units) {
-						await tx.insert(chapters).values({
-							name: unitData.name,
-							subjectId: createdSubject.id,
+					semesterId = updatedSemester.id;
+				}
+
+				// -------------------------------------------------
+				// NEW SEMESTER → CREATE
+				// -------------------------------------------------
+				else {
+					const [createdSemester] = await tx
+						.insert(semesters)
+						.values({
+							courseId,
+							number: semesterData.number,
+						})
+						.returning({
+							id: semesters.id,
 						});
+
+					if (!createdSemester) {
+						throw new Error("Failed to create semester");
+					}
+
+					semesterId = createdSemester.id;
+				}
+
+				// =================================================
+				// 4. PROCESS SUBJECTS
+				// =================================================
+
+				for (const subjectData of semesterData.subjects) {
+					let subjectId: string;
+
+					// -------------------------------------------------
+					// EXISTING SUBJECT → UPDATE
+					// -------------------------------------------------
+
+					if (subjectData.id) {
+						const [updatedSubject] = await tx
+							.update(subjects)
+							.set({
+								name: subjectData.name,
+								code: subjectData.code ?? null,
+								updatedAt: new Date(),
+							})
+							.where(
+								and(
+									eq(subjects.id, subjectData.id),
+									eq(subjects.semesterId, semesterId),
+								),
+							)
+							.returning({
+								id: subjects.id,
+							});
+
+						if (!updatedSubject) {
+							throw new Error("Subject not found");
+						}
+
+						subjectId = updatedSubject.id;
+					}
+
+					// -------------------------------------------------
+					// NEW SUBJECT → CREATE
+					// -------------------------------------------------
+					else {
+						const [createdSubject] = await tx
+							.insert(subjects)
+							.values({
+								semesterId,
+								name: subjectData.name,
+								code: subjectData.code ?? null,
+							})
+							.returning({
+								id: subjects.id,
+							});
+
+						if (!createdSubject) {
+							throw new Error("Failed to create subject");
+						}
+
+						subjectId = createdSubject.id;
+					}
+
+					// =================================================
+					// 5. PROCESS UNITS
+					// =================================================
+
+					const newUnits: {
+						subjectId: string;
+						name: string;
+					}[] = [];
+
+					for (const unitData of subjectData.units) {
+						// -------------------------------------------------
+						// EXISTING UNIT → UPDATE
+						// -------------------------------------------------
+
+						if (unitData.id) {
+							const [updatedUnit] = await tx
+								.update(unit)
+								.set({
+									name: unitData.name,
+									updatedAt: new Date(),
+								})
+								.where(
+									and(eq(unit.id, unitData.id), eq(unit.subjectId, subjectId)),
+								)
+								.returning({
+									id: unit.id,
+								});
+
+							if (!updatedUnit) {
+								throw new Error("Unit not found");
+							}
+						}
+
+						// -------------------------------------------------
+						// NEW UNIT → COLLECT
+						// -------------------------------------------------
+						else {
+							newUnits.push({
+								subjectId,
+								name: unitData.name,
+							});
+						}
+					}
+
+					// =================================================
+					// 6. BULK CREATE NEW UNITS
+					// =================================================
+
+					if (newUnits.length > 0) {
+						await tx.insert(unit).values(newUnits);
 					}
 				}
 			}
 
-			// ============================================
-			// RETURN RESPONSE
-			// ============================================
+			// =================================================
+			// 7. RETURN RESPONSE
+			// =================================================
 
 			return {
 				message: "Course updated successfully",
@@ -269,7 +429,7 @@ export const courseRepository = {
 					with: {
 						subjects: {
 							with: {
-								chapters: true,
+								units: true,
 							},
 						},
 					},
@@ -308,8 +468,8 @@ export const courseRepository = {
 
 	// get units by subject id with all its relations
 	async findUnitsBySubjectId(db: DB, subjectId: string) {
-		return await db.query.chapters.findMany({
-			where: (chapters, { eq }) => eq(chapters.subjectId, subjectId),
+		return await db.query.unit.findMany({
+			where: (unit, { eq }) => eq(unit.subjectId, subjectId),
 		});
 	},
 

@@ -19,20 +19,6 @@ const PyqDetailSkeleton = () => {
 						<Skeleton className="h-7 w-20 rounded-full" />
 						<Skeleton className="h-7 w-28 rounded-full" />
 					</div>
-
-					<div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-						{[1, 2, 3, 4, 5].map((row) => (
-							<div className="rounded-lg border p-4" key={row}>
-								<div className="flex items-center gap-3">
-									<Skeleton className="h-5 w-5 rounded-full" />
-									<div className="flex-1 space-y-2">
-										<Skeleton className="h-3 w-12" />
-										<Skeleton className="h-4 w-20" />
-									</div>
-								</div>
-							</div>
-						))}
-					</div>
 				</div>
 
 				<div className="mt-6 grid gap-6 md:grid-cols-[2fr_1fr]">

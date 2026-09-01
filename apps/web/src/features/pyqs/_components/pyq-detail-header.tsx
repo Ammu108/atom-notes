@@ -1,4 +1,3 @@
-import { BookOpen, Calendar, Clock3, FileText } from "lucide-react";
 import { Badge } from "~/components/ui/badge";
 
 interface PyqDetailHeaderProps {
@@ -13,9 +12,7 @@ interface PyqDetailHeaderProps {
 const PyqDetailHeader = ({
 	course,
 	semester,
-	subject,
 	title,
-	questionsCount,
 	year,
 }: PyqDetailHeaderProps) => {
 	return (
@@ -39,40 +36,6 @@ const PyqDetailHeader = ({
 					<Badge className="bg-green-600 text-white hover:bg-green-700">
 						Solved Paper
 					</Badge>
-				</div>
-
-				<div className="grid gap-4 sm:grid-cols-4">
-					<div className="flex items-center gap-3 rounded-lg border p-4">
-						<Calendar className="h-5 w-5 text-primary" />
-						<div>
-							<p className="text-muted-foreground text-xs">Year</p>
-							<p className="font-semibold">{year}</p>
-						</div>
-					</div>
-
-					<div className="flex items-center gap-3 rounded-lg border p-4">
-						<BookOpen className="h-5 w-5 text-primary" />
-						<div>
-							<p className="text-muted-foreground text-xs">Subject</p>
-							<p className="font-semibold">{subject}</p>
-						</div>
-					</div>
-
-					<div className="flex items-center gap-3 rounded-lg border p-4">
-						<FileText className="h-5 w-5 text-primary" />
-						<div>
-							<p className="text-muted-foreground text-xs">Questions</p>
-							<p className="font-semibold">{questionsCount}</p>
-						</div>
-					</div>
-
-					<div className="flex items-center gap-3 rounded-lg border p-4">
-						<Clock3 className="h-5 w-5 text-primary" />
-						<div>
-							<p className="text-muted-foreground text-xs">Duration</p>
-							<p className="font-semibold">3 Hours</p>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>

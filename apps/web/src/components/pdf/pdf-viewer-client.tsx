@@ -81,19 +81,19 @@ export default function PdfViewer({ src }: PdfViewerProps) {
 				<div className="flex items-center gap-1">
 					<button
 						aria-label="Previous page"
-						className="inline-flex size-8 items-center justify-center rounded-md border text-sm transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+						className="inline-flex size-6 items-center justify-center rounded-md border text-sm transition-colors hover:cursor-pointer hover:bg-muted/20 disabled:pointer-events-none disabled:opacity-40 md:size-8"
 						disabled={pageNumber <= 1}
 						onClick={() => setPageNumber((page) => Math.max(1, page - 1))}
 						type="button"
 					>
 						<ChevronLeft className="size-4" />
 					</button>
-					<span className="min-w-20 text-center text-muted-foreground text-sm tabular-nums">
+					<span className="text-center text-muted-foreground text-xs tabular-nums md:min-w-20 md:text-sm">
 						{numPages ? `${pageNumber} / ${numPages}` : "- / -"}
 					</span>
 					<button
 						aria-label="Next page"
-						className="inline-flex size-8 items-center justify-center rounded-md border text-sm transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+						className="inline-flex size-6 items-center justify-center rounded-md border text-sm transition-colors hover:cursor-pointer hover:bg-muted/20 disabled:pointer-events-none disabled:opacity-40 md:size-8"
 						disabled={!numPages || pageNumber >= numPages}
 						onClick={() =>
 							setPageNumber((page) => Math.min(numPages, page + 1))
@@ -107,7 +107,7 @@ export default function PdfViewer({ src }: PdfViewerProps) {
 				<div className="flex items-center gap-2">
 					<button
 						aria-label="Zoom out"
-						className="inline-flex size-8 items-center justify-center rounded-md border text-sm transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+						className="inline-flex size-6 items-center justify-center rounded-md border text-sm transition-colors hover:cursor-pointer hover:bg-muted/20 disabled:pointer-events-none disabled:opacity-40 md:size-8"
 						disabled={zoom <= 0.75}
 						onClick={() => setZoom((value) => Math.max(0.75, value - 0.25))}
 						type="button"
@@ -115,13 +115,13 @@ export default function PdfViewer({ src }: PdfViewerProps) {
 						<Minus className="size-4" />
 					</button>
 
-					<span className="min-w-14 text-center text-muted-foreground text-sm tabular-nums">
+					<span className="text-center text-muted-foreground text-xs tabular-nums md:min-w-14 md:text-sm">
 						{Math.round(zoom * 100)}%
 					</span>
 
 					<button
 						aria-label="Zoom in"
-						className="inline-flex size-8 items-center justify-center rounded-md border text-sm transition-colors hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
+						className="inline-flex size-6 items-center justify-center rounded-md border text-sm transition-colors hover:cursor-pointer hover:bg-muted/20 disabled:pointer-events-none disabled:opacity-40 md:size-8"
 						disabled={zoom >= 2}
 						onClick={() => setZoom((value) => Math.min(2, value + 0.25))}
 						type="button"
@@ -131,7 +131,7 @@ export default function PdfViewer({ src }: PdfViewerProps) {
 
 					<button
 						aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-						className="inline-flex size-8 items-center justify-center rounded-md border text-sm transition-colors hover:bg-muted"
+						className="inline-flex size-6 items-center justify-center rounded-md border text-sm transition-colors hover:cursor-pointer hover:bg-muted/20 md:size-8"
 						onClick={toggleFullscreen}
 						type="button"
 					>
@@ -146,26 +146,28 @@ export default function PdfViewer({ src }: PdfViewerProps) {
 
 			<div
 				className={`min-h-96 flex-1 overflow-auto p-4 ${
-					isFullscreen ? "min-h-0" : "max-h-[70vh]"
+					isFullscreen ? "min-h-0" : ""
 				}`}
 			>
-				<div className="flex min-w-full justify-center">
-					<Document
-						file={src}
-						onLoadSuccess={({ numPages: loadedPages }) => {
-							setNumPages(loadedPages);
-							setPageNumber((page) => Math.min(page, loadedPages));
-						}}
-					>
-						<div className="pointer-events-none select-none overflow-hidden rounded-sm border bg-white shadow-md">
-							<Page
-								pageNumber={pageNumber}
-								renderAnnotationLayer={false}
-								renderTextLayer={false}
-								width={pageWidth}
-							/>
-						</div>
-					</Document>
+				<div className="min-w-full">
+					<div className="mx-auto w-fit">
+						<Document
+							file={src}
+							onLoadSuccess={({ numPages: loadedPages }) => {
+								setNumPages(loadedPages);
+								setPageNumber((page) => Math.min(page, loadedPages));
+							}}
+						>
+							<div className="pointer-events-none select-none overflow-hidden rounded-sm border bg-white shadow-md">
+								<Page
+									pageNumber={pageNumber}
+									renderAnnotationLayer={false}
+									renderTextLayer={false}
+									width={pageWidth}
+								/>
+							</div>
+						</Document>
+					</div>
 				</div>
 			</div>
 		</section>

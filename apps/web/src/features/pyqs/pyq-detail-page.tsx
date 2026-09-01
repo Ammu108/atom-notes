@@ -1,7 +1,6 @@
 "use client";
 
 import PdfViewer from "~/components/pdf/pdf-viewer";
-import { Separator } from "~/components/ui/separator";
 import PyqDetailHeader from "./_components/pyq-detail-header";
 import PyqDetailSidebar from "./_components/pyq-detail-sidebar";
 import PyqDetailSkeleton from "./_components/pyq-detail-skeleton";
@@ -38,7 +37,6 @@ const PyqDetailPage = ({ id }: { id: string }) => {
 				title={pyq.title}
 				year={pyq.year}
 			/>
-			<Separator />
 			<div className="mt-6 grid gap-6 md:grid-cols-[2fr_1fr]">
 				{/* <DetailedPyqSection question={pyq.questions} /> */}
 				{pyq.pdfUrl ? (

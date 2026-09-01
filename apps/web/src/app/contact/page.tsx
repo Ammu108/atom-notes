@@ -31,11 +31,6 @@ const Contact = () => {
 							{/* Info Cards */}
 							{[
 								{
-									icon: "📍",
-									title: "Location",
-									content: "123 Medical Street, Health City, HC 12345",
-								},
-								{
 									icon: "📞",
 									title: "Phone",
 									content: "+1 (555) 123-4567",

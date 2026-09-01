@@ -1,7 +1,7 @@
 import "~/styles/globals.css";
 
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Roboto } from "next/font/google";
 import Script from "next/script";
 import { AppShell } from "~/components/app-shell";
 import { Toaster } from "~/components/ui/sonner";
@@ -14,16 +14,17 @@ export const metadata: Metadata = {
 	icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
+const roboto = Roboto({
 	subsets: ["latin"],
-	variable: "--font-geist-sans",
+	weight: ["400", "500", "700"],
+	variable: "--font-roboto",
 });
 
 export default async function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html className={` ${geist.variable}`} lang="en">
+		<html className={roboto.variable} lang="en">
 			<body className="bg-background">
 				<TRPCReactProvider>
 					<HydrateClient>

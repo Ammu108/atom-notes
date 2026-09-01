@@ -56,19 +56,19 @@ const features = [
 const founders = [
 	{
 		name: "Aman Kumar",
-		role: "Founder & CEO",
+		role: "Founder",
 		avatar: "/aman-img.webp",
 		Education: "MCA - Present",
-		bio: "Aman Kumar is the Founder & CEO of Atom Notes, leading the technical vision and development of the platform. With strong expertise in Full Stack Development, he has been responsible for building the core technology behind Atom Notes. From designing scalable web solutions to implementing modern technologies, Aman has worked extensively with TypeScript, React, and other advanced programming technologies to bring the idea of Atom Notes into a fully functional learning platform. His strong understanding of frontend, backend, and complete development workflows helps Atom Notes deliver a smooth, reliable, and user-friendly experience for students. Beyond coding, Aman contributes to the overall product thinking, ensuring that technology and user needs come together to create a meaningful educational platform.",
+		bio: "Aman Kumar is the Founder of Atom Notes, leading the technical vision and development of the platform. With strong expertise in Full Stack Development, he has been responsible for building the core technology behind Atom Notes. From designing scalable web solutions to implementing modern technologies, Aman has worked extensively with TypeScript, React, and other advanced programming technologies to bring the idea of Atom Notes into a fully functional learning platform. His strong understanding of frontend, backend, and complete development workflows helps Atom Notes deliver a smooth, reliable, and user-friendly experience for students. Beyond coding, Aman contributes to the overall product thinking, ensuring that technology and user needs come together to create a meaningful educational platform.",
 		linkedin: "https://www.linkedin.com/in/aman-kumar-5464242b8/",
 		portfolio: "https://amenx.me/",
 	},
 	{
 		name: "Rishabh Jha",
-		role: "Co-Founder & CEO",
+		role: "Co-Founder",
 		avatar: "/rishabh-img.webp",
 		Education: "MCA - Present",
-		bio: "Rishabh Jha is the Co-Founder & CEO of Atom Notes, responsible for shaping the platform’s design vision, user experience, and creative direction. With a strong interest in UI/UX Design, user behavior, and digital experiences, Rishabh designed the complete structure, interface, and visual identity of Atom Notes. From planning the website flow to creating an intuitive user journey, he focuses on making the platform simple, engaging, and easy for students to navigate. His work revolves around understanding student needs, creating meaningful designs, and improving the overall experience through thoughtful UX decisions. Along with design, Rishabh also contributes to product strategy, content planning, and building the overall direction of Atom Notes to ensure that the platform solves real problems faced by students.",
+		bio: "Rishabh Jha is the Co-Founder of Atom Notes, responsible for shaping the platform’s design vision, user experience, and creative direction. With a strong interest in UI/UX Design, user behavior, and digital experiences, Rishabh designed the complete structure, interface, and visual identity of Atom Notes. From planning the website flow to creating an intuitive user journey, he focuses on making the platform simple, engaging, and easy for students to navigate. His work revolves around understanding student needs, creating meaningful designs, and improving the overall experience through thoughtful UX decisions. Along with design, Rishabh also contributes to product strategy, content planning, and building the overall direction of Atom Notes to ensure that the platform solves real problems faced by students.",
 		linkedin:
 			"https://www.linkedin.com/in/rishabh-jha-7883a3270?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app",
 		portfolio: "https://rishabh-portfolio-tau.vercel.app/",

@@ -30,10 +30,6 @@ export default function HeroSection() {
 					<div className="flex flex-col items-center justify-center gap-6">
 						{/* Badge */}
 						<div className="flex items-center justify-center gap-2 rounded-full border border-border bg-card/70 px-4 py-1.5 text-center shadow-sm backdrop-blur-sm transition-all duration-700 ease-out">
-							{/* mini flag emoji representation */}
-							<span aria-hidden="true" className="text-base">
-								🇮🇳
-							</span>
 							<span className="font-medium text-gray-600 text-xs tracking-wide sm:text-sm">
 								India&apos;s Smartest College Student Notes Platform
 							</span>

@@ -4,23 +4,23 @@ import dotenv from "dotenv";
 import { z } from "zod";
 
 dotenv.config({
-  path: path.resolve(process.cwd(), "../../.env"),
+	path: path.resolve(process.cwd(), "../../.env"),
 });
 
 export const env = createEnv({
-  server: {
-    DATABASE_URL: z.string().url(),
+	server: {
+		DATABASE_URL: z.string().url(),
 
-    NODE_ENV: z
-      .enum(["development", "test", "production"])
-      .default("development"),
-  },
+		NODE_ENV: z
+			.enum(["development", "test", "production"])
+			.default("development"),
+	},
 
-  runtimeEnv: {
-    DATABASE_URL: process.env.DATABASE_URL,
-    NODE_ENV: process.env.NODE_ENV,
-  },
+	runtimeEnv: {
+		DATABASE_URL: process.env.DATABASE_URL,
+		NODE_ENV: process.env.NODE_ENV,
+	},
 
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
-  emptyStringAsUndefined: true,
+	skipValidation: !!process.env.SKIP_ENV_VALIDATION,
+	emptyStringAsUndefined: true,
 });

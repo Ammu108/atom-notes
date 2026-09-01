@@ -3,7 +3,6 @@
  * This allows easy importing of all schemas throughout the application
  */
 
-export * from "./unit";
 export * from "./contact";
 export * from "./courses";
 export * from "./notes";
@@ -14,4 +13,5 @@ export * from "./pyq-purchases";
 export * from "./pyqs";
 export * from "./semesters";
 export * from "./subjects";
+export * from "./unit";
 export * from "./users";

@@ -43,7 +43,7 @@ export function NoteViewer({ content }: NoteViewerProps) {
 	if (!editor) return null;
 
 	return (
-		<div className="prose dark:prose-invert max-w-none">
+		<div className="prose dark:prose-invert">
 			<EditorContent editor={editor} />
 		</div>
 	);

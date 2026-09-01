@@ -1,4 +1,4 @@
-import { unit, courses, type DB, semesters, subjects } from "@repo/db";
+import { courses, type DB, semesters, subjects, unit } from "@repo/db";
 import { and, countDistinct, desc, eq } from "drizzle-orm";
 
 export const courseRepository = {

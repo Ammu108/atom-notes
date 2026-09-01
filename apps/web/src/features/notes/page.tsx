@@ -32,7 +32,7 @@ const NoteDetailPage = ({ slug }: NoteDetailPageProps) => {
 		<div className="w-full pt-20 md:pt-24">
 			<div className="flex flex-col gap-10 pb-16 md:flex-row md:px-6">
 				{/* Main Content */}
-				<div>
+				<div className="min-w-0 flex-1 space-y-6">
 					{/* Tags */}
 					<NotesTagView
 						semester={notes.semester}
@@ -41,7 +41,9 @@ const NoteDetailPage = ({ slug }: NoteDetailPageProps) => {
 					/>
 
 					{/* Title */}
-					<NotesHeaderView price={notes.pdfPrice} title={notes.title} />
+					<div>
+						<NotesHeaderView price={notes.pdfPrice} title={notes.title} />
+					</div>
 
 					{/* Introduction */}
 					<div>
@@ -50,7 +52,7 @@ const NoteDetailPage = ({ slug }: NoteDetailPageProps) => {
 				</div>
 
 				{/* Sidebar */}
-				<div className="scroll-mt-24 md:w-1/3" id="buyPdf">
+				<div className="scroll-mt-24" id="buyPdf">
 					<NoteSidebar
 						hasPurchased={notes.hasPurchased}
 						isPaid={notes.isPaid}

@@ -5,37 +5,37 @@ import { eq } from "drizzle-orm";
 import { db, user } from ".";
 
 async function seedAdmin() {
-  const email = "admin@example.com";
-  const password = "password";
+	const email = "admin@example.com";
+	const password = "password";
 
-  console.log("⏳ Checking admin...");
+	console.log("⏳ Checking admin...");
 
-  const existing = await db.query.user.findFirst({
-    where: eq(user.email, email),
-  });
+	const existing = await db.query.user.findFirst({
+		where: eq(user.email, email),
+	});
 
-  if (!existing) {
-    await adminAuth.api.signUpEmail({
-      body: {
-        name: "Admin User",
-        email,
-        password,
-      },
-    });
+	if (!existing) {
+		await adminAuth.api.signUpEmail({
+			body: {
+				name: "Admin User",
+				email,
+				password,
+			},
+		});
 
-    console.log("✅ Admin account created.");
-  } else {
-    console.log("ℹ️ Admin already exists.");
-  }
+		console.log("✅ Admin account created.");
+	} else {
+		console.log("ℹ️ Admin already exists.");
+	}
 
-  await db
-    .update(user)
-    .set({
-      role: "ADMIN",
-    })
-    .where(eq(user.email, email));
+	await db
+		.update(user)
+		.set({
+			role: "ADMIN",
+		})
+		.where(eq(user.email, email));
 
-  console.log(`
+	console.log(`
 =================================
 Admin credentials
 Email:    ${email}
@@ -46,8 +46,8 @@ Role:     ADMIN
 }
 
 seedAdmin()
-  .then(() => process.exit(0))
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });
+	.then(() => process.exit(0))
+	.catch((err) => {
+		console.error(err);
+		process.exit(1);
+	});

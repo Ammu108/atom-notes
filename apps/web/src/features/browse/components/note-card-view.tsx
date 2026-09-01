@@ -22,8 +22,8 @@ const NoteCardView = ({ note }: NoteCardProps) => {
 								<span className="rounded-full border border-slate-300 bg-slate-50 px-3 py-1 text-slate-700 text-xs">
 									semester {note.semester}
 								</span>
-								<span className="rounded-full border border-slate-300 bg-slate-50 px-3 py-1 text-slate-700 text-xs">
-									Unit - {note.chapter}
+								<span className="rounded-full border border-slate-300 bg-slate-50 px-3 py-1 text-slate-700 text-xs capitalize">
+									{note.chapter}
 								</span>
 							</div>
 

@@ -61,9 +61,12 @@ export default function Footer() {
 
 						{/* ── RIGHT: Contact + Admin Panel ── */}
 						<div className="flex flex-col items-end gap-3">
-							<p className="font-regular text-muted-foreground text-sm">
-								atomNotes@gmail.com
-							</p>
+							<a
+								className="font-regular text-muted-foreground text-sm transition-colors hover:text-foreground hover:underline"
+								href="mailto:atomnotes98@gmail.com"
+							>
+								atomnotes98@gmail.com
+							</a>
 						</div>
 					</div>
 				</div>

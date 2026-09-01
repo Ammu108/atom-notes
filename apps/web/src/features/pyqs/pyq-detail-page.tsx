@@ -1,8 +1,8 @@
 "use client";
 
+import PdfViewer from "~/components/pdf/pdf-viewer";
 import { Separator } from "~/components/ui/separator";
 import PyqDetailHeader from "./_components/pyq-detail-header";
-import DetailedPyqSection from "./_components/pyq-detail-questions";
 import PyqDetailSidebar from "./_components/pyq-detail-sidebar";
 import PyqDetailSkeleton from "./_components/pyq-detail-skeleton";
 import { useGetPyqsById } from "./api";
@@ -13,6 +13,8 @@ const PyqDetailPage = ({ id }: { id: string }) => {
 	if (isLoading) {
 		return <PyqDetailSkeleton />;
 	}
+
+	console.log("PYQ URL", pyq?.pdfUrl);
 
 	if (!pyq) {
 		return (
@@ -38,7 +40,14 @@ const PyqDetailPage = ({ id }: { id: string }) => {
 			/>
 			<Separator />
 			<div className="mt-6 grid gap-6 md:grid-cols-[2fr_1fr]">
-				<DetailedPyqSection question={pyq.questions} />
+				{/* <DetailedPyqSection question={pyq.questions} /> */}
+				{pyq.pdfUrl ? (
+					<PdfViewer src={pyq.pdfUrl} />
+				) : (
+					<div className="rounded-xl border p-4 text-center text-muted-foreground text-sm">
+						No PDF available for this PYQ.
+					</div>
+				)}
 
 				{/* h-fit prevents grid stretch; top-24 adjusts sticky offset */}
 				<div className="sticky top-24 h-fit">

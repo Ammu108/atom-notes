@@ -48,11 +48,17 @@ export const subjectIdSchema = z
 	.uuid({ message: "Invalid Subject ID format (must be a valid UUID)" });
 export type SubjectIdSchema = z.infer<typeof subjectIdSchema>;
 
-export const pdfUrlSchema = z.string().optional().nullable();
-export type PdfUrlSchema = z.infer<typeof pdfUrlSchema>;
+export const solutionPdfUrlSchema = z.string().optional().nullable();
+export type SolutionPdfUrlSchema = z.infer<typeof solutionPdfUrlSchema>;
 
-export const pdfKeySchema = z.string().optional().nullable();
-export type PdfKeySchema = z.infer<typeof pdfKeySchema>;
+export const solutionPdfKeySchema = z.string().optional().nullable();
+export type SolutionPdfKeySchema = z.infer<typeof solutionPdfKeySchema>;
+
+export const questionPdfUrlSchema = z.string().optional().nullable();
+export type QuestionPdfUrlSchema = z.infer<typeof questionPdfUrlSchema>;
+
+export const questionPdfKeySchema = z.string().optional().nullable();
+export type QuestionPdfKeySchema = z.infer<typeof questionPdfKeySchema>;
 
 export const isPaidSchema = z.boolean().optional();
 export type IsPaidSchema = z.infer<typeof isPaidSchema>;

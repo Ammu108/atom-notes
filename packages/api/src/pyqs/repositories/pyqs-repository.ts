@@ -2,14 +2,13 @@ import {
 	courses,
 	type DB,
 	pyqPurchases,
-	pyqQuestions,
 	pyqs,
 	semesters,
 	subjects,
 } from "@repo/db";
 import type { PyqsFormValues } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { pyqPaymentRepository } from "../../pyq-payment/repositories/pyq-payment-repository";
 
 export const pyqRepository = {
@@ -21,8 +20,8 @@ export const pyqRepository = {
 					title: data.title,
 					year: data.year,
 					subjectId: data.subjectId,
-					pdfUrl: data.pdfUrl,
-					pdfKey: data.pdfKey,
+					solutionPdfUrl: data.solutionPdfUrl,
+					solutionPdfKey: data.solutionPdfKey,
 					isPaid: data.isPaid,
 					price: data.price,
 				})
@@ -35,13 +34,13 @@ export const pyqRepository = {
 				});
 			}
 
-			await tx.insert(pyqQuestions).values(
-				data.questions.map((q, index) => ({
-					pyqId: pyq.id,
-					question: q.question,
-					displayOrder: index,
-				})),
-			);
+			// await tx.insert(pyqQuestions).values(
+			// 	data.questions.map((q, index) => ({
+			// 		pyqId: pyq.id,
+			// 		question: q.question,
+			// 		displayOrder: index,
+			// 	})),
+			// );
 
 			if (!pyq) {
 				throw new TRPCError({
@@ -62,8 +61,8 @@ export const pyqRepository = {
 					title: data.title,
 					year: data.year,
 					subjectId: data.subjectId,
-					pdfUrl: data.pdfUrl,
-					pdfKey: data.pdfKey,
+					solutionPdfUrl: data.solutionPdfUrl,
+					solutionPdfKey: data.solutionPdfKey,
 					isPaid: data.isPaid,
 					price: data.price,
 				})
@@ -74,14 +73,14 @@ export const pyqRepository = {
 				throw new Error("PYQ not found");
 			}
 
-			await tx.delete(pyqQuestions).where(eq(pyqQuestions.pyqId, id));
-			data.questions.length > 0;
-			await tx.insert(pyqQuestions).values(
-				data.questions.map((q) => ({
-					pyqId: id,
-					question: q.question,
-				})),
-			);
+			// await tx.delete(pyqQuestions).where(eq(pyqQuestions.pyqId, id));
+			// data.questions.length > 0;
+			// await tx.insert(pyqQuestions).values(
+			// 	data.questions.map((q) => ({
+			// 		pyqId: id,
+			// 		question: q.question,
+			// 	})),
+			// );
 
 			return updatedPyq;
 		});
@@ -96,13 +95,13 @@ export const pyqRepository = {
 				subjectName: subjects.name,
 				semester: semesters.number,
 				price: pyqs.price,
-				questionsLength: count(pyqQuestions.id),
+				// questionsLength: count(pyqQuestions.id),
 				updatedAt: pyqs.updatedAt,
 			})
 			.from(pyqs)
 			.innerJoin(subjects, eq(pyqs.subjectId, subjects.id))
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
-			.leftJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
+			// .leftJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
 			.groupBy(
 				pyqs.id,
 				pyqs.title,
@@ -124,8 +123,8 @@ export const pyqRepository = {
 				year: pyqs.year,
 				subjectId: pyqs.subjectId,
 				subjectName: subjects.name,
-				pdfUrl: pyqs.pdfUrl,
-				pdfKey: pyqs.pdfKey,
+				solutionPdfUrl: pyqs.solutionPdfUrl,
+				solutionPdfKey: pyqs.solutionPdfKey,
 				isPaid: pyqs.isPaid,
 				price: pyqs.price,
 				course: courses.name,
@@ -137,7 +136,7 @@ export const pyqRepository = {
 			.innerJoin(subjects, eq(pyqs.subjectId, subjects.id))
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
 			.innerJoin(courses, eq(semesters.courseId, courses.id))
-			.innerJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
+			// .innerJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
 			.where(eq(pyqs.id, id))
 			.limit(1);
 
@@ -153,15 +152,15 @@ export const pyqRepository = {
 			});
 		}
 
-		const questions = await db
-			.select({
-				id: pyqQuestions.id,
-				question: pyqQuestions.question,
-			})
-			.from(pyqQuestions)
-			.where(eq(pyqQuestions.pyqId, id));
+		// const questions = await db
+		// 	.select({
+		// 		id: pyqQuestions.id,
+		// 		question: pyqQuestions.question,
+		// 	})
+		// 	.from(pyqQuestions)
+		// 	.where(eq(pyqQuestions.pyqId, id));
 
-		return { ...pyq, questions, questionCount: questions.length, hasPurchased };
+		return { ...pyq, hasPurchased };
 	},
 
 	async getStats(db: DB, noteId: string) {

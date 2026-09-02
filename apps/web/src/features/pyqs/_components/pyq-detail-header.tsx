@@ -6,7 +6,6 @@ interface PyqDetailHeaderProps {
 	subject: string;
 	title: string;
 	year: string;
-	questionsCount: number;
 }
 
 const PyqDetailHeader = ({

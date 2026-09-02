@@ -170,7 +170,7 @@ export const pyqPaymentRouter = createTRPCRouter({
 			// Free note
 			if (!pyq.isPaid) {
 				return {
-					url: pyq.pdfUrl,
+					url: pyq.solutionPdfUrl,
 				};
 			}
 
@@ -199,7 +199,7 @@ export const pyqPaymentRouter = createTRPCRouter({
 				});
 
 			return {
-				url: pyq.pdfUrl,
+				url: pyq.solutionPdfUrl,
 				message: "Pyq downloaded successfully",
 			};
 		}),

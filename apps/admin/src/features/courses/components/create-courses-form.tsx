@@ -93,10 +93,13 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 			name: courseName.trim(),
 			slug: createSlug(courseName),
 			semesters: semesters.map((semester) => ({
+				id: semester.id,
 				number: semester.number,
 				subjects: (semester.subjects ?? []).map((subject) => ({
+					id: subject.id,
 					name: subject.name.trim(),
 					units: (subject.units ?? []).map((unit) => ({
+						id: unit.id,
 						name: unit.name.trim(),
 					})),
 				})),

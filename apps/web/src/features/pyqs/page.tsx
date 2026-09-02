@@ -69,12 +69,6 @@ const PyqsPage = () => {
 									>
 										{pyq.year}
 									</span>
-
-									<span
-										className={`rounded-full px-2.5 py-0.5 font-medium text-xs ${badgeStyles.questions}`}
-									>
-										{pyq.questionsLength} Questions
-									</span>
 								</div>
 							</div>
 

@@ -17,14 +17,14 @@ export interface Semester {
 
 export function createEmptyUnit(): Unit {
 	return {
-		id: crypto.randomUUID(),
+		id: `temp-unit-${crypto.randomUUID()}`,
 		name: "",
 	};
 }
 
 export function createEmptySubject(): Subject {
 	return {
-		id: crypto.randomUUID(),
+		id: `temp-subject-${crypto.randomUUID()}`,
 		name: "",
 		units: [],
 	};
@@ -32,7 +32,7 @@ export function createEmptySubject(): Subject {
 
 export function createSemester(number: string): Semester {
 	return {
-		id: `sem-${number}`,
+		id: `temp-semester-${number}`,
 		number,
 		subjects: [],
 	};
@@ -66,7 +66,7 @@ export function addSubjectToSemester(
 				subjects: [
 					...sem.subjects,
 					{
-						id: crypto.randomUUID(),
+						id: `temp-subject-${crypto.randomUUID()}`,
 						name: "",
 						units: [],
 					},

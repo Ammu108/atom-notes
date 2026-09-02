@@ -17,20 +17,20 @@ export function useCourseCreation() {
 	});
 }
 
-export function useCourseUpdate() {
-	const utils = api.useUtils();
+// export function useCourseUpdate() {
+// 	const utils = api.useUtils();
 
-	return api.courses.updateCourse.useMutation({
-		onSuccess: async (data) => {
-			await utils.courses.invalidate();
-			toast.success(data.message);
-		},
-		onError: (error) => {
-			console.error("Error updating course:", error);
-			toast.error(error.message);
-		},
-	});
-}
+// 	return api.courses.updateCourse.useMutation({
+// 		onSuccess: async (data) => {
+// 			await utils.courses.invalidate();
+// 			toast.success(data.message);
+// 		},
+// 		onError: (error) => {
+// 			console.error("Error updating course:", error);
+// 			toast.error(error.message);
+// 		},
+// 	});
+// }
 
 export function useDeleteCourse() {
 	const utils = api.useUtils();

@@ -5,17 +5,16 @@ import { adminProcedure, createTRPCRouter, publicProcedure } from "../../trpc";
 import { courseRepository } from "../repositories/course-repositary";
 import { coursesService } from "../services/courses-service";
 import {
-	coursesSchema,
+	createCourseSchema,
 	getCourseByIdSchema,
 	getSemestersByCourseIdSchema,
 	getSubjectsBySemesterIdSchema,
 	getUnitsBySubjectIdSchema,
-	updateCourseSchema,
 } from "../validators/courses-validators";
 
 export const courseRouter = createTRPCRouter({
 	createCourse: adminProcedure
-		.input(coursesSchema)
+		.input(createCourseSchema)
 		.mutation(async ({ input, ctx }) => {
 			if (!ctx.user || ctx.user.role !== "ADMIN") {
 				throw new TRPCError({
@@ -44,39 +43,39 @@ export const courseRouter = createTRPCRouter({
 			return course;
 		}),
 
-	updateCourse: adminProcedure
-		.input(updateCourseSchema)
-		.mutation(async ({ input, ctx }) => {
-			if (!ctx.user || ctx.user.role !== "ADMIN") {
-				throw new TRPCError({
-					code: "FORBIDDEN",
-					message: "Only admins can update courses",
-				});
-			}
+	// updateCourse: adminProcedure
+	// 	.input(updateCourseSchema)
+	// 	.mutation(async ({ input, ctx }) => {
+	// 		if (!ctx.user || ctx.user.role !== "ADMIN") {
+	// 			throw new TRPCError({
+	// 				code: "FORBIDDEN",
+	// 				message: "Only admins can update courses",
+	// 			});
+	// 		}
 
-			const normalizedName = generateSlug(input.name);
+	// 		const normalizedName = generateSlug(input.name);
 
-			const existingCourse = await courseRepository.findCourseBySlug(
-				ctx.db,
-				normalizedName,
-			);
+	// 		const existingCourse = await courseRepository.findCourseBySlug(
+	// 			ctx.db,
+	// 			normalizedName,
+	// 		);
 
-			// allow same course to update itself
-			const duplicateCourse = existingCourse.find(
-				(course) => course.id !== input.courseId,
-			);
+	// 		// allow same course to update itself
+	// 		const duplicateCourse = existingCourse.find(
+	// 			(course) => course.id !== input.courseId,
+	// 		);
 
-			if (duplicateCourse) {
-				throw new TRPCError({
-					code: "BAD_REQUEST",
-					message: "Course with this name already exists",
-				});
-			}
+	// 		if (duplicateCourse) {
+	// 			throw new TRPCError({
+	// 				code: "BAD_REQUEST",
+	// 				message: "Course with this name already exists",
+	// 			});
+	// 		}
 
-			const course = await coursesService.updateCourse(input, ctx.db);
+	// 		const course = await coursesService.updateCourse(input, ctx.db);
 
-			return course;
-		}),
+	// 		return course;
+	// 	}),
 
 	getAllCourses: publicProcedure.query(async ({ ctx }) => {
 		return await courseRepository.getAllCourses(ctx.db);

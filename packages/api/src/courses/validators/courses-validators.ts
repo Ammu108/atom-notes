@@ -41,6 +41,51 @@ export const coursesSchema = z.object({
 	slug: z.string(),
 });
 
+export const createCourseSchema = z.object({
+	name: z.string().min(1, "Course name is required"),
+	slug: z.string().min(1, "Course slug is required"),
+	semesters: z.array(
+		z.object({
+			semesterNumber: z.number().int().positive(),
+			subjects: z.array(
+				z.object({
+					name: z.string().min(1, "Subject name is required"),
+					units: z.array(
+						z.object({
+							name: z.string().min(1, "Unit name is required"),
+						}),
+					),
+				}),
+			),
+		}),
+	),
+});
+
+// export const updateCourseSchema = z.object({
+// 	courseId: z.string().uuid(),
+// 	name: z.string().min(1, "Course name is required"),
+// 	slug: z.string().min(1, "Slug is required"),
+// 	semesters: z.array(
+// 		z.object({
+// 			id: z.string().uuid().optional(),
+// 			semesterNumber: z.number().int().positive(),
+// 			subjects: z.array(
+// 				z.object({
+// 					id: z.string().uuid().optional(),
+// 					name: z.string().min(1, "Subject name is required"),
+// 					code: z.string().nullable().optional(),
+// 					units: z.array(
+// 						z.object({
+// 							id: z.string().uuid().optional(),
+// 							name: z.string().min(1, "Unit name is required"),
+// 						}),
+// 					),
+// 				}),
+// 			),
+// 		}),
+// 	),
+// });
+
 export const getCourseByIdSchema = z.object({
 	id: z.string(),
 });
@@ -57,6 +102,6 @@ export const getUnitsBySubjectIdSchema = z.object({
 	id: z.string(),
 });
 
-export const updateCourseSchema = coursesSchema.extend({
-	courseId: z.string().uuid(),
-});
+// export const updateCourseSchema = coursesSchema.extend({
+// 	courseId: z.string().uuid(),
+// });

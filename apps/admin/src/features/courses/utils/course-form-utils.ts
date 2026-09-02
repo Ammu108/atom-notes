@@ -11,7 +11,7 @@ export interface Subject {
 
 export interface Semester {
 	id: string;
-	number: string;
+	semesterNumber: number;
 	subjects: Subject[];
 }
 
@@ -33,7 +33,7 @@ export function createEmptySubject(): Subject {
 export function createSemester(number: string): Semester {
 	return {
 		id: `temp-semester-${number}`,
-		number,
+		semesterNumber: parseInt(number, 10),
 		subjects: [],
 	};
 }
@@ -46,7 +46,7 @@ export function initializeSemesters(
 
 	for (let index = 1; index <= count; index++) {
 		const existingSemester = previousSemesters.find(
-			(semester) => semester.number === index.toString(),
+			(semester) => semester.semesterNumber === index,
 		);
 
 		semesters.push(existingSemester || createSemester(index.toString()));

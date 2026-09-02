@@ -26,7 +26,7 @@ export interface Subject {
 
 export interface Semester {
 	id: string;
-	number: string;
+	semesterNumber: number;
 	subjects: Subject[];
 }
 
@@ -87,7 +87,7 @@ const CreateSemesterCard = memo(function CreateSemesterCard({
 					<div className="flex items-center gap-2">
 						<Layers2 className="h-4 w-4" />
 						<CardTitle className="font-semibold text-sm">
-							Semester {semester.number}
+							Semester {semester.semesterNumber}
 						</CardTitle>
 					</div>
 					<Button

@@ -1,5 +1,13 @@
-import { courses, type DB, semesters, subjects, unit } from "@repo/db";
-import { and, countDistinct, desc, eq } from "drizzle-orm";
+import {
+	courses,
+	type DB,
+	notes,
+	pyqs,
+	semesters,
+	subjects,
+	unit,
+} from "@repo/db";
+import { and, countDistinct, desc, eq, sql } from "drizzle-orm";
 
 export const courseRepository = {
 	// check if slug already exists
@@ -108,6 +116,46 @@ export const courseRepository = {
 			.leftJoin(subjects, eq(subjects.semesterId, semesters.id))
 			.groupBy(courses.id)
 			.orderBy(desc(courses.createdAt));
+	},
+
+	async getAllSemestersAndResources(db: DB) {
+		return await db
+			.select({
+				name: courses.name,
+				totalSemesters: countDistinct(semesters.id),
+				totalResources: sql<number>`
+                count(distinct ${notes.id}) + count(distinct ${pyqs.id})
+            `,
+			})
+			.from(courses)
+			.leftJoin(semesters, eq(semesters.courseId, courses.id))
+			.leftJoin(subjects, eq(subjects.semesterId, semesters.id))
+			.leftJoin(unit, eq(unit.subjectId, subjects.id))
+			.leftJoin(notes, eq(notes.unitId, unit.id))
+			.leftJoin(pyqs, eq(pyqs.subjectId, subjects.id))
+			.where(eq(courses.slug, "bca"))
+			.groupBy(courses.id);
+	},
+
+	async getAllSemestersByCourse(db: DB) {
+		return await db
+			.select({
+				id: semesters.id,
+				name: courses.name,
+				semesterNumber: semesters.semesterNumber,
+				totalSubjects: countDistinct(subjects.id),
+				totalResources: sql<number>`
+				count(distinct ${notes.id}) + count(distinct ${pyqs.id})
+			`,
+			})
+			.from(courses)
+			.leftJoin(semesters, eq(semesters.courseId, courses.id))
+			.leftJoin(subjects, eq(subjects.semesterId, semesters.id))
+			.leftJoin(unit, eq(unit.subjectId, subjects.id))
+			.leftJoin(notes, eq(notes.unitId, unit.id))
+			.leftJoin(pyqs, eq(pyqs.subjectId, subjects.id))
+			.where(eq(courses.slug, "bca"))
+			.groupBy(courses.id, semesters.id, semesters.semesterNumber);
 	},
 
 	// get course by id with all its relations

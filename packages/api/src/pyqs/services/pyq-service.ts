@@ -8,11 +8,12 @@ export const pyqService = {
 			title: input.title,
 			year: input.year,
 			subjectId: input.subjectId,
-			pdfUrl: input.pdfUrl,
-			pdfKey: input.pdfKey,
+			questionPdfUrl: input.questionPdfUrl,
+			questionPdfKey: input.questionPdfKey,
+			solutionPdfUrl: input.solutionPdfUrl,
+			solutionPdfKey: input.solutionPdfKey,
 			isPaid: input.isPaid,
 			price: input.price,
-			questions: input.questions,
 		});
 	},
 
@@ -21,11 +22,12 @@ export const pyqService = {
 			title: input.title,
 			year: input.year,
 			subjectId: input.subjectId,
-			pdfUrl: input.pdfUrl,
-			pdfKey: input.pdfKey,
+			questionPdfUrl: input.questionPdfUrl,
+			questionPdfKey: input.questionPdfKey,
+			solutionPdfUrl: input.solutionPdfUrl,
+			solutionPdfKey: input.solutionPdfKey,
 			isPaid: input.isPaid,
 			price: input.price,
-			questions: input.questions,
 		});
 	},
 };

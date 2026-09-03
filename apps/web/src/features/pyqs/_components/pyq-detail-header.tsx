@@ -2,11 +2,10 @@ import { Badge } from "~/components/ui/badge";
 
 interface PyqDetailHeaderProps {
 	course: string;
-	semester: string;
+	semester: number;
 	subject: string;
 	title: string;
 	year: string;
-	questionsCount: number;
 }
 
 const PyqDetailHeader = ({

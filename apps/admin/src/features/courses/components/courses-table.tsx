@@ -103,7 +103,7 @@ export function CoursesTable({ courses }: CoursesTableProps) {
 										<DropdownMenuItem
 											onClick={() => handleNavigateToCourse(course.id)}
 										>
-											Edit Course
+											View Course
 										</DropdownMenuItem>
 										<DropdownMenuItem
 											className="text-destructive"

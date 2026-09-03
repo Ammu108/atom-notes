@@ -11,20 +11,20 @@ export interface Subject {
 
 export interface Semester {
 	id: string;
-	number: string;
+	semesterNumber: number;
 	subjects: Subject[];
 }
 
 export function createEmptyUnit(): Unit {
 	return {
-		id: crypto.randomUUID(),
+		id: `temp-unit-${crypto.randomUUID()}`,
 		name: "",
 	};
 }
 
 export function createEmptySubject(): Subject {
 	return {
-		id: crypto.randomUUID(),
+		id: `temp-subject-${crypto.randomUUID()}`,
 		name: "",
 		units: [],
 	};
@@ -32,8 +32,8 @@ export function createEmptySubject(): Subject {
 
 export function createSemester(number: string): Semester {
 	return {
-		id: `sem-${number}`,
-		number,
+		id: `temp-semester-${number}`,
+		semesterNumber: parseInt(number, 10),
 		subjects: [],
 	};
 }
@@ -46,7 +46,7 @@ export function initializeSemesters(
 
 	for (let index = 1; index <= count; index++) {
 		const existingSemester = previousSemesters.find(
-			(semester) => semester.number === index.toString(),
+			(semester) => semester.semesterNumber === index,
 		);
 
 		semesters.push(existingSemester || createSemester(index.toString()));
@@ -66,7 +66,7 @@ export function addSubjectToSemester(
 				subjects: [
 					...sem.subjects,
 					{
-						id: crypto.randomUUID(),
+						id: `temp-subject-${crypto.randomUUID()}`,
 						name: "",
 						units: [],
 					},

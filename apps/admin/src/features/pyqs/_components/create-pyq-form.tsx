@@ -7,15 +7,15 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import PdfUploader from "~/components/pdf-monetization";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Field, FieldError, FieldLabel } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { Spinner } from "~/components/ui/spinner";
+import PyqSolutionPdfUploader from "~/features/pyqs/_components/pyq-solution-pdf-uploader";
 import { api } from "~/trpc/react";
 import AcademicPyqClassification from "./academic-pyq-classification";
-import AddPyqQuestion from "./add-pyq-question";
+import PyqQuestionPdfUploader from "./pyq-qustion-pdf-uploader";
 
 interface CreatePyqFormProps {
 	pyq?: PyqsFormValues;
@@ -25,7 +25,8 @@ interface CreatePyqFormProps {
 const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 	const isEditMode = Boolean(pyqId);
 	const router = useRouter();
-	const [pdfFile, setPdfFile] = useState<File | null>(null);
+	const [questionPdfFile, setQuestionPdfFile] = useState<File | null>(null);
+	const [solutionPdfFile, setSolutionPdfFile] = useState<File | null>(null);
 	const [isPaid, setIsPaid] = useState(false);
 	const [price, setPrice] = useState(0);
 	const utils = api.useUtils();
@@ -36,9 +37,10 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 			title: "",
 			year: "",
 			subjectId: "",
-			questions: [{ question: "" }],
-			pdfUrl: null,
-			pdfKey: "",
+			questionPdfUrl: null,
+			questionPdfKey: "",
+			solutionPdfUrl: null,
+			solutionPdfKey: "",
 			isPaid: false,
 			price: undefined,
 		},
@@ -51,9 +53,10 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 			title: pyq.title,
 			year: pyq.year,
 			subjectId: pyq.subjectId,
-			questions: pyq.questions,
-			pdfUrl: pyq.pdfUrl,
-			pdfKey: pyq.pdfKey ?? undefined,
+			questionPdfUrl: pyq.questionPdfUrl,
+			questionPdfKey: pyq.questionPdfKey ?? undefined,
+			solutionPdfUrl: pyq.solutionPdfUrl,
+			solutionPdfKey: pyq.solutionPdfKey ?? undefined,
 			isPaid: pyq.isPaid,
 			price: pyq.price ? pyq.price.toString() : undefined,
 		});
@@ -64,9 +67,14 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 
 	const selectedSubjectId = form.watch("subjectId");
 
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleQuestionFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0] ?? null;
-		setPdfFile(file);
+		setQuestionPdfFile(file);
+	};
+
+	const handleSolutionFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0] ?? null;
+		setSolutionPdfFile(file);
 	};
 
 	const { mutateAsync: createPyq, isPending: isCreatePyqPending } =
@@ -107,31 +115,43 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 	};
 
 	const onSubmit = async (data: PyqsFormValues) => {
-		console.log("button is pressed");
 		if (!selectedSubjectId) {
 			toast.error("Please select an subject.");
 			return;
 		}
 
 		try {
-			let pdfUrl = data.pdfUrl;
-			let pdfKey = data.pdfKey;
+			let questionPdfUrl = data.questionPdfUrl;
+			let questionPdfKey = data.questionPdfKey;
 
-			if (pdfFile) {
-				const uploaded = await uploadPdf(pdfFile);
-				pdfUrl = uploaded.url;
-				pdfKey = uploaded.key;
+			let solutionPdfUrl = data.solutionPdfUrl;
+			let solutionPdfKey = data.solutionPdfKey;
+
+			// Upload question PDF
+			if (questionPdfFile) {
+				const uploadedQuestion = await uploadPdf(questionPdfFile);
+
+				questionPdfUrl = uploadedQuestion.url;
+				questionPdfKey = uploadedQuestion.key;
 			}
 
-			console.log("Data being sent is : ", data);
+			// Upload solution PDF
+			if (solutionPdfFile) {
+				const uploadedSolution = await uploadPdf(solutionPdfFile);
+
+				solutionPdfUrl = uploadedSolution.url;
+				solutionPdfKey = uploadedSolution.key;
+			}
 
 			if (isEditMode && pyqId) {
 				await updatePyq({
 					...data,
 					id: pyqId,
 					subjectId: selectedSubjectId,
-					pdfUrl,
-					pdfKey,
+					questionPdfUrl,
+					questionPdfKey,
+					solutionPdfUrl,
+					solutionPdfKey,
 					isPaid,
 					price: price.toString(),
 				});
@@ -139,15 +159,18 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 				await createPyq({
 					...data,
 					subjectId: selectedSubjectId,
-					pdfUrl,
-					pdfKey,
+					questionPdfUrl,
+					questionPdfKey,
+					solutionPdfUrl,
+					solutionPdfKey,
 					isPaid,
 					price: price.toString(),
 				});
 			}
 
 			form.reset();
-			setPdfFile(null);
+			setQuestionPdfFile(null);
+			setSolutionPdfFile(null);
 		} catch (error) {
 			if (error instanceof TRPCClientError) {
 				toast.error(error.message);
@@ -221,19 +244,28 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 				/>
 			</Card>
 
-			{/* Adding Pyq Question */}
+			{/* Upload Question Paper Pdf */}
 			<Card>
-				<AddPyqQuestion form={form} />
+				<PyqQuestionPdfUploader
+					existingPdfKey={pyq?.questionPdfKey}
+					existingPdfUrl={pyq?.questionPdfUrl}
+					isPaid={isPaid}
+					onFileChange={handleQuestionFileChange}
+					pdfFile={questionPdfFile}
+					price={price}
+					setIsPaid={setIsPaid}
+					setPrice={setPrice}
+				/>
 			</Card>
 
 			{/* PDF Uploader */}
 			<Card>
-				<PdfUploader
-					existingPdfKey={pyq?.pdfKey}
-					existingPdfUrl={pyq?.pdfUrl}
+				<PyqSolutionPdfUploader
+					existingPdfKey={pyq?.solutionPdfKey}
+					existingPdfUrl={pyq?.solutionPdfUrl}
 					isPaid={isPaid}
-					onFileChange={handleFileChange}
-					pdfFile={pdfFile}
+					onFileChange={handleSolutionFileChange}
+					pdfFile={solutionPdfFile}
 					price={price}
 					setIsPaid={setIsPaid}
 					setPrice={setPrice}

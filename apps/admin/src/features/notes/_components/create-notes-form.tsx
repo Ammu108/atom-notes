@@ -20,7 +20,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Spinner } from "~/components/ui/spinner";
 import { api } from "~/trpc/react";
-import PdfUploader from "../../../components/pdf-monetization";
+import PdfUploader from "../../pyqs/_components/pyq-solution-pdf-uploader";
 import AcademicClassification from "./academic-classification";
 
 interface CreateNotesFormProps {

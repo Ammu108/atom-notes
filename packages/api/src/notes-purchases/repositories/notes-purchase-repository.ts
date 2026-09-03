@@ -56,7 +56,7 @@ export const notesPurchaseRepository = {
 				resourceId: notes.id,
 				title: notes.title,
 				course: courses.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				subject: subjects.name,
 				price: notes.price,
 				amountPaid: notesPurchases.amount,

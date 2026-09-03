@@ -3,7 +3,6 @@ import {
 	index,
 	numeric,
 	pgTable,
-	text,
 	uuid,
 	varchar,
 } from "drizzle-orm/pg-core";
@@ -19,8 +18,13 @@ export const pyqs = pgTable(
 		subjectId: uuid("subject_id")
 			.references(() => subjects.id, { onDelete: "cascade" })
 			.notNull(),
-		pdfUrl: varchar("pdf_url", { length: 2048 }),
-		pdfKey: varchar("pdf_key", { length: 255 }),
+		// Question paper PDF
+		questionPdfUrl: varchar("question_pdf_url", { length: 2048 }),
+		questionPdfKey: varchar("question_pdf_key", { length: 255 }),
+
+		// Solution PDF
+		solutionPdfUrl: varchar("solution_pdf_url", { length: 2048 }),
+		solutionPdfKey: varchar("solution_pdf_key", { length: 255 }),
 		isPaid: boolean("is_paid").default(false).notNull(),
 		price: numeric("price", { precision: 10, scale: 2 })
 			.default("0.00")
@@ -29,24 +33,5 @@ export const pyqs = pgTable(
 	},
 	(table) => ({
 		subjectIdIdx: index("pyqs_subject_id_idx").on(table.subjectId),
-	}),
-);
-
-export const pyqQuestions = pgTable(
-	"pyq_questions",
-	{
-		id: uuid("id").primaryKey().defaultRandom(),
-
-		pyqId: uuid("pyq_id")
-			.references(() => pyqs.id, {
-				onDelete: "cascade",
-			})
-			.notNull(),
-
-		question: text("question").notNull(),
-		...timestamps,
-	},
-	(table) => ({
-		pyqIdIdx: index("pyq_questions_pyq_id_idx").on(table.pyqId),
 	}),
 );

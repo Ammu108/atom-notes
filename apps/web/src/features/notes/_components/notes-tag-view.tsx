@@ -1,5 +1,5 @@
 interface NoteDetailProps {
-	semester: string;
+	semester: number;
 	subject: string;
 	unit: string;
 }

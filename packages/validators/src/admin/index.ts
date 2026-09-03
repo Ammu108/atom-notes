@@ -4,9 +4,11 @@ import {
 	idSchema,
 	isPaidSchema,
 	passwordSchema,
-	pdfKeySchema,
-	pdfUrlSchema,
 	priceSchema,
+	questionPdfKeySchema,
+	questionPdfUrlSchema,
+	solutionPdfKeySchema,
+	solutionPdfUrlSchema,
 	subjectIdSchema,
 	titleSchema,
 	yearSchema,
@@ -57,13 +59,11 @@ export const pyqsFormSchema = z.object({
 	title: titleSchema,
 	year: yearSchema,
 	subjectId: subjectIdSchema,
-	questions: z.array(
-		z.object({
-			question: z.string({ required_error: "Question text is required" }),
-		}),
-	),
-	pdfUrl: pdfUrlSchema,
-	pdfKey: pdfKeySchema,
+	questionPdfUrl: questionPdfUrlSchema,
+	questionPdfKey: questionPdfKeySchema,
+
+	solutionPdfUrl: solutionPdfUrlSchema,
+	solutionPdfKey: solutionPdfKeySchema,
 
 	isPaid: isPaidSchema,
 	price: priceSchema,

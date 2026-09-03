@@ -125,7 +125,7 @@ export const notesRouter = createTRPCRouter({
 			z.object({
 				search: z.string().optional(),
 				course: z.string().optional(),
-				semester: z.string().optional(),
+				semester: z.number().optional(),
 				subject: z.string().optional(),
 			}),
 		)

@@ -71,7 +71,7 @@ const PyqTable = () => {
 	return (
 		<Card>
 			<CardHeader className="gap-3">
-				<CardTitle>Notes Directory</CardTitle>
+				<CardTitle>PYQs Directory</CardTitle>
 				<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 					<div className="relative w-full md:max-w-sm">
 						<SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -157,13 +157,13 @@ const PyqTable = () => {
 												<DropdownMenuItem
 													onClick={() => handleNavigateToNotes(pyq.id)}
 												>
-													Edit Notes
+													Edit Pyq
 												</DropdownMenuItem>
 												<DropdownMenuItem
 													className="text-destructive"
 													onClick={() => handleDeleteNote(pyq.id)}
 												>
-													Delete Notes
+													Delete Pyqs
 												</DropdownMenuItem>
 											</DropdownMenuContent>
 										</DropdownMenu>

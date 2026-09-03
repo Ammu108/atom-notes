@@ -2,14 +2,13 @@ import {
 	courses,
 	type DB,
 	pyqPurchases,
-	pyqQuestions,
 	pyqs,
 	semesters,
 	subjects,
 } from "@repo/db";
 import type { PyqsFormValues } from "@repo/validators";
 import { TRPCError } from "@trpc/server";
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { pyqPaymentRepository } from "../../pyq-payment/repositories/pyq-payment-repository";
 
 export const pyqRepository = {
@@ -21,8 +20,10 @@ export const pyqRepository = {
 					title: data.title,
 					year: data.year,
 					subjectId: data.subjectId,
-					pdfUrl: data.pdfUrl,
-					pdfKey: data.pdfKey,
+					questionPdfUrl: data.questionPdfUrl,
+					questionPdfKey: data.questionPdfKey,
+					solutionPdfUrl: data.solutionPdfUrl,
+					solutionPdfKey: data.solutionPdfKey,
 					isPaid: data.isPaid,
 					price: data.price,
 				})
@@ -34,14 +35,6 @@ export const pyqRepository = {
 					message: "Failed to create pyq",
 				});
 			}
-
-			await tx.insert(pyqQuestions).values(
-				data.questions.map((q, index) => ({
-					pyqId: pyq.id,
-					question: q.question,
-					displayOrder: index,
-				})),
-			);
 
 			if (!pyq) {
 				throw new TRPCError({
@@ -62,8 +55,10 @@ export const pyqRepository = {
 					title: data.title,
 					year: data.year,
 					subjectId: data.subjectId,
-					pdfUrl: data.pdfUrl,
-					pdfKey: data.pdfKey,
+					questionPdfUrl: data.questionPdfUrl,
+					questionPdfKey: data.questionPdfKey,
+					solutionPdfUrl: data.solutionPdfUrl,
+					solutionPdfKey: data.solutionPdfKey,
 					isPaid: data.isPaid,
 					price: data.price,
 				})
@@ -73,15 +68,6 @@ export const pyqRepository = {
 			if (!updatedPyq) {
 				throw new Error("PYQ not found");
 			}
-
-			await tx.delete(pyqQuestions).where(eq(pyqQuestions.pyqId, id));
-			data.questions.length > 0;
-			await tx.insert(pyqQuestions).values(
-				data.questions.map((q) => ({
-					pyqId: id,
-					question: q.question,
-				})),
-			);
 
 			return updatedPyq;
 		});
@@ -94,21 +80,19 @@ export const pyqRepository = {
 				title: pyqs.title,
 				year: pyqs.year,
 				subjectName: subjects.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				price: pyqs.price,
-				questionsLength: count(pyqQuestions.id),
 				updatedAt: pyqs.updatedAt,
 			})
 			.from(pyqs)
 			.innerJoin(subjects, eq(pyqs.subjectId, subjects.id))
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
-			.leftJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
 			.groupBy(
 				pyqs.id,
 				pyqs.title,
 				pyqs.year,
 				subjects.name,
-				semesters.number,
+				semesters.semesterNumber,
 				pyqs.updatedAt,
 			)
 			.orderBy(desc(pyqs.updatedAt));
@@ -124,12 +108,14 @@ export const pyqRepository = {
 				year: pyqs.year,
 				subjectId: pyqs.subjectId,
 				subjectName: subjects.name,
-				pdfUrl: pyqs.pdfUrl,
-				pdfKey: pyqs.pdfKey,
+				solutionPdfUrl: pyqs.solutionPdfUrl,
+				solutionPdfKey: pyqs.solutionPdfKey,
 				isPaid: pyqs.isPaid,
 				price: pyqs.price,
+				questionPdfUrl: pyqs.questionPdfUrl,
+				questionPdfKey: pyqs.questionPdfKey,
 				course: courses.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				createdAt: pyqs.createdAt,
 				updatedAt: pyqs.updatedAt,
 			})
@@ -137,7 +123,6 @@ export const pyqRepository = {
 			.innerJoin(subjects, eq(pyqs.subjectId, subjects.id))
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
 			.innerJoin(courses, eq(semesters.courseId, courses.id))
-			.innerJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
 			.where(eq(pyqs.id, id))
 			.limit(1);
 
@@ -153,15 +138,15 @@ export const pyqRepository = {
 			});
 		}
 
-		const questions = await db
-			.select({
-				id: pyqQuestions.id,
-				question: pyqQuestions.question,
-			})
-			.from(pyqQuestions)
-			.where(eq(pyqQuestions.pyqId, id));
+		// const questions = await db
+		// 	.select({
+		// 		id: pyqQuestions.id,
+		// 		question: pyqQuestions.question,
+		// 	})
+		// 	.from(pyqQuestions)
+		// 	.where(eq(pyqQuestions.pyqId, id));
 
-		return { ...pyq, questions, questionCount: questions.length, hasPurchased };
+		return { ...pyq, hasPurchased };
 	},
 
 	async getStats(db: DB, noteId: string) {

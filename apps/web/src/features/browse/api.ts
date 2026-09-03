@@ -3,18 +3,18 @@ import { api } from "~/trpc/react";
 export const useGetAllNotes = ({
 	search,
 	course,
-	sem,
+	semester,
 	sub,
 }: {
 	search?: string;
 	course?: string;
-	sem?: string;
+	semester?: number;
 	sub?: string;
 }) => {
 	return api.notes.getAllNotes.useQuery({
 		search,
 		course,
-		semester: sem,
+		semester,
 		subject: sub,
 	});
 };

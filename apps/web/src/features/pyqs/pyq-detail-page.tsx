@@ -13,8 +13,6 @@ const PyqDetailPage = ({ id }: { id: string }) => {
 		return <PyqDetailSkeleton />;
 	}
 
-	console.log("PYQ URL", pyq?.pdfUrl);
-
 	if (!pyq) {
 		return (
 			<div className="w-full pt-20 md:pt-24">
@@ -31,16 +29,14 @@ const PyqDetailPage = ({ id }: { id: string }) => {
 		<div className="w-full pt-20 md:pt-24">
 			<PyqDetailHeader
 				course={pyq.course}
-				questionsCount={pyq.questionCount}
 				semester={pyq.semester}
 				subject={pyq.subjectName}
 				title={pyq.title}
 				year={pyq.year}
 			/>
 			<div className="mt-6 grid gap-6 md:grid-cols-[2fr_1fr]">
-				{/* <DetailedPyqSection question={pyq.questions} /> */}
-				{pyq.pdfUrl ? (
-					<PdfViewer src={pyq.pdfUrl} />
+				{pyq.questionPdfUrl ? (
+					<PdfViewer src={pyq.questionPdfUrl} />
 				) : (
 					<div className="rounded-xl border p-4 text-center text-muted-foreground text-sm">
 						No PDF available for this PYQ.

@@ -8,7 +8,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Field, FieldDescription, FieldLabel } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
-import { useCourseCreation, useCourseUpdate } from "../hooks/use-course";
+import { useCourseCreation } from "../hooks/use-course";
 import { initializeSemesters, type Semester } from "../utils/course-form-utils";
 import CreateSemesterCard from "./create-semester-card";
 
@@ -19,12 +19,11 @@ type CreateCoursesFormProps = {
 		slug: string;
 		semesters?: Array<{
 			id: string;
-			number: string;
+			semesterNumber: number;
 			subjects?: Array<{
 				id: string;
 				name: string;
 				units?: Array<{ id: string; name: string }>;
-				unit?: Array<{ id: string; name: string }>;
 			}>;
 		}>;
 	};
@@ -54,11 +53,11 @@ const normalizeSemesters = (
 
 	return semesters.map((semester) => ({
 		id: semester.id,
-		number: semester.number,
+		semesterNumber: semester.semesterNumber,
 		subjects: (semester.subjects ?? []).map((subject) => ({
 			id: subject.id,
 			name: subject.name,
-			units: (subject.units ?? subject.unit ?? []).map((unit) => ({
+			units: (subject.units ?? []).map((unit) => ({
 				id: unit.id,
 				name: unit.name,
 			})),
@@ -70,7 +69,7 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 	const initialSemesters =
 		course?.semesters && course.semesters.length > 0
 			? normalizeSemesters(course.semesters)
-			: [{ id: "sem-1", number: "1", subjects: [] }];
+			: [{ id: "sem-1", semesterNumber: 1, subjects: [] }];
 
 	const [courseName, setCourseName] = useState(course?.name ?? "");
 	const [semesterCount, setSemesterCount] = useState<number | "">(
@@ -79,7 +78,7 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 	const [submitError, setSubmitError] = useState("");
 	const [semesters, setSemesters] = useState<Semester[]>(initialSemesters);
 	const createCourseMutation = useCourseCreation();
-	const updateCourseMutation = useCourseUpdate();
+	// const updateCourseMutation = useCourseUpdate();
 	const router = useRouter();
 	const isEditMode = !!course?.id;
 
@@ -93,10 +92,13 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 			name: courseName.trim(),
 			slug: createSlug(courseName),
 			semesters: semesters.map((semester) => ({
-				number: semester.number,
+				id: semester.id,
+				semesterNumber: semester.semesterNumber,
 				subjects: (semester.subjects ?? []).map((subject) => ({
+					id: subject.id,
 					name: subject.name.trim(),
 					units: (subject.units ?? []).map((unit) => ({
+						id: unit.id,
 						name: unit.name.trim(),
 					})),
 				})),
@@ -144,10 +146,10 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 					return;
 				}
 
-				await updateCourseMutation.mutateAsync({
-					courseId: course.id,
-					...coursePayload,
-				});
+				// await updateCourseMutation.mutateAsync({
+				// 	courseId: course.id,
+				// 	...coursePayload,
+				// });
 
 				router.push("/courses");
 				return;
@@ -159,7 +161,7 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 			setSemesters([
 				{
 					id: "sem-1",
-					number: "1",
+					semesterNumber: 1,
 					subjects: [],
 				},
 			]);
@@ -240,19 +242,11 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 					<Button
 						className="w-full"
 						disabled={
-							!isFormComplete ||
-							createCourseMutation.isPending ||
-							updateCourseMutation.isPending
+							isEditMode || !isFormComplete || createCourseMutation.isPending
 						}
 						type="submit"
 					>
-						{isEditMode
-							? updateCourseMutation.isPending
-								? "Updating..."
-								: "Update Course"
-							: createCourseMutation.isPending
-								? "Saving..."
-								: "Save Course"}
+						{createCourseMutation.isPending ? "Saving..." : "Save Course"}
 					</Button>
 				</div>
 			</div>

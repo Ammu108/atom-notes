@@ -1,5 +1,3 @@
-// packages/db/seed/admin.ts
-
 import { adminAuth } from "@repo/api/admin-auth";
 import { eq } from "drizzle-orm";
 import { db, user } from ".";

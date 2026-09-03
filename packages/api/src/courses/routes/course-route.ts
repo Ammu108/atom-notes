@@ -96,6 +96,34 @@ export const courseRouter = createTRPCRouter({
 			return course;
 		}),
 
+	getAllSemestersAndResources: publicProcedure.query(async ({ ctx }) => {
+		const [semesters] = await courseRepository.getAllSemestersAndResources(
+			ctx.db,
+		);
+
+		if (!semesters) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Semesters not found!",
+			});
+		}
+
+		return semesters;
+	}),
+
+	getAllSemestersByCourse: publicProcedure.query(async ({ ctx }) => {
+		const semesters = await courseRepository.getAllSemestersByCourse(ctx.db);
+
+		if (!semesters) {
+			throw new TRPCError({
+				code: "NOT_FOUND",
+				message: "Semesters not found!",
+			});
+		}
+
+		return semesters;
+	}),
+
 	getSemestersByCourseId: publicProcedure
 		.input(getSemestersByCourseIdSchema)
 		.query(async ({ input, ctx }) => {

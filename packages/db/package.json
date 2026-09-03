@@ -13,7 +13,7 @@
 		"push": "drizzle-kit push",
 		"studio": "drizzle-kit studio",
 		"seed": "tsx src/seed.ts",
-		"seed-course": "tsx src/course-seed.ts"
+		"seed-course": "tsx src/seed-course.ts"
 	},
 	"devDependencies": {
 		"drizzle-kit": "^0.30.5",

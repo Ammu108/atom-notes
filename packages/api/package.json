@@ -12,7 +12,8 @@
 		"./user-auth": "./src/auth/better-auth/user-auth.ts",
 		"./user-client": "./src/auth/better-auth/user-client.ts",
 		"./admin-auth": "./src/auth/better-auth/admin-auth.ts",
-		"./admin-client": "./src/auth/better-auth/admin-client.ts"
+		"./admin-client": "./src/auth/better-auth/admin-client.ts",
+		"./course-service": "./src/courses/services/courses-service.ts"
 	},
 	"devDependencies": {
 		"@types/jsonwebtoken": "^9.0.10",

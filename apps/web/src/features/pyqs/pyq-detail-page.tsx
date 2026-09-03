@@ -1,6 +1,6 @@
 "use client";
 
-// import PdfViewer from "~/components/pdf/pdf-viewer";
+import PdfViewer from "~/components/pdf/pdf-viewer";
 import PyqDetailHeader from "./_components/pyq-detail-header";
 import PyqDetailSidebar from "./_components/pyq-detail-sidebar";
 import PyqDetailSkeleton from "./_components/pyq-detail-skeleton";
@@ -35,13 +35,13 @@ const PyqDetailPage = ({ id }: { id: string }) => {
 				year={pyq.year}
 			/>
 			<div className="mt-6 grid gap-6 md:grid-cols-[2fr_1fr]">
-				{/* {pyq.pdfUrl ? (
-					<PdfViewer src={pyq.pdfUrl} />
+				{pyq.questionPdfUrl ? (
+					<PdfViewer src={pyq.questionPdfUrl} />
 				) : (
 					<div className="rounded-xl border p-4 text-center text-muted-foreground text-sm">
 						No PDF available for this PYQ.
 					</div>
-				)} */}
+				)}
 
 				{/* h-fit prevents grid stretch; top-24 adjusts sticky offset */}
 				<div className="sticky top-24 h-fit">

@@ -52,7 +52,7 @@ const RemainingSemestersList = ({ semId }: RemainingSemestersListProps) => {
 					>
 						<div className="mb-3 flex w-full items-start justify-between">
 							<span className="inline-block rounded-md bg-destructive/10 px-3 py-1 font-medium text-destructive text-sm">
-								Semester {sem.number}
+								Semester {sem.semesterNumber}
 							</span>
 							<ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
 						</div>

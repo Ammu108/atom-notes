@@ -7,7 +7,7 @@ interface PyqDetailSidebarProps {
 	price: string;
 	pyqId: string;
 	course: string;
-	semester: string;
+	semester: number;
 	subject: string;
 	year: string;
 	hasPurchased: boolean;

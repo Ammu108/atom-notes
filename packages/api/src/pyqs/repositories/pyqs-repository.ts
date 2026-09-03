@@ -20,6 +20,8 @@ export const pyqRepository = {
 					title: data.title,
 					year: data.year,
 					subjectId: data.subjectId,
+					questionPdfUrl: data.questionPdfUrl,
+					questionPdfKey: data.questionPdfKey,
 					solutionPdfUrl: data.solutionPdfUrl,
 					solutionPdfKey: data.solutionPdfKey,
 					isPaid: data.isPaid,
@@ -33,14 +35,6 @@ export const pyqRepository = {
 					message: "Failed to create pyq",
 				});
 			}
-
-			// await tx.insert(pyqQuestions).values(
-			// 	data.questions.map((q, index) => ({
-			// 		pyqId: pyq.id,
-			// 		question: q.question,
-			// 		displayOrder: index,
-			// 	})),
-			// );
 
 			if (!pyq) {
 				throw new TRPCError({
@@ -61,6 +55,8 @@ export const pyqRepository = {
 					title: data.title,
 					year: data.year,
 					subjectId: data.subjectId,
+					questionPdfUrl: data.questionPdfUrl,
+					questionPdfKey: data.questionPdfKey,
 					solutionPdfUrl: data.solutionPdfUrl,
 					solutionPdfKey: data.solutionPdfKey,
 					isPaid: data.isPaid,
@@ -73,15 +69,6 @@ export const pyqRepository = {
 				throw new Error("PYQ not found");
 			}
 
-			// await tx.delete(pyqQuestions).where(eq(pyqQuestions.pyqId, id));
-			// data.questions.length > 0;
-			// await tx.insert(pyqQuestions).values(
-			// 	data.questions.map((q) => ({
-			// 		pyqId: id,
-			// 		question: q.question,
-			// 	})),
-			// );
-
 			return updatedPyq;
 		});
 	},
@@ -93,21 +80,19 @@ export const pyqRepository = {
 				title: pyqs.title,
 				year: pyqs.year,
 				subjectName: subjects.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				price: pyqs.price,
-				// questionsLength: count(pyqQuestions.id),
 				updatedAt: pyqs.updatedAt,
 			})
 			.from(pyqs)
 			.innerJoin(subjects, eq(pyqs.subjectId, subjects.id))
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
-			// .leftJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
 			.groupBy(
 				pyqs.id,
 				pyqs.title,
 				pyqs.year,
 				subjects.name,
-				semesters.number,
+				semesters.semesterNumber,
 				pyqs.updatedAt,
 			)
 			.orderBy(desc(pyqs.updatedAt));
@@ -127,8 +112,10 @@ export const pyqRepository = {
 				solutionPdfKey: pyqs.solutionPdfKey,
 				isPaid: pyqs.isPaid,
 				price: pyqs.price,
+				questionPdfUrl: pyqs.questionPdfUrl,
+				questionPdfKey: pyqs.questionPdfKey,
 				course: courses.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				createdAt: pyqs.createdAt,
 				updatedAt: pyqs.updatedAt,
 			})
@@ -136,7 +123,6 @@ export const pyqRepository = {
 			.innerJoin(subjects, eq(pyqs.subjectId, subjects.id))
 			.innerJoin(semesters, eq(subjects.semesterId, semesters.id))
 			.innerJoin(courses, eq(semesters.courseId, courses.id))
-			// .innerJoin(pyqQuestions, eq(pyqs.id, pyqQuestions.pyqId))
 			.where(eq(pyqs.id, id))
 			.limit(1);
 

@@ -68,7 +68,7 @@ export const notesRepository = {
 				isPaid: notes.isPaid,
 				price: notes.price,
 				course: courses.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				subject: subjects.name,
 				createdAt: notes.createdAt,
 				updatedAt: notes.updatedAt,
@@ -90,7 +90,7 @@ export const notesRepository = {
 				id: notesPurchases.id,
 				title: notes.title,
 				course: courses.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				subject: subjects.name,
 				amountPaid: notesPurchases.amount,
 				purchasesAt: notesPurchases.createdAt,
@@ -113,7 +113,7 @@ export const notesRepository = {
 		const [note] = await db
 			.select({
 				id: notes.id,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				subject: subjects.name,
 				title: notes.title,
 				metaTitle: notes.metaTitle,
@@ -160,7 +160,7 @@ export const notesRepository = {
 				description: notes.metaDescription,
 				chapter: unit.name,
 				subject: subjects.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				UpdatedAt: notes.updatedAt,
 			})
 			.from(notes)
@@ -177,7 +177,7 @@ export const notesRepository = {
 		input?: {
 			search?: string;
 			course?: string;
-			semester?: string;
+			semester?: number;
 			subject?: string;
 		},
 	) {
@@ -198,7 +198,7 @@ export const notesRepository = {
 		}
 
 		if (input?.semester) {
-			conditions.push(eq(semesters.number, input.semester));
+			conditions.push(eq(semesters.semesterNumber, input.semester));
 		}
 
 		if (input?.subject) {
@@ -213,7 +213,7 @@ export const notesRepository = {
 				description: notes.metaDescription,
 				chapter: unit.name,
 				subject: subjects.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				UpdatedAt: notes.updatedAt,
 			})
 			.from(notes)

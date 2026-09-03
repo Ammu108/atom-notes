@@ -8,14 +8,15 @@ const NoteCardRepo = () => {
 	const searchParams = useSearchParams();
 	const search = searchParams.get("search") ?? "";
 	const course = searchParams.get("course") ?? "";
-	const sem = searchParams.get("sem") ?? "";
+	const rawSemester = searchParams.get("semester");
+	const semester = rawSemester ? Number(rawSemester) : undefined;
 	const sub = searchParams.get("sub") ?? "";
 
 	const {
 		data: allNotes,
 		isError,
 		isPending,
-	} = useGetAllNotes({ search, course, sem, sub });
+	} = useGetAllNotes({ search, course, semester, sub });
 
 	if (isPending || isError) {
 		return <NoteCardSkeleton />;

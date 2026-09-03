@@ -25,7 +25,8 @@ interface CreatePyqFormProps {
 const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 	const isEditMode = Boolean(pyqId);
 	const router = useRouter();
-	const [pdfFile, setPdfFile] = useState<File | null>(null);
+	const [questionPdfFile, setQuestionPdfFile] = useState<File | null>(null);
+	const [solutionPdfFile, setSolutionPdfFile] = useState<File | null>(null);
 	const [isPaid, setIsPaid] = useState(false);
 	const [price, setPrice] = useState(0);
 	const utils = api.useUtils();
@@ -36,7 +37,6 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 			title: "",
 			year: "",
 			subjectId: "",
-			questions: [{ question: "" }],
 			questionPdfUrl: null,
 			questionPdfKey: "",
 			solutionPdfUrl: null,
@@ -53,7 +53,6 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 			title: pyq.title,
 			year: pyq.year,
 			subjectId: pyq.subjectId,
-			questions: pyq.questions,
 			questionPdfUrl: pyq.questionPdfUrl,
 			questionPdfKey: pyq.questionPdfKey ?? undefined,
 			solutionPdfUrl: pyq.solutionPdfUrl,
@@ -68,9 +67,14 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 
 	const selectedSubjectId = form.watch("subjectId");
 
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleQuestionFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0] ?? null;
-		setPdfFile(file);
+		setQuestionPdfFile(file);
+	};
+
+	const handleSolutionFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const file = e.target.files?.[0] ?? null;
+		setSolutionPdfFile(file);
 	};
 
 	const { mutateAsync: createPyq, isPending: isCreatePyqPending } =
@@ -117,13 +121,26 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 		}
 
 		try {
+			let questionPdfUrl = data.questionPdfUrl;
+			let questionPdfKey = data.questionPdfKey;
+
 			let solutionPdfUrl = data.solutionPdfUrl;
 			let solutionPdfKey = data.solutionPdfKey;
 
-			if (pdfFile) {
-				const uploaded = await uploadPdf(pdfFile);
-				solutionPdfUrl = uploaded.url;
-				solutionPdfKey = uploaded.key;
+			// Upload question PDF
+			if (questionPdfFile) {
+				const uploadedQuestion = await uploadPdf(questionPdfFile);
+
+				questionPdfUrl = uploadedQuestion.url;
+				questionPdfKey = uploadedQuestion.key;
+			}
+
+			// Upload solution PDF
+			if (solutionPdfFile) {
+				const uploadedSolution = await uploadPdf(solutionPdfFile);
+
+				solutionPdfUrl = uploadedSolution.url;
+				solutionPdfKey = uploadedSolution.key;
 			}
 
 			if (isEditMode && pyqId) {
@@ -131,6 +148,8 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 					...data,
 					id: pyqId,
 					subjectId: selectedSubjectId,
+					questionPdfUrl,
+					questionPdfKey,
 					solutionPdfUrl,
 					solutionPdfKey,
 					isPaid,
@@ -140,6 +159,8 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 				await createPyq({
 					...data,
 					subjectId: selectedSubjectId,
+					questionPdfUrl,
+					questionPdfKey,
 					solutionPdfUrl,
 					solutionPdfKey,
 					isPaid,
@@ -148,7 +169,8 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 			}
 
 			form.reset();
-			setPdfFile(null);
+			setQuestionPdfFile(null);
+			setSolutionPdfFile(null);
 		} catch (error) {
 			if (error instanceof TRPCClientError) {
 				toast.error(error.message);
@@ -228,8 +250,8 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 					existingPdfKey={pyq?.questionPdfKey}
 					existingPdfUrl={pyq?.questionPdfUrl}
 					isPaid={isPaid}
-					onFileChange={handleFileChange}
-					pdfFile={pdfFile}
+					onFileChange={handleQuestionFileChange}
+					pdfFile={questionPdfFile}
 					price={price}
 					setIsPaid={setIsPaid}
 					setPrice={setPrice}
@@ -242,8 +264,8 @@ const CreatePyqForm = ({ pyq, pyqId }: CreatePyqFormProps) => {
 					existingPdfKey={pyq?.solutionPdfKey}
 					existingPdfUrl={pyq?.solutionPdfUrl}
 					isPaid={isPaid}
-					onFileChange={handleFileChange}
-					pdfFile={pdfFile}
+					onFileChange={handleSolutionFileChange}
+					pdfFile={solutionPdfFile}
 					price={price}
 					setIsPaid={setIsPaid}
 					setPrice={setPrice}

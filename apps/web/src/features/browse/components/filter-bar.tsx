@@ -50,7 +50,7 @@ const FilterBar = () => {
 	} = useGetAllSemesters(selectedCourseId ?? undefined);
 	const selectedSemesterName = semestersData?.find(
 		(sem) => sem.id === selectedSemesterId,
-	)?.number;
+	)?.semesterNumber;
 
 	const {
 		data: subjectsData,
@@ -183,7 +183,7 @@ const FilterBar = () => {
 					) : (
 						semestersData?.map((item) => (
 							<SelectItem key={item.id} value={item.id}>
-								Semester {item.number}
+								Semester {item.semesterNumber}
 							</SelectItem>
 						))
 					)}

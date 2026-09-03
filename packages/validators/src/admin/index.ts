@@ -59,11 +59,6 @@ export const pyqsFormSchema = z.object({
 	title: titleSchema,
 	year: yearSchema,
 	subjectId: subjectIdSchema,
-	questions: z.array(
-		z.object({
-			question: z.string({ required_error: "Question text is required" }),
-		}),
-	),
 	questionPdfUrl: questionPdfUrlSchema,
 	questionPdfKey: questionPdfKeySchema,
 

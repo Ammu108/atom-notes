@@ -3,6 +3,7 @@
 import {
 	ChevronLeft,
 	ChevronRight,
+	Download,
 	Maximize2,
 	Minimize2,
 	Minus,
@@ -108,8 +109,8 @@ export default function PdfViewer({ src }: PdfViewerProps) {
 					<button
 						aria-label="Zoom out"
 						className="inline-flex size-6 items-center justify-center rounded-md border text-sm transition-colors hover:cursor-pointer hover:bg-muted/20 disabled:pointer-events-none disabled:opacity-40 md:size-8"
-						disabled={zoom <= 0.75}
-						onClick={() => setZoom((value) => Math.max(0.75, value - 0.25))}
+						disabled={zoom <= 0.5}
+						onClick={() => setZoom((value) => Math.max(0.5, value - 0.25))}
 						type="button"
 					>
 						<Minus className="size-4" />
@@ -127,6 +128,23 @@ export default function PdfViewer({ src }: PdfViewerProps) {
 						type="button"
 					>
 						<Plus className="size-4" />
+					</button>
+
+					{/* Download */}
+					<button
+						aria-label="Download PDF"
+						className="inline-flex size-6 items-center justify-center rounded-md border text-sm transition-colors hover:cursor-pointer hover:bg-muted/20 md:size-8"
+						onClick={() => {
+							const link = document.createElement("a");
+							link.href = src;
+							link.download = "document.pdf";
+							link.target = "_blank";
+							link.rel = "noopener noreferrer";
+							link.click();
+						}}
+						type="button"
+					>
+						<Download className="size-4" />
 					</button>
 
 					<button

@@ -38,7 +38,7 @@ export const pyqPurchaseRepository = {
 				resourceId: pyqs.id,
 				title: pyqs.title,
 				course: courses.name,
-				semester: semesters.number,
+				semester: semesters.semesterNumber,
 				subject: subjects.name,
 				price: pyqs.price,
 				amountPaid: pyqPurchases.amount,

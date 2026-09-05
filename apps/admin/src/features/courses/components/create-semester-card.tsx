@@ -16,6 +16,7 @@ import {
 export interface Unit {
 	id: string;
 	name: string;
+	description: string;
 }
 
 export interface Subject {
@@ -64,9 +65,10 @@ const CreateSemesterCard = memo(function CreateSemesterCard({
 		subjectId: string,
 		unitId: string,
 		name: string,
+		description: string,
 	) => {
 		setSemesters((prev) =>
-			updateUnitName(prev, semesterId, subjectId, unitId, name),
+			updateUnitName(prev, semesterId, subjectId, unitId, name, description),
 		);
 	};
 
@@ -77,8 +79,6 @@ const CreateSemesterCard = memo(function CreateSemesterCard({
 	) => {
 		setSemesters((prev) => removeUnit(prev, semesterId, subjectId, unitId));
 	};
-
-	// console.log(`Semester ${semester.number} rerender`);
 
 	return (
 		<Card key={semester.id}>
@@ -174,11 +174,27 @@ const CreateSemesterCard = memo(function CreateSemesterCard({
 															subject.id,
 															unit.id,
 															e.target.value,
+															unit.description,
 														)
 													}
 													placeholder="e.g., Unit 1, Chapter 1"
 													type="text"
 													value={unit.name}
+												/>
+												<Input
+													className="h-9 text-sm"
+													onChange={(e) =>
+														updateUnit(
+															semester.id,
+															subject.id,
+															unit.id,
+															unit.name,
+															e.target.value,
+														)
+													}
+													placeholder="unit description...."
+													type="text"
+													value={unit.description}
 												/>
 												<Button
 													className="h-9 text-destructive hover:bg-destructive/10 hover:text-destructive"

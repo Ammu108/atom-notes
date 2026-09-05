@@ -1,6 +1,7 @@
 export interface Unit {
 	id: string;
 	name: string;
+	description: string;
 }
 
 export interface Subject {
@@ -19,6 +20,7 @@ export function createEmptyUnit(): Unit {
 	return {
 		id: `temp-unit-${crypto.randomUUID()}`,
 		name: "",
+		description: "",
 	};
 }
 
@@ -151,6 +153,7 @@ export function updateUnitName(
 	subjectId: string,
 	unitId: string,
 	name: string,
+	description: string,
 ): Semester[] {
 	return semesters.map((semester) => {
 		if (semester.id !== semesterId) {
@@ -171,7 +174,7 @@ export function updateUnitName(
 							return unit;
 						}
 
-						return { ...unit, name };
+						return { ...unit, name, description };
 					}),
 				};
 			}),

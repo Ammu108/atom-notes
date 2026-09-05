@@ -53,6 +53,7 @@ export const createCourseSchema = z.object({
 					units: z.array(
 						z.object({
 							name: z.string().min(1, "Unit name is required"),
+							description: z.string().min(1, "Unit description is required"),
 						}),
 					),
 				}),

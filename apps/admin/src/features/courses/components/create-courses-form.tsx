@@ -23,7 +23,7 @@ type CreateCoursesFormProps = {
 			subjects?: Array<{
 				id: string;
 				name: string;
-				units?: Array<{ id: string; name: string }>;
+				units?: Array<{ id: string; name: string; description: string | null }>;
 			}>;
 		}>;
 	};
@@ -60,6 +60,7 @@ const normalizeSemesters = (
 			units: (subject.units ?? []).map((unit) => ({
 				id: unit.id,
 				name: unit.name,
+				description: unit.description ?? "",
 			})),
 		})),
 	}));
@@ -100,6 +101,7 @@ const CreateCoursesForm = ({ course }: CreateCoursesFormProps) => {
 					units: (subject.units ?? []).map((unit) => ({
 						id: unit.id,
 						name: unit.name.trim(),
+						description: unit.description.trim(),
 					})),
 				})),
 			})),

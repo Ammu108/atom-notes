@@ -32,6 +32,7 @@ export const courseRepository = {
 					code?: string | null;
 					units: {
 						name: string;
+						description: string;
 					}[];
 				}[];
 			}[];
@@ -86,6 +87,7 @@ export const courseRepository = {
 							sub.units.map((unit) => ({
 								subjectId: newSubject.id,
 								name: unit.name,
+								description: unit.description,
 							})),
 						);
 					}
@@ -155,7 +157,8 @@ export const courseRepository = {
 			.leftJoin(notes, eq(notes.unitId, unit.id))
 			.leftJoin(pyqs, eq(pyqs.subjectId, subjects.id))
 			.where(eq(courses.slug, "bca"))
-			.groupBy(courses.id, semesters.id, semesters.semesterNumber);
+			.groupBy(courses.id, semesters.id, semesters.semesterNumber)
+			.orderBy(semesters.semesterNumber);
 	},
 
 	// get course by id with all its relations

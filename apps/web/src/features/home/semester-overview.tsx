@@ -22,8 +22,10 @@ function SemesterCard({
 
 	const cardContent = (
 		<div
-			className={`flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm ${
-				active ? "" : "cursor-not-allowed opacity-70"
+			className={`group flex flex-col justify-between rounded-2xl border border-slate-100 bg-white p-5 shadow-sm transition-all duration-200 ${
+				active
+					? "hover:-translate-y-0.5 hover:scale-[1.02] hover:border-slate-200 hover:shadow-md active:scale-[0.99]"
+					: "cursor-not-allowed opacity-70"
 			}`}
 		>
 			<div>
@@ -52,7 +54,11 @@ function SemesterCard({
 					{totalResources} Resources
 				</span>
 				<ArrowRight
-					className={`h-5 w-5 ${active ? "text-slate-400" : "text-slate-300"}`}
+					className={`h-5 w-5 transition-transform duration-200 ${
+						active
+							? "text-slate-400 group-hover:translate-x-1 group-hover:text-primary"
+							: "text-slate-300"
+					}`}
 				/>
 			</div>
 		</div>

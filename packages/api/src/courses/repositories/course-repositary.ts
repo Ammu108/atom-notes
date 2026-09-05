@@ -7,7 +7,7 @@ import {
 	subjects,
 	unit,
 } from "@repo/db";
-import { and, countDistinct, desc, eq, sql } from "drizzle-orm";
+import { and, asc, countDistinct, desc, eq, sql } from "drizzle-orm";
 
 export const courseRepository = {
 	// check if slug already exists
@@ -161,6 +161,88 @@ export const courseRepository = {
 			.orderBy(semesters.semesterNumber);
 	},
 
+	async getSemesterOverviewById(db: DB, semesterId: string) {
+		return await db
+			.select({
+				courseName: courses.name,
+				activeSemester: semesters.semesterNumber,
+				totalSubjects: countDistinct(subjects.id),
+				totalNotes: countDistinct(notes.id),
+				totalPyqs: countDistinct(pyqs.id),
+			})
+			.from(courses)
+			.leftJoin(semesters, eq(semesters.courseId, courses.id))
+			.leftJoin(subjects, eq(subjects.semesterId, semesters.id))
+			.leftJoin(unit, eq(unit.subjectId, subjects.id))
+			.leftJoin(notes, eq(notes.unitId, unit.id))
+			.leftJoin(pyqs, eq(pyqs.subjectId, subjects.id))
+			.where(eq(semesters.id, semesterId))
+			.groupBy(courses.id, semesters.id);
+	},
+
+	async getAllSubjectsBySemesterId(db: DB, semesterId: string) {
+		const rows = await db
+			.select({
+				subjectId: subjects.id,
+				subjectName: subjects.name,
+
+				unitId: unit.id,
+				unitTitle: unit.name,
+				unitDescription: unit.description,
+
+				totalNotes: countDistinct(notes.id),
+				totalPyqs: countDistinct(pyqs.id),
+			})
+			.from(subjects)
+			.leftJoin(unit, eq(unit.subjectId, subjects.id))
+			.leftJoin(notes, eq(notes.unitId, unit.id))
+			.leftJoin(pyqs, eq(pyqs.subjectId, subjects.id))
+			.where(eq(subjects.semesterId, semesterId))
+			.groupBy(subjects.id, subjects.name, unit.id, unit.name, unit.description)
+			.orderBy(asc(subjects.name), asc(unit.id));
+
+		const subjectsMap = new Map<
+			string,
+			{
+				id: string;
+				subjectName: string;
+				units: {
+					id: string;
+					unitTitle: string;
+					unitDescription: string | null;
+					totalNotes: number;
+					totalPyqs: number;
+				}[];
+			}
+		>();
+
+		for (const row of rows) {
+			if (!subjectsMap.has(row.subjectId)) {
+				subjectsMap.set(row.subjectId, {
+					id: row.subjectId,
+					subjectName: row.subjectName,
+					units: [],
+				});
+			}
+
+			if (row.unitId) {
+				const subject = subjectsMap.get(row.subjectId);
+
+				if (subject) {
+					subject.units.push({
+						id: row.unitId,
+						unitTitle: row.unitTitle ?? "",
+						unitDescription: row.unitDescription,
+						totalNotes: Number(row.totalNotes),
+						totalPyqs: Number(row.totalPyqs),
+					});
+				}
+			}
+		}
+
+		return Array.from(subjectsMap.values());
+	},
+
 	// get course by id with all its relations
 	async findCourseById(db: DB, courseId: string) {
 		return await db.query.courses.findFirst({
@@ -239,12 +321,6 @@ export const courseRepository = {
 				message: "Course deleted successfully",
 				course: deletedCourse,
 			};
-		});
-	},
-
-	async getRemainingSemesters(db: DB, semesterId: string) {
-		return await db.query.semesters.findMany({
-			where: (semester, { ne }) => ne(semester.id, semesterId),
 		});
 	},
 };

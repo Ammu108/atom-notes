@@ -124,6 +124,42 @@ export const courseRouter = createTRPCRouter({
 		return semesters;
 	}),
 
+	getSmesterOverviewById: publicProcedure
+		.input(z.object({ semesterId: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const [semesterOverview] = await courseRepository.getSemesterOverviewById(
+				ctx.db,
+				input.semesterId,
+			);
+
+			if (!semesterOverview) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Semester overview not found!",
+				});
+			}
+
+			return semesterOverview;
+		}),
+
+	getAllSubjectsBySemesterId: publicProcedure
+		.input(z.object({ semesterId: z.string() }))
+		.query(async ({ input, ctx }) => {
+			const subjects = await courseRepository.getAllSubjectsBySemesterId(
+				ctx.db,
+				input.semesterId,
+			);
+
+			if (!subjects) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "subjects not found!",
+				});
+			}
+
+			return subjects;
+		}),
+
 	getSemestersByCourseId: publicProcedure
 		.input(getSemestersByCourseIdSchema)
 		.query(async ({ input, ctx }) => {
@@ -217,14 +253,5 @@ export const courseRouter = createTRPCRouter({
 			}
 
 			return course;
-		}),
-
-	getRemainingSemesters: publicProcedure
-		.input(z.object({ semesterId: z.string() }))
-		.query(async ({ input, ctx }) => {
-			return await courseRepository.getRemainingSemesters(
-				ctx.db,
-				input.semesterId,
-			);
 		}),
 });

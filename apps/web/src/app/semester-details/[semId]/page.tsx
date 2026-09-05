@@ -1,6 +1,6 @@
 import { Container } from "~/components/container";
-import GetRemainingSemester from "~/features/semester-details/_components/get-remaining-semesters";
-import SemesterDetailsPage from "~/features/semester-details/page";
+import SemesterDetailsHeroSection from "~/features/semester-details/_components/semester-details-hero-section";
+import SemesterDetailsSection from "~/features/semester-details/_components/semester-details-section";
 
 interface PageProps {
 	params: Promise<{
@@ -13,9 +13,9 @@ const SemesterDetails = async ({ params }: PageProps) => {
 
 	return (
 		<Container className="mx-auto">
-			<div className="flex w-full flex-col gap-6 pt-24">
-				<SemesterDetailsPage semId={semId} />
-				<GetRemainingSemester semId={semId} />
+			<div className="flex w-full flex-col gap-12 pt-24">
+				<SemesterDetailsHeroSection semId={semId} />
+				<SemesterDetailsSection semId={semId} />
 			</div>
 		</Container>
 	);

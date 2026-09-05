@@ -13,13 +13,19 @@ import { useRouter } from "next/navigation";
 import { useGetAllSemestersByCourse, useGetSemesterOverview } from "../api";
 import SemesterDetailsHeroSectionSkeleton from "./semester-details-hero-section-skeleton";
 
-const SemesterDetailsHeroSection = ({ semId }: { semId: string }) => {
+const SemesterDetailsHeroSection = ({
+	courseSlug,
+	semesterNumber,
+}: {
+	courseSlug: string;
+	semesterNumber: number;
+}) => {
 	const router = useRouter();
 	const {
 		data: semesterOverview,
 		isLoading: isOverviewLoading,
 		isError: isOverviewError,
-	} = useGetSemesterOverview(semId);
+	} = useGetSemesterOverview({ courseSlug, semesterNumber });
 
 	const {
 		data: semesters,
@@ -81,7 +87,7 @@ const SemesterDetailsHeroSection = ({ semId }: { semId: string }) => {
 					{semesters.map((sem) => (
 						<button
 							className={`rounded-full px-4 py-2 font-semibold text-sm transition hover:cursor-pointer ${
-								semId === sem.id
+								semesterNumber === sem.semesterNumber
 									? "bg-[hsl(7,82%,45%)] text-white shadow-sm"
 									: "border border-slate-200 bg-white text-slate-600 hover:border-slate-300"
 							}`}
@@ -90,7 +96,9 @@ const SemesterDetailsHeroSection = ({ semId }: { semId: string }) => {
 							type="button"
 						>
 							Sem{" "}
-							{semId === sem.id ? `${sem.semesterNumber}` : sem.semesterNumber}
+							{semesterNumber === sem.semesterNumber
+								? `${sem.semesterNumber}`
+								: sem.semesterNumber}
 						</button>
 					))}
 				</div>

@@ -11,12 +11,21 @@ import { Button } from "~/components/ui/button";
 import { useGetAllSubjectsBySemesterId } from "../api";
 import SemesterDetailSkeleton from "./semester-details-skeleton";
 
-const SemesterDetailsSection = ({ semId }: { semId: string }) => {
+const SemesterDetailsSection = ({
+	courseSlug,
+	semesterNumber,
+}: {
+	courseSlug: string;
+	semesterNumber: number;
+}) => {
 	const {
 		data: subjects,
 		isLoading: unitsLoading,
 		isError: unitsError,
-	} = useGetAllSubjectsBySemesterId(semId);
+	} = useGetAllSubjectsBySemesterId({
+		courseSlug,
+		semesterNumber,
+	});
 
 	if (unitsLoading || !subjects) {
 		return <SemesterDetailSkeleton />;

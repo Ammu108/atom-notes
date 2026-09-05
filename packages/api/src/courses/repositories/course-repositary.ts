@@ -143,7 +143,7 @@ export const courseRepository = {
 		return await db
 			.select({
 				id: semesters.id,
-				name: courses.name,
+				slug: courses.slug,
 				semesterNumber: semesters.semesterNumber,
 				totalSubjects: countDistinct(subjects.id),
 				totalResources: sql<number>`
@@ -161,7 +161,11 @@ export const courseRepository = {
 			.orderBy(semesters.semesterNumber);
 	},
 
-	async getSemesterOverviewById(db: DB, semesterId: string) {
+	async getSemesterOverviewById(
+		db: DB,
+		courseName: string,
+		semesterNumber: number,
+	) {
 		return await db
 			.select({
 				courseName: courses.name,
@@ -176,11 +180,20 @@ export const courseRepository = {
 			.leftJoin(unit, eq(unit.subjectId, subjects.id))
 			.leftJoin(notes, eq(notes.unitId, unit.id))
 			.leftJoin(pyqs, eq(pyqs.subjectId, subjects.id))
-			.where(eq(semesters.id, semesterId))
+			.where(
+				and(
+					eq(courses.name, courseName),
+					eq(semesters.semesterNumber, semesterNumber),
+				),
+			)
 			.groupBy(courses.id, semesters.id);
 	},
 
-	async getAllSubjectsBySemesterId(db: DB, semesterId: string) {
+	async getAllSubjectsBySemesterId(
+		db: DB,
+		courseName: string,
+		semesterNumber: number,
+	) {
 		const rows = await db
 			.select({
 				subjectId: subjects.id,
@@ -194,10 +207,17 @@ export const courseRepository = {
 				totalPyqs: countDistinct(pyqs.id),
 			})
 			.from(subjects)
+			.innerJoin(semesters, eq(semesters.id, subjects.semesterId))
+			.innerJoin(courses, eq(courses.id, semesters.courseId))
 			.leftJoin(unit, eq(unit.subjectId, subjects.id))
 			.leftJoin(notes, eq(notes.unitId, unit.id))
 			.leftJoin(pyqs, eq(pyqs.subjectId, subjects.id))
-			.where(eq(subjects.semesterId, semesterId))
+			.where(
+				and(
+					eq(courses.name, courseName),
+					eq(semesters.semesterNumber, semesterNumber),
+				),
+			)
 			.groupBy(subjects.id, subjects.name, unit.id, unit.name, unit.description)
 			.orderBy(asc(subjects.name), asc(unit.id));
 

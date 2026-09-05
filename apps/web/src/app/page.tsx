@@ -8,8 +8,8 @@ const Page = () => {
 		<main>
 			<HeroSection />
 			<div className="flex flex-col gap-24">
-				<WhyStudentsLoveUs />
 				<SemesterOverViewSection />
+				<WhyStudentsLoveUs />
 				<Faqs />
 			</div>
 		</main>

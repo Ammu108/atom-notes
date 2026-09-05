@@ -6,14 +6,14 @@ import { useGetAllSemesterDetails, useGetAllSemesters } from "./api";
 import SemesterOverviewSkeleton from "./semester-overview-skeleton";
 
 interface SemesterCardProps {
-	id: string | null;
+	courseSlug: string;
 	semesterNumber: number | null;
 	subjects: number;
 	totalResources: number;
 }
 
 function SemesterCard({
-	id,
+	courseSlug,
 	semesterNumber,
 	subjects,
 	totalResources,
@@ -68,7 +68,11 @@ function SemesterCard({
 		return cardContent;
 	}
 
-	return <Link href={`/semester-details/${id}`}>{cardContent}</Link>;
+	return (
+		<Link href={`/${courseSlug}/semester/${semesterNumber}`}>
+			{cardContent}
+		</Link>
+	);
 }
 
 const SemesterOverview = () => {
@@ -132,7 +136,7 @@ const SemesterOverview = () => {
 				{semesters.map((sem) => (
 					<div key={sem.id}>
 						<SemesterCard
-							id={sem.id}
+							courseSlug={sem.slug}
 							semesterNumber={sem.semesterNumber}
 							subjects={sem.totalSubjects}
 							totalResources={sem.totalResources}

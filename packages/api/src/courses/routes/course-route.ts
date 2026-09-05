@@ -125,11 +125,26 @@ export const courseRouter = createTRPCRouter({
 	}),
 
 	getSmesterOverviewById: publicProcedure
-		.input(z.object({ semesterId: z.string() }))
+		.input(z.object({ courseSlug: z.string(), semesterNumber: z.number() }))
 		.query(async ({ input, ctx }) => {
+			const [courseExist] = await courseRepository.findCourseBySlug(
+				ctx.db,
+				input.courseSlug,
+			);
+
+			if (!courseExist) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Course not found!",
+				});
+			}
+
+			const courseName = courseExist.name;
+
 			const [semesterOverview] = await courseRepository.getSemesterOverviewById(
 				ctx.db,
-				input.semesterId,
+				courseName,
+				input.semesterNumber,
 			);
 
 			if (!semesterOverview) {
@@ -143,11 +158,26 @@ export const courseRouter = createTRPCRouter({
 		}),
 
 	getAllSubjectsBySemesterId: publicProcedure
-		.input(z.object({ semesterId: z.string() }))
+		.input(z.object({ courseSlug: z.string(), semesterNumber: z.number() }))
 		.query(async ({ input, ctx }) => {
+			const [courseExist] = await courseRepository.findCourseBySlug(
+				ctx.db,
+				input.courseSlug,
+			);
+
+			if (!courseExist) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Course not found!",
+				});
+			}
+
+			const courseName = courseExist.name;
+
 			const subjects = await courseRepository.getAllSubjectsBySemesterId(
 				ctx.db,
-				input.semesterId,
+				courseName,
+				input.semesterNumber,
 			);
 
 			if (!subjects) {

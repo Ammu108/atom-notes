@@ -1,9 +1,15 @@
 import { api } from "~/trpc/react";
 
-export const useGetSemesterOverview = (semesterId: string) => {
+export const useGetSemesterOverview = ({
+	courseSlug,
+	semesterNumber,
+}: {
+	courseSlug: string;
+	semesterNumber: number;
+}) => {
 	return api.courses.getSmesterOverviewById.useQuery(
-		{ semesterId },
-		{ enabled: !!semesterId },
+		{ courseSlug, semesterNumber },
+		{ enabled: !!courseSlug && !!semesterNumber },
 	);
 };
 
@@ -11,9 +17,15 @@ export const useGetAllSemestersByCourse = () => {
 	return api.courses.getAllSemestersByCourse.useQuery();
 };
 
-export const useGetAllSubjectsBySemesterId = (semesterId: string) => {
+export const useGetAllSubjectsBySemesterId = ({
+	courseSlug,
+	semesterNumber,
+}: {
+	courseSlug: string;
+	semesterNumber: number;
+}) => {
 	return api.courses.getAllSubjectsBySemesterId.useQuery(
-		{ semesterId },
-		{ enabled: !!semesterId },
+		{ courseSlug, semesterNumber },
+		{ enabled: !!courseSlug && !!semesterNumber },
 	);
 };

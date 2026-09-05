@@ -1,5 +1,11 @@
 import { relations } from "drizzle-orm";
-import { index, pgTableCreator, uuid, varchar } from "drizzle-orm/pg-core";
+import {
+	index,
+	pgTableCreator,
+	text,
+	uuid,
+	varchar,
+} from "drizzle-orm/pg-core";
 import { timestamps } from "../helpers";
 import { notes } from "./notes";
 import { subjects } from "./subjects";
@@ -14,6 +20,7 @@ export const unit = createTable(
 			.references(() => subjects.id, { onDelete: "cascade" })
 			.notNull(),
 		name: varchar("name", { length: 256 }).notNull(),
+		description: text("description"),
 		...timestamps,
 	},
 	(table) => ({
